@@ -1,1 +1,0 @@
-console.log("My Health Dashboard started.");
