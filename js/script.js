@@ -40,11 +40,25 @@ today.textContent =
     new Date().toLocaleDateString("en-US", options);
     const logButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
+const breakfastButton =
+    document.getElementById("breakfastButton");
+
+const breakfastStatus =
+    document.getElementById("breakfastStatus");
+    const middayButton =
+    document.getElementById("middayButton");
+
+const middayStatus =
+    document.getElementById("middayStatus");
 const weightButton = document.getElementById("weightButton");
 const weightDisplay = document.getElementById("weightDisplay");
 const summaryWeight = document.getElementById("summaryWeight");
 const summaryBP =
     document.getElementById("summaryBP");
+    const summaryBreakfast =
+    document.getElementById("summaryBreakfast");
+    const summaryMidday =
+    document.getElementById("summaryMidday");
 const bpButton = document.getElementById("bpButton");
 const bpDisplay = document.getElementById("bpDisplay");
 const heartRateDisplay = document.getElementById("heartRateDisplay");
@@ -147,33 +161,110 @@ if (medicationLog.wakeUp?.logged) {
 summaryWakeUp.textContent = "✅ Logged " + medicationLog.wakeUp.time;
     logButton.disabled = true;
 }
+// Restore Breakfast medication display
+if (medicationLog.breakfast?.logged) {
+
+    breakfastStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.breakfast.time;
+        
+        summaryBreakfast.textContent =
+    "✅ Logged " + medicationLog.breakfast.time;
+
+    breakfastButton.textContent = "✅ Logged Today";
+    breakfastButton.disabled = true;
+}
+// Restore Midday medication display
+if (medicationLog.midday?.logged) {
+
+    middayStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.midday.time;
+        
+        summaryMidday.textContent =
+    "✅ Logged " + medicationLog.midday.time;
+
+    middayButton.textContent = "✅ Logged Today";
+    middayButton.disabled = true;
+}
 
 logButton.addEventListener("click", function () {
 
     const now = new Date();
 
-medicationLog.wakeUp = {
-    logged: true,
-    date: now.toDateString(),
-    time: now.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    })
-};
+    medicationLog.wakeUp = {
+        logged: true,
+        date: now.toDateString(),
+        time: now.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        })
+    };
 
-localStorage.setItem(
-    "medicationLog",
-    JSON.stringify(medicationLog)
-);
+    localStorage.setItem(
+        "medicationLog",
+        JSON.stringify(medicationLog)
+    );
+
     medStatus.innerHTML =
-    "<strong>✅ Logged Today:</strong> " +
-    now.toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    });
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.wakeUp.time;
 
-logButton.textContent = "✅ Logged Today";
-logButton.disabled = true;
+    logButton.textContent = "✅ Logged Today";
+    logButton.disabled = true;
+
+});
+
+breakfastButton.addEventListener("click", function () {
+
+    const now = new Date();
+
+    medicationLog.breakfast = {
+        logged: true,
+        date: now.toDateString(),
+        time: now.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        })
+    };
+
+    localStorage.setItem(
+        "medicationLog",
+        JSON.stringify(medicationLog)
+    );
+
+    breakfastStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.breakfast.time;
+
+    breakfastButton.textContent = "✅ Logged Today";
+    breakfastButton.disabled = true;
+
+});
+middayButton.addEventListener("click", function () {
+
+    const now = new Date();
+
+    medicationLog.midday = {
+        logged: true,
+        date: now.toDateString(),
+        time: now.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        })
+    };
+
+    localStorage.setItem(
+        "medicationLog",
+        JSON.stringify(medicationLog)
+    );
+
+    middayStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.midday.time;
+
+    middayButton.textContent = "✅ Logged Today";
+    middayButton.disabled = true;
 
 });
 
