@@ -28,6 +28,9 @@
 <p>🥪 Midday Medications:
     <strong id="summaryMidday">Not Logged</strong>
 </p>
+<p>🌙 Evening Medications:
+    <strong id="summaryEvening">Not Logged</strong>
+</p>
    <p>
 ❤️ Blood Pressure:
 <strong id="summaryBP">Not Recorded</strong>
@@ -54,7 +57,10 @@
     <section class="briefing">
 
         <div class="card" id="medCard">
-    <h2>💊 Morning Medications</h2>
+    <h2>💊 Wake-Up Medications</h2>
+    <p id="wakeUpMedicationList">
+    Loading medications...
+</p>
 
     <p id="medStatus">
         Status:
@@ -62,12 +68,15 @@
     </p>
 
     <button id="logButton">
-        Log Morning Medications
+        Log Wake-Up Medications
     </button>
 
 </div>
 <div class="card" id="breakfastCard">
     <h2>🍳 Breakfast Medications</h2>
+    <p id="breakfastMedicationList">
+    Loading medications...
+</p>
 
     <p id="breakfastStatus">
         Status:
@@ -81,6 +90,9 @@
 </div>
 <div class="card" id="middayCard">
     <h2>🥪 Midday Medications</h2>
+    <p id="middayMedicationList">
+    Loading medications...
+</p>
 
     <p id="middayStatus">
         Status:
@@ -91,6 +103,37 @@
         Log  Midday Medications
     </button>
 
+</div>
+<div class="card">
+    <h2>🍽️ Dinner Medications</h2>
+
+    <p id="dinnerMedicationList">
+        Loading medications...
+    </p>
+
+    <p id="dinnerStatus">
+        Not logged
+    </p>
+
+    <button id="dinnerButton">
+        Log Dinner Medications
+    </button>
+</div>
+
+<div class="card" id="eveningCard">
+    <h2>🌙 Evening Medications</h2>
+    <p id="eveningMedicationList">
+    Loading medications...
+</p>
+
+    <p id="eveningStatus">
+        Status:
+        <strong>Not Logged</strong>
+    </p>
+
+    <button id="eveningButton">
+        Log Evening Medications
+    </button>
 </div>
 
         <div class="card">

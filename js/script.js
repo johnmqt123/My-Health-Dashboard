@@ -1,5 +1,11 @@
 // Load saved medication status
 let medicationLog = JSON.parse(localStorage.getItem("medicationLog")) || {};
+
+if (!medicationLog.evening) {
+    medicationLog.evening = {};
+}
+
+
 let weightLog = JSON.parse(localStorage.getItem("weightLog")) || {};
 // Restore Wake-Up medication status
 if (
@@ -27,6 +33,7 @@ if (hour < 12) {
 console.log("John's Assistant started.");
 
 console.log(medicationSchedule);
+
 const today = document.getElementById("today");
 
 const options = {
@@ -40,6 +47,30 @@ today.textContent =
     new Date().toLocaleDateString("en-US", options);
     const logButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
+const wakeUpMedicationList = document.getElementById("wakeUpMedicationList");
+const breakfastMedicationList = document.getElementById("breakfastMedicationList");
+const middayMedicationList = document.getElementById("middayMedicationList");
+const dinnerMedicationList = document.getElementById("dinnerMedicationList");
+const eveningMedicationList = document.getElementById("eveningMedicationList");
+
+    function displayMedicationList(time, element) {
+    const group = medicationSchedule.find(
+        group => group.time === time
+    );
+
+    if (!group) return;
+
+    element.innerHTML =
+        "<ul><li>" +
+        group.medications.join("</li><li>") +
+        "</li></ul>";
+        
+}
+displayMedicationList("Wake Up", wakeUpMedicationList);
+displayMedicationList("Breakfast", breakfastMedicationList);
+displayMedicationList("Midday", middayMedicationList);
+displayMedicationList("Dinner", dinnerMedicationList);
+displayMedicationList("Evening", eveningMedicationList);
 const breakfastButton =
     document.getElementById("breakfastButton");
 
@@ -50,6 +81,14 @@ const breakfastStatus =
 
 const middayStatus =
     document.getElementById("middayStatus");
+    const eveningButton =
+    document.getElementById("eveningButton");
+
+const eveningStatus =
+    document.getElementById("eveningStatus");
+
+const summaryEvening =
+    document.getElementById("summaryEvening");
 const weightButton = document.getElementById("weightButton");
 const weightDisplay = document.getElementById("weightDisplay");
 const summaryWeight = document.getElementById("summaryWeight");
@@ -59,6 +98,8 @@ const summaryBP =
     document.getElementById("summaryBreakfast");
     const summaryMidday =
     document.getElementById("summaryMidday");
+    const summaryWakeUp =
+    document.getElementById("summaryWakeUp");
 const bpButton = document.getElementById("bpButton");
 const bpDisplay = document.getElementById("bpDisplay");
 const heartRateDisplay = document.getElementById("heartRateDisplay");
@@ -155,6 +196,7 @@ if (medicationLog.wakeUp?.logged) {
     medStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.wakeUp.time;
+        
 
     logButton.textContent = "✅ Logged Today";
     const summaryWakeUp = document.getElementById("summaryWakeUp");
@@ -187,7 +229,19 @@ if (medicationLog.midday?.logged) {
     middayButton.textContent = "✅ Logged Today";
     middayButton.disabled = true;
 }
+// Restore Evening medication display
+if (medicationLog.evening?.logged) {
 
+    eveningStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.evening.time;
+        
+        summaryEvening.textContent =
+    "✅ Logged " + medicationLog.evening.time;
+
+    eveningButton.textContent = "✅ Logged Today";
+    eveningButton.disabled = true;
+}
 logButton.addEventListener("click", function () {
 
     const now = new Date();
@@ -209,6 +263,9 @@ logButton.addEventListener("click", function () {
     medStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.wakeUp.time;
+
+        summaryWakeUp.textContent =
+    "✅ Logged " + medicationLog.wakeUp.time;
 
     logButton.textContent = "✅ Logged Today";
     logButton.disabled = true;
@@ -265,6 +322,33 @@ middayButton.addEventListener("click", function () {
 
     middayButton.textContent = "✅ Logged Today";
     middayButton.disabled = true;
+
+});
+
+eveningButton.addEventListener("click", function () {
+
+    const now = new Date();
+
+    medicationLog.evening = {
+        logged: true,
+        date: now.toDateString(),
+        time: now.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        })
+    };
+
+    localStorage.setItem(
+        "medicationLog",
+        JSON.stringify(medicationLog)
+    );
+
+    eveningStatus.innerHTML =
+        "<strong>✅ Logged Today:</strong> " +
+        medicationLog.evening.time;
+
+    eveningButton.textContent = "✅ Logged Today";
+    eveningButton.disabled = true;
 
 });
 

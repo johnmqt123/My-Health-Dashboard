@@ -33,11 +33,12 @@ const medicationSchedule = [
     },
 
     {
-        time: "Bedtime",
+        time: "Evening",
         medications: [
             "Nifedipine",
             "Rosuvastatin",
-            "Low-dose Aspirin"
+            "Low-dose Aspirin",
+            "Gabapentin"
         ]
     }
 
