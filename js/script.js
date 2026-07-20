@@ -596,6 +596,8 @@ localStorage.setItem(
     "medicationHistory",
     JSON.stringify(medicationHistory)
 );
+summaryBreakfast.textContent =
+    "✅ Logged " + medicationLog.breakfast.time;
 
     breakfastStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
@@ -644,6 +646,8 @@ localStorage.setItem(
     "medicationHistory",
     JSON.stringify(medicationHistory)
 );
+summaryMidday.textContent =
+    "✅ Logged " + medicationLog.midday.time;
     middayStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.midday.time;
@@ -742,6 +746,9 @@ localStorage.setItem(
     "medicationHistory",
     JSON.stringify(medicationHistory)
 );
+
+summaryEvening.textContent =
+    "✅ Logged " + medicationLog.evening.time;
 
     eveningStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
