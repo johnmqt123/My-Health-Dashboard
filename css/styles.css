@@ -82,3 +82,55 @@ button {
     box-shadow: 0 3px 10px rgba(0,0,0,.12);
 
 }
+#manageMedicationsBtn {
+    padding: 10px 16px;
+    margin: 10px 0 15px 0;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    background-color: #0078d4;
+    color: white;
+}
+
+#manageMedicationsBtn:hover {
+    background-color: #005fa3;
+}
+#medicationEditArea {
+    display: none;
+    margin-top: 20px;
+    padding: 15px;
+    border: 2px solid #0078d4;
+    border-radius: 8px;
+    background-color: white;
+    color: black;
+}
+.editMedicationBtn,
+.notesMedicationBtn {
+
+    background-color: #0078d4;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    padding: 10px 18px;
+
+    margin: 10px 8px 10px 0;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.editMedicationBtn:hover,
+.notesMedicationBtn:hover {
+
+    background-color: #005fa3;
+
+}
