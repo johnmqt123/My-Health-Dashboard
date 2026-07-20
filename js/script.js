@@ -330,6 +330,11 @@ const summaryWakeUp =
 const bpButton = document.getElementById("bpButton");
 const bpDisplay = document.getElementById("bpDisplay");
 const heartRateDisplay = document.getElementById("heartRateDisplay");
+const addTaskButton =
+    document.getElementById("addTaskButton");
+
+const todayList =
+    document.getElementById("todayList");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
 
@@ -781,7 +786,17 @@ function updateDashboard() {if (medicationLog.wakeUp?.logged) {
 }
 updateDashboard();
 console.log(medicationHistory);
+addTaskButton.addEventListener("click", function () {
 
+    const task = prompt("Enter a task for today:");
+
+    if (!task) {
+        return;
+    }
+
+    todayList.textContent = task;
+
+});
 function saveMedicationLog() {
     localStorage.setItem(
         "medicationLog",
