@@ -337,6 +337,8 @@ const todayList =
     document.getElementById("todayList");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
+let todayTask =
+    localStorage.getItem("todayTask") || "";
 
 if (weightLog.current) {
 
@@ -346,7 +348,11 @@ if (weightLog.current) {
     summaryWeight.textContent =
         weightLog.current + " lb";
 }
+if (todayTask) {
 
+    todayList.textContent = todayTask;
+
+}
 if (bpLog.systolic) {
 
     bpDisplay.textContent =
@@ -795,6 +801,12 @@ addTaskButton.addEventListener("click", function () {
     }
 
     todayList.textContent = task;
+    todayTask = task;
+
+localStorage.setItem(
+    "todayTask",
+    todayTask
+);
 
 });
 function saveMedicationLog() {
