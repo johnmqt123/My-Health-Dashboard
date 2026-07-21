@@ -337,8 +337,8 @@ const todayList =
     document.getElementById("todayList");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
-let todayTask =
-    localStorage.getItem("todayTask") || "";
+let todayTasks =
+    JSON.parse(localStorage.getItem("todayTasks")) || [];
 
 if (weightLog.current) {
 
@@ -348,9 +348,14 @@ if (weightLog.current) {
     summaryWeight.textContent =
         weightLog.current + " lb";
 }
-if (todayTask) {
+if (todayTasks.length > 0) {
 
-    todayList.textContent = todayTask;
+    todayList.innerHTML =
+        "<ul>" +
+        todayTasks.map(function (task) {
+            return "<li><input type='checkbox'> " + task + "</li>";
+        }).join("") +
+        "</ul>";
 
 }
 if (bpLog.systolic) {
@@ -800,12 +805,18 @@ addTaskButton.addEventListener("click", function () {
         return;
     }
 
-    todayList.textContent = task;
-    todayTask = task;
+    todayTasks.push(task);
+
+todayList.innerHTML =
+    "<ul>" +
+    todayTasks.map(function (task) {
+        return "<li><input type='checkbox'> " + task + "</li>";
+    }).join("") +
+    "</ul>";
 
 localStorage.setItem(
-    "todayTask",
-    todayTask
+    "todayTasks",
+    JSON.stringify(todayTasks)
 );
 
 });
