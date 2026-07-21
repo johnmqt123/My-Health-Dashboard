@@ -134,3 +134,43 @@ button {
     background-color: #005fa3;
 
 }
+#todayList ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-left: 0;
+}
+#todayList li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+#todayList li input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.deleteTaskBtn {
+    margin-top: 0;
+    margin-left: 10px;
+}
+#medicationCenter {
+    margin-top: 40px;
+}
+
+#medicationCenter h2 {
+    color: #1f4e79;
+    margin-bottom: 20px;
+}
+#medicationCenterButton {
+    display: block;
+    margin: 20px auto;
+    padding: 12px 24px;
+    font-size: 18px;
+}
+.dashboardDivider {
+    width: 70%;
+    margin: 10px auto 25px;
+    border: none;
+    border-top: 1px solid rgba(255,255,255,.35);
+}

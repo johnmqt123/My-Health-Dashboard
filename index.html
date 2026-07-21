@@ -15,13 +15,13 @@
     <header>
         <h1 id="greeting">Hello, John</h1>
         <p id="today"></p>
+
+        <h2 id="atAGlanceHeading">At a Glance</h2>
+        <hr class="dashboardDivider">
+        
        
 
-    <h2>At a Glance</h2>
     
-    <button id="manageMedicationsBtn">
-    Manage Medications
-</button>
 <div id="manageMedicationsPanel" style="display: none;">
     <h3>Manage Medications</h3>
 
@@ -29,21 +29,7 @@
     <div id="medicationEditArea"></div>
     
 </div>
-    <p>💊 Wake-Up Medications:
-        <strong id="summaryWakeUp">Not Logged</strong>
-    </p>
-<p>🍳 Breakfast Medications:
-    <strong id="summaryBreakfast">Not Logged</strong>
-</p>
-<p>🥪 Midday Medications:
-    <strong id="summaryMidday">Not Logged</strong>
-</p>
-<p>🍽️ Dinner Medications:
-    <strong id="summaryDinner">Not Logged</strong>
-</p>
-<p>🌙 Evening Medications:
-    <strong id="summaryEvening">Not Logged</strong>
-</p>
+    
    <p>
 ❤️ Blood Pressure:
 <strong id="summaryBP">Not Recorded</strong>
@@ -57,17 +43,87 @@
         <strong>Coming Soon</strong>
     </p>
 
-    <p>📅 Calendar:
-        <strong>No Events</strong>
-    </p>
-
+    <div style="text-align:center; margin-top:20px;">
+    <button id="medicationCenterButton">
+        💊 Medication Center
+    </button>
 </div>
+
     </header>
      
 
     <section class="briefing">
 
-        <div class="card" id="medCard">
+        
+<
+
+
+
+
+
+        <div class="card">
+            <h2>❤️ Blood Pressure</h2>
+            <p id="bpDisplay">Last Reading: -- / --</p>
+            <p id="heartRateDisplay">Heart Rate: -- bpm</p>
+            <button id="bpButton">
+    Log Blood Pressure
+</button>
+        </div>
+
+        <div class="card">
+            <h2>⚖️ Weight</h2>
+           <p id="weightDisplay">Last Weight: --</p>
+           <button id="weightButton">
+    Log Weight
+</button>
+        </div>
+
+        <div class="card">
+            <h2>😴 CPAP</h2>
+            <p>No data recorded.</p>
+        </div>
+
+        <div class="card">
+            <h2>🌤 Weather</h2>
+            <p>Coming Soon!</p>
+        </div>
+
+        <div class="card">
+            <h2>📅 Calendar</h2>
+            <p>No events today.</p>
+        </div>
+        <div class="card" id="todayListCard">
+    <h2>📝 Today's List</h2>
+
+    <p id="todayList">
+        No tasks yet.
+    </p>
+
+     <button id="addTaskButton">
+       Add Task
+    </button>
+ </div>
+
+
+
+     </section>
+    
+
+    <div class="summary-card">
+
+    <h2 id="medicationCenter">💊 Medication Center</h2>
+    
+
+    
+    
+    <button id="manageMedicationsBtn">
+    Manage Medications
+</button>
+    <section class="briefing">
+
+    
+
+    <div class="card" id="medCard">
     <h2>💊 Wake-Up Medications</h2>
     <p id="wakeUpMedicationList">
     Loading medications...
@@ -130,7 +186,6 @@
         Log Dinner Medications
     </button>
 </div>
-
 <div class="card" id="eveningCard">
     <h2>🌙 Evening Medications</h2>
     <p id="eveningMedicationList">
@@ -145,52 +200,9 @@
     <button id="eveningButton">
         Log Evening Medications
     </button>
-</div>
-
-        <div class="card">
-            <h2>❤️ Blood Pressure</h2>
-            <p id="bpDisplay">Last Reading: -- / --</p>
-            <p id="heartRateDisplay">Heart Rate: -- bpm</p>
-            <button id="bpButton">
-    Log Blood Pressure
-</button>
-        </div>
-
-        <div class="card">
-            <h2>⚖️ Weight</h2>
-           <p id="weightDisplay">Last Weight: --</p>
-           <button id="weightButton">
-    Log Weight
-</button>
-        </div>
-
-        <div class="card">
-            <h2>😴 CPAP</h2>
-            <p>No data recorded.</p>
-        </div>
-
-        <div class="card">
-            <h2>🌤 Weather</h2>
-            <p>Coming Soon!</p>
-        </div>
-
-        <div class="card">
-            <h2>📅 Calendar</h2>
-            <p>No events today.</p>
-        </div>
-        <div class="card" id="todayListCard">
-    <h2>📝 Today's List</h2>
-
-    <p id="todayList">
-        No tasks yet.
-    </p>
-
-    <button id="addTaskButton">
-        Add Task
-    </button>
-</div>
-
     </section>
+</div>
+</div>
 
 </div>
 <script src="js/userProfile.js"></script>

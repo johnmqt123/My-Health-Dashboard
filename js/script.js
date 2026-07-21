@@ -335,10 +335,15 @@ const addTaskButton =
 
 const todayList =
     document.getElementById("todayList");
+    const medicationCenterButton =
+    document.getElementById("medicationCenterButton");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
 let todayTasks =
     JSON.parse(localStorage.getItem("todayTasks")) || [];
+    let taskListDate =
+    localStorage.getItem("taskListDate") ||
+    new Date().toDateString();
 
 if (weightLog.current) {
 
@@ -348,14 +353,33 @@ if (weightLog.current) {
     summaryWeight.textContent =
         weightLog.current + " lb";
 }
+if (taskListDate !== new Date().toDateString()) {
+
+    todayTasks = todayTasks
+        .filter(task => !task.completed)
+        .map(function (task) {
+            return {
+                text: task.text,
+                completed: false
+            };
+        });
+
+    taskListDate = new Date().toDateString();
+
+    localStorage.setItem(
+        "todayTasks",
+        JSON.stringify(todayTasks)
+    );
+
+    localStorage.setItem(
+        "taskListDate",
+        taskListDate
+    );
+}
+
 if (todayTasks.length > 0) {
 
-    todayList.innerHTML =
-        "<ul>" +
-        todayTasks.map(function (task) {
-            return "<li><input type='checkbox'> " + task + "</li>";
-        }).join("") +
-        "</ul>";
+    displayTodayTasks();
 
 }
 if (bpLog.systolic) {
@@ -446,7 +470,10 @@ if (
 
     logButton.textContent = "✅ Logged Today";
     const summaryWakeUp = document.getElementById("summaryWakeUp");
-summaryWakeUp.textContent = "✅ Logged " + medicationLog.wakeUp.time;
+
+if (summaryWakeUp) {
+    summaryWakeUp.textContent = "✅ Logged " + medicationLog.wakeUp.time;
+}
     logButton.disabled = false;
 }
 // Restore Breakfast medication display
@@ -784,10 +811,13 @@ function updateDashboard() {if (medicationLog.wakeUp?.logged) {
     logButton.textContent = "✅ Logged Today";
 
     const summaryWakeUp =
-        document.getElementById("summaryWakeUp");
+    document.getElementById("summaryWakeUp");
 
+if (summaryWakeUp) {
     summaryWakeUp.textContent =
         "✅ Logged " + medicationLog.wakeUp.time;
+}
+}
 
     logButton.disabled = false;
 }
@@ -805,19 +835,93 @@ addTaskButton.addEventListener("click", function () {
         return;
     }
 
-    todayTasks.push(task);
+    todayTasks.push({
+    text: task,
+    completed: false
+});
 
-todayList.innerHTML =
-    "<ul>" +
-    todayTasks.map(function (task) {
-        return "<li><input type='checkbox'> " + task + "</li>";
-    }).join("") +
-    "</ul>";
+displayTodayTasks();
 
 localStorage.setItem(
     "todayTasks",
     JSON.stringify(todayTasks)
 );
+});
+function displayTodayTasks() {
+
+    if (todayTasks.length === 0) {
+
+        todayList.textContent = "No tasks yet.";
+        return;
+
+    }
+
+    todayList.innerHTML =
+        "<ul>" +
+        todayTasks.map(function (task, index) {
+
+            const checked =
+                task.completed ? "checked" : "";
+
+            return "<li><input type='checkbox' " +
+                checked +
+                " data-index='" + index + "'> " +
+               "<span class='taskText'>" +
+task.text +
+"</span>" +
+" <button class='deleteTaskBtn' style='font-size:14px; padding:2px 6px;' data-index='" +
+index +
+"'>🗑️</button>"
+                "</li>";
+
+        }).join("") +
+        "</ul>";
+
+    document.querySelectorAll("#todayList input[type='checkbox']")
+        .forEach(function (checkbox) {
+
+            checkbox.addEventListener("change", function () {
+
+                const index = this.dataset.index;
+
+                todayTasks[index].completed = this.checked;
+
+                localStorage.setItem(
+                    "todayTasks",
+                    JSON.stringify(todayTasks)
+                );
+
+            });
+
+        });
+
+   document.querySelectorAll(".deleteTaskBtn")
+    .forEach(function (button) {
+
+        button.addEventListener("click", function () {
+
+            const index = this.dataset.index;
+
+            todayTasks.splice(index, 1);
+
+            localStorage.setItem(
+                "todayTasks",
+                JSON.stringify(todayTasks)
+            );
+
+            displayTodayTasks();
+
+        });
+
+    });     
+}
+
+medicationCenterButton.addEventListener("click", function () {
+
+    document.getElementById("medicationCenter")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
 
 });
 function saveMedicationLog() {
