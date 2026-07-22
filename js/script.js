@@ -610,9 +610,17 @@ breakfastButton.addEventListener("click", function () {
 
     summaryBreakfast.textContent = "Not Logged";
 
-    medicationLog.breakfast = {};
+// Remove today's Breakfast entry from history
+medicationHistory = medicationHistory.filter(entry => {
+    return !(
+        entry.period === "Breakfast" &&
+        entry.date === new Date().toDateString()
+    );
+});
 
-    saveMedicationLog();
+medicationLog.breakfast = {};
+
+saveMedicationLog();
 
     return;
 }
