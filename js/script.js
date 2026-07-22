@@ -261,7 +261,21 @@ document.getElementById("addMedicationBtn")
         });
 
 }
-    const wakeUpButton = document.getElementById("logButton");
+const exerciseButton = document.getElementById("exerciseButton");
+const exerciseDisplay = document.getElementById("exerciseDisplay");
+const savedExercise =
+    JSON.parse(localStorage.getItem("exerciseData"));
+
+if (savedExercise) {
+
+    exerciseDisplay.innerHTML = `
+        <strong>Last Ride:</strong><br>
+        ${savedExercise.minutes} minutes<br>
+        ${savedExercise.time}
+    `;
+
+}
+const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
 const wakeUpMedicationList = document.getElementById("wakeUpMedicationList");
 const breakfastMedicationList = document.getElementById("breakfastMedicationList");
@@ -618,6 +632,7 @@ medicationHistory = medicationHistory.filter(entry => {
     );
 });
 
+
 medicationLog.breakfast = {};
 
 saveMedicationLog();
@@ -656,6 +671,29 @@ summaryBreakfast.textContent =
 
     breakfastButton.textContent = "✅ Logged Today";
     breakfastButton.disabled = false;
+
+});
+exerciseButton.addEventListener("click", function () {
+
+    const minutes = prompt("How many minutes did you ride?");
+
+    if (!minutes) return;
+
+    const exerciseData = {
+        minutes: minutes,
+        time: new Date().toLocaleString()
+    };
+
+    localStorage.setItem(
+        "exerciseData",
+        JSON.stringify(exerciseData)
+    );
+
+    exerciseDisplay.innerHTML = `
+    <strong>Last Ride:</strong><br>
+    ${exerciseData.minutes} minutes<br>
+    ${exerciseData.time}
+`;
 
 });
 middayButton.addEventListener("click", function () {
