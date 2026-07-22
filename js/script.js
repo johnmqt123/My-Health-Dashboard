@@ -725,10 +725,19 @@ dinnerButton.addEventListener("click", function () {
 
     summaryDinner.textContent = "Not Logged";
 
-    medicationLog.dinner = {};
+// Remove today's Dinner entry from history
+medicationHistory = medicationHistory.filter(entry => {
+    return !(
+        entry.period === "Dinner" &&
+        entry.date === new Date().toDateString()
+    );
+});
 
-    saveMedicationLog();
-    return;
+medicationLog.dinner = {};
+
+saveMedicationLog();
+
+return;
 }
 
     const now = new Date();
