@@ -784,11 +784,19 @@ eveningButton.addEventListener("click", function () {
 
     summaryEvening.textContent = "Not Logged";
 
-    medicationLog.evening = {};
+// Remove today's Evening entry from history
+medicationHistory = medicationHistory.filter(entry => {
+    return !(
+        entry.period === "Evening" &&
+        entry.date === new Date().toDateString()
+    );
+});
 
-    saveMedicationLog();
+medicationLog.evening = {};
 
-    return;
+saveMedicationLog();
+
+return;
 }
 
     const now = new Date();
