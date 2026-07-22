@@ -821,7 +821,7 @@ function updateDashboard() {
         }
     }
 
-    wakeUpButtonS.disabled = false;
+    wakeUpButton.disabled = false;
 }
 
     
