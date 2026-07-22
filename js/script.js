@@ -668,9 +668,17 @@ middayButton.addEventListener("click", function () {
 
     summaryMidday.textContent = "Not Logged";
 
-    medicationLog.midday = {};
+// Remove today's Midday entry from history
+medicationHistory = medicationHistory.filter(entry => {
+    return !(
+        entry.period === "Midday" &&
+        entry.date === new Date().toDateString()
+    );
+});
 
-    saveMedicationLog();
+medicationLog.midday = {};
+
+saveMedicationLog();
 
     return;
 }
