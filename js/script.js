@@ -261,7 +261,7 @@ document.getElementById("addMedicationBtn")
         });
 
 }
-    const logButton = document.getElementById("logButton");
+    const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
 const wakeUpMedicationList = document.getElementById("wakeUpMedicationList");
 const breakfastMedicationList = document.getElementById("breakfastMedicationList");
@@ -468,13 +468,13 @@ if (
         medicationLog.wakeUp.time;
         
 
-    logButton.textContent = "✅ Logged Today";
+    wakeUpButton.textContent = "✅ Logged Today";
     const summaryWakeUp = document.getElementById("summaryWakeUp");
 
 if (summaryWakeUp) {
     summaryWakeUp.textContent = "✅ Logged " + medicationLog.wakeUp.time;
 }
-    logButton.disabled = false;
+    wakeUpButton.disabled = false;
 }
 // Restore Breakfast medication display
 if (
@@ -539,9 +539,9 @@ if (
     eveningButton.textContent = "✅ Logged Today";
     eveningButton.disabled = false;
 }
-logButton.addEventListener("click", function () {
+wakeUpButton.addEventListener("click", function () {
 if (
-    logButton.textContent === "✅ Logged Today"
+    wakeUpButton.textContent === "✅ Logged Today"
 ) {
     medicationLog.wakeUp = {};
     medicationHistory = medicationHistory.filter(function (entry) {
@@ -560,7 +560,7 @@ localStorage.setItem(
 
     summaryWakeUp.textContent = "Not Logged";
 
-    logButton.textContent = "Log Medications";
+    wakeUpButton.textContent = "Log Medications";
 
     return;
 }
@@ -595,8 +595,8 @@ localStorage.setItem(
         summaryWakeUp.textContent =
     "✅ Logged " + medicationLog.wakeUp.time;
 
-    logButton.textContent = "✅ Logged Today";
-    logButton.disabled = false;
+    wakeUpButton.textContent = "✅ Logged Today";
+    wakeUpButton.disabled = false;
 
 });
 
@@ -802,29 +802,31 @@ summaryEvening.textContent =
 
 });
 
-function updateDashboard() {if (medicationLog.wakeUp?.logged) {
+function updateDashboard() {
 
-    medStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.wakeUp.time;
+    if (medicationLog.wakeUp?.logged) {
 
-    logButton.textContent = "✅ Logged Today";
+        medStatus.innerHTML =
+            "<strong>✅ Logged Today:</strong> " +
+            medicationLog.wakeUp.time;
 
-    const summaryWakeUp =
-    document.getElementById("summaryWakeUp");
+        wakeUpButton.textContent = "✅ Logged Today";
 
-if (summaryWakeUp) {
-    summaryWakeUp.textContent =
-        "✅ Logged " + medicationLog.wakeUp.time;
-}
-}
+        const summaryWakeUp =
+            document.getElementById("summaryWakeUp");
 
-    logButton.disabled = false;
+        if (summaryWakeUp) {
+            summaryWakeUp.textContent =
+                "✅ Logged " + medicationLog.wakeUp.time;
+        }
+    }
+
+    wakeUpButtonS.disabled = false;
 }
 
     
 
-}
+
 updateDashboard();
 console.log(medicationHistory);
 addTaskButton.addEventListener("click", function () {
