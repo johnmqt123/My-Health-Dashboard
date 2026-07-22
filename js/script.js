@@ -815,6 +815,7 @@ function updateDashboard() {
         const summaryWakeUp =
             document.getElementById("summaryWakeUp");
 
+
         if (summaryWakeUp) {
             summaryWakeUp.textContent =
                 "✅ Logged " + medicationLog.wakeUp.time;
