@@ -22,13 +22,7 @@
        
 
     
-<div id="manageMedicationsPanel" style="display: none;">
-    <h3>Manage Medications</h3>
 
-    <div id="medicationEditor"></div>
-    <div id="medicationEditArea"></div>
-    
-</div>
     
    <p>
 ❤️ Blood Pressure:
@@ -62,16 +56,25 @@
         <strong>Coming Soon</strong>
     </p>
 
-    <div style="text-align:center; margin-top:20px;">
-    <button id="medicationCenterButton">
-        💊 Medication Center
-    </button>
-</div>
+   
 
     </header>
      
 
     <section class="briefing">
+
+        <div class="card medication-center-card">
+    <h2>💊 Medication Center</h2>
+
+    <p>
+        Log today's medications and view your medication schedule.
+    </p>
+
+    <button id="medicationCenterButton">
+        Medication Center
+    </button>
+</div>
+
 
         
 
@@ -108,6 +111,8 @@
         Log Exercise
     </button>
 </div>
+
+<div class="card">
             <h2>🌤 Weather</h2>
             <p>Coming Soon!</p>
         </div>
@@ -136,12 +141,19 @@
     <div class="summary-card">
 
     <h2 id="medicationCenter">💊 Medication Center</h2>
+    <div id="manageMedicationsPanel" style="display: none;">
+    <h3>Manage Medications</h3>
+
+    <div id="medicationEditor"></div>
+    <div id="medicationEditArea"></div>
+    
+</div>
     
 
     
     
     <button id="manageMedicationsBtn">
-    Manage Medications
+    Edit Medication Schedule
 </button>
     <section class="briefing">
 
