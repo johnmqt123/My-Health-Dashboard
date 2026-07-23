@@ -566,6 +566,7 @@ if (
     eveningButton.disabled = false;
 }
 wakeUpButton.addEventListener("click", function () {
+    console.log("Wake-Up button clicked");
 if (
     wakeUpButton.textContent === "✅ Logged Today"
 ) {
@@ -586,7 +587,7 @@ localStorage.setItem(
 
     
 
-    wakeUpButton.textContent = "Log Medications";
+    wakeUpButton.textContent = "Wake-Up Medications";
 
     return;
 }
@@ -618,8 +619,7 @@ localStorage.setItem(
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.wakeUp.time;
 
-        summaryWakeUp.textContent =
-    "✅ Logged " + medicationLog.wakeUp.time;
+        
 
     wakeUpButton.textContent = "✅ Logged Today";
     wakeUpButton.disabled = false;
