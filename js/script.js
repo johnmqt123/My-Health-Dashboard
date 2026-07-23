@@ -301,6 +301,28 @@ displayMedicationList("Breakfast", breakfastMedicationList);
 displayMedicationList("Midday", middayMedicationList);
 displayMedicationList("Dinner", dinnerMedicationList);
 displayMedicationList("Evening", eveningMedicationList);
+function setupMedicationToggle(headingId, listId) {
+    const heading = document.getElementById(headingId);
+    const list = document.getElementById(listId);
+
+    if (!heading || !list) return;
+
+    heading.addEventListener("click", () => {
+        const isHidden = list.style.display === "none";
+
+        list.style.display = isHidden ? "block" : "none";
+
+        heading.textContent =
+            (isHidden ? "▼ " : "▶ ") +
+            heading.textContent.substring(2);
+    });
+}
+
+setupMedicationToggle("wakeUpHeading", "wakeUpMedicationList");
+setupMedicationToggle("breakfastHeading", "breakfastMedicationList");
+setupMedicationToggle("middayHeading", "middayMedicationList");
+setupMedicationToggle("dinnerHeading", "dinnerMedicationList");
+setupMedicationToggle("eveningHeading", "eveningMedicationList");
 const breakfastButton =
     document.getElementById("breakfastButton");
 
