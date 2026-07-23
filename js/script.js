@@ -346,23 +346,17 @@ const eveningButton =
 const eveningStatus =
     document.getElementById("eveningStatus");
 
-const summaryEvening =
-    document.getElementById("summaryEvening");
+
 const weightButton = document.getElementById("weightButton");
 const weightDisplay = document.getElementById("weightDisplay");
 const summaryWeight = document.getElementById("summaryWeight");
 const summaryBP =
     document.getElementById("summaryBP");
-    const summaryBreakfast =
-    document.getElementById("summaryBreakfast");
-    const summaryMidday =
-    document.getElementById("summaryMidday");
+        
 
-const summaryDinner =
-    document.getElementById("summaryDinner");
 
-const summaryWakeUp =
-    document.getElementById("summaryWakeUp");
+
+
 const bpButton = document.getElementById("bpButton");
 const bpDisplay = document.getElementById("bpDisplay");
 const heartRateDisplay = document.getElementById("heartRateDisplay");
@@ -522,8 +516,7 @@ if (
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.breakfast.time;
         
-        summaryBreakfast.textContent =
-    "✅ Logged " + medicationLog.breakfast.time;
+        
 
     breakfastButton.textContent = "✅ Logged Today";
     breakfastButton.disabled = false;
@@ -537,8 +530,7 @@ if (
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.midday.time;
         
-        summaryMidday.textContent =
-    "✅ Logged " + medicationLog.midday.time;
+        
 
     middayButton.textContent = "✅ Logged Today";
     middayButton.disabled = false;
@@ -553,8 +545,7 @@ if (
     "<strong>✅ Logged Today:</strong> " +
     medicationLog.dinner.time;
 
-summaryDinner.textContent =
-    "✅ Logged " + medicationLog.dinner.time;
+
 
 dinnerButton.textContent = "✅ Logged Today";
 dinnerButton.disabled = false;
@@ -569,8 +560,7 @@ if (
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.evening.time;
         
-        summaryEvening.textContent =
-    "✅ Logged " + medicationLog.evening.time;
+        
 
     eveningButton.textContent = "✅ Logged Today";
     eveningButton.disabled = false;
@@ -594,7 +584,7 @@ localStorage.setItem(
 );
     medStatus.textContent = "Not Logged";
 
-    summaryWakeUp.textContent = "Not Logged";
+    
 
     wakeUpButton.textContent = "Log Medications";
 
@@ -644,7 +634,7 @@ breakfastButton.addEventListener("click", function () {
 
     breakfastStatus.textContent = "Not Logged";
 
-    summaryBreakfast.textContent = "Not Logged";
+    
 
 // Remove today's Breakfast entry from history
 medicationHistory = medicationHistory.filter(entry => {
@@ -684,8 +674,7 @@ localStorage.setItem(
     "medicationHistory",
     JSON.stringify(medicationHistory)
 );
-summaryBreakfast.textContent =
-    "✅ Logged " + medicationLog.breakfast.time;
+
 
     breakfastStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
@@ -726,7 +715,7 @@ middayButton.addEventListener("click", function () {
 
     middayStatus.textContent = "Not Logged";
 
-    summaryMidday.textContent = "Not Logged";
+    
 
 // Remove today's Midday entry from history
 medicationHistory = medicationHistory.filter(entry => {
@@ -765,8 +754,7 @@ localStorage.setItem(
     "medicationHistory",
     JSON.stringify(medicationHistory)
 );
-summaryMidday.textContent =
-    "✅ Logged " + medicationLog.midday.time;
+
     middayStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
         medicationLog.midday.time;
@@ -783,7 +771,7 @@ dinnerButton.addEventListener("click", function () {
 
     dinnerStatus.textContent = "Not Logged";
 
-    summaryDinner.textContent = "Not Logged";
+    
 
 // Remove today's Dinner entry from history
 medicationHistory = medicationHistory.filter(entry => {
@@ -827,8 +815,7 @@ localStorage.setItem(
     "<strong>✅ Logged Today:</strong> " +
     medicationLog.dinner.time;
 
-summaryDinner.textContent =
-    "✅ Logged " + medicationLog.dinner.time;
+
 
 dinnerButton.textContent = "✅ Logged Today";
 dinnerButton.disabled = false;
@@ -842,7 +829,7 @@ eveningButton.addEventListener("click", function () {
 
     eveningStatus.textContent = "Not Logged";
 
-    summaryEvening.textContent = "Not Logged";
+    
 
 // Remove today's Evening entry from history
 medicationHistory = medicationHistory.filter(entry => {
@@ -883,8 +870,7 @@ localStorage.setItem(
     JSON.stringify(medicationHistory)
 );
 
-summaryEvening.textContent =
-    "✅ Logged " + medicationLog.evening.time;
+
 
     eveningStatus.innerHTML =
         "<strong>✅ Logged Today:</strong> " +
