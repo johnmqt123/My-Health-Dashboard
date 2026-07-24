@@ -263,18 +263,83 @@ document.getElementById("addMedicationBtn")
 }
 const exerciseButton = document.getElementById("exerciseButton");
 const exerciseDisplay = document.getElementById("exerciseDisplay");
-const savedExercise =
-    JSON.parse(localStorage.getItem("exerciseData"));
+const exerciseModal = document.getElementById("exerciseModal");
+const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
+const stationaryBikeBtn = document.getElementById("stationaryBikeBtn");
+const ebikeRideBtn = document.getElementById("ebikeRideBtn");
+exerciseButton.addEventListener("click", function () {
+    exerciseModal.style.display = "block";
+});
+let exerciseLog = JSON.parse(localStorage.getItem("exerciseLog")) || [];
+cancelExerciseBtn.addEventListener("click", function () {
+    exerciseModal.style.display = "none";
+});
+stationaryBikeBtn.addEventListener("click", function () {
 
-if (savedExercise) {
+    exerciseModal.style.display = "none";
 
-    exerciseDisplay.innerHTML = `
-        <strong>Last Ride:</strong><br>
-        ${savedExercise.minutes} minutes<br>
-        ${savedExercise.time}
-    `;
+    const minutes = prompt("How many minutes did you ride the stationary bike?");
+
+    if (!minutes) return;
+
+    exerciseLog.push({
+    type: "Stationary Bike",
+    amount: minutes,
+    unit: "minutes"
+});
+localStorage.setItem(
+    "exerciseLog",
+    JSON.stringify(exerciseLog)
+);
+
+displayExerciseLog();
+});
+ebikeRideBtn.addEventListener("click", function () {
+
+    exerciseModal.style.display = "none";
+
+    const miles = prompt("How many miles did you ride your e-bike?");
+
+    if (!miles) return;
+    exerciseLog.push({
+    type: "E-Bike Ride",
+    amount: miles,
+    unit: "miles"
+});
+
+localStorage.setItem(
+    "exerciseLog",
+    JSON.stringify(exerciseLog)
+);
+
+displayExerciseLog();
+
+    
+});
+
+// Display all logged exercise entries
+function displayExerciseLog() {
+
+    exerciseDisplay.innerHTML = "";
+
+    exerciseLog.forEach(function (ride) {
+
+        exerciseDisplay.innerHTML +=
+            "🚴 " +
+            ride.type +
+            " - " +
+            ride.amount +
+            " " +
+            ride.unit +
+            "<br>";
+
+    });
 
 }
+if (exerciseLog.length > 0) {
+    displayExerciseLog();
+}
+
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
 const wakeUpMedicationList = document.getElementById("wakeUpMedicationList");
@@ -684,29 +749,7 @@ localStorage.setItem(
     breakfastButton.disabled = false;
 
 });
-exerciseButton.addEventListener("click", function () {
 
-    const minutes = prompt("How many minutes did you ride?");
-
-    if (!minutes) return;
-
-    const exerciseData = {
-        minutes: minutes,
-        time: new Date().toLocaleString()
-    };
-
-    localStorage.setItem(
-        "exerciseData",
-        JSON.stringify(exerciseData)
-    );
-
-    exerciseDisplay.innerHTML = `
-    <strong>Last Ride:</strong><br>
-    ${exerciseData.minutes} minutes<br>
-    ${exerciseData.time}
-`;
-
-});
 middayButton.addEventListener("click", function () {
     if (
     middayButton.textContent === "✅ Logged Today"

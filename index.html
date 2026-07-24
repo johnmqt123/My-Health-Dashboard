@@ -85,9 +85,11 @@
         <div class="card">
     <h2>🚴 Exercise</h2>
 
-    <p id="exerciseDisplay">
-        Last Ride: None
-    </p>
+    <h3>Today's Exercise</h3>
+
+<div id="exerciseDisplay">
+    No exercise logged today.
+</div>
 
     <button id="exerciseButton">
         Log Exercise
@@ -135,7 +137,7 @@
     
     
     <button id="manageMedicationsBtn">
-    Edit Medication Schedule
+    Edit Medications
 </button>
     <section class="briefing">
 
@@ -185,7 +187,7 @@
     </p>
 
     <button id="middayButton">
-        Log  Midday Medications
+        Log Midday Medications
     </button>
 
 </div>
@@ -223,6 +225,23 @@
 </div>
 </div>
 
+</div>
+<div id="exerciseModal" class="modal">
+    <div class="modal-content">
+        <h2>Log Exercise</h2>
+
+        <button id="stationaryBikeBtn">
+            🚴 Stationary Bike
+        </button>
+
+        <button id="ebikeRideBtn">
+            🚲 E-Bike Ride
+        </button>
+
+        <button id="cancelExerciseBtn">
+            Cancel
+        </button>
+    </div>
 </div>
 <script src="js/userProfile.js"></script>
 <script src="js/medications.js"></script>
