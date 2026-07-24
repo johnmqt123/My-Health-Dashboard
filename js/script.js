@@ -1063,10 +1063,10 @@ medicationCenterCardHeading.addEventListener("click", function () {
     document.getElementById("medicationCenterSection")
         .style.display = "none";
 
-    medicationCenterCardHeading.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    document.getElementById("greeting").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
 
 });
 
