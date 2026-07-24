@@ -430,8 +430,11 @@ const addTaskButton =
 
 const todayList =
     document.getElementById("todayList");
-    const medicationCenterButton =
-    document.getElementById("medicationCenterButton");
+    
+    const medicationCenterCardHeading =
+    document.getElementById("medicationCenterCardHeading");
+    const medicationCenterHeading =
+    document.getElementById("medicationCenter");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
 let todayTasks =
@@ -1041,12 +1044,37 @@ index +
     });     
 }
 
-medicationCenterButton.addEventListener("click", function () {
 
-    document.getElementById("medicationCenter")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
+medicationCenterCardHeading.addEventListener("click", function () {
+
+    const medicationCenterSection =
+        document.getElementById("medicationCenterSection");
+
+    if (medicationCenterSection.style.display === "none") {
+
+        medicationCenterSection.style.display = "block";
+
+        document.getElementById("medicationCenter")
+            .scrollIntoView({
+                behavior: "smooth"
+            });
+            medicationCenterHeading.addEventListener("click", function () {
+
+    document.getElementById("medicationCenterSection")
+        .style.display = "none";
+
+    medicationCenterCardHeading.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+});
+
+    } else {
+
+        medicationCenterSection.style.display = "none";
+
+    }
 
 });
 function saveMedicationLog() {
