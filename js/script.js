@@ -433,8 +433,8 @@ const todayList =
     
     const medicationCenterCardHeading =
     document.getElementById("medicationCenterCardHeading");
-    const medicationCenterHeading =
-    document.getElementById("medicationCenter");
+    const backToTop =
+    document.getElementById("backToTop");
 
 let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
 let todayTasks =
@@ -1050,33 +1050,49 @@ medicationCenterCardHeading.addEventListener("click", function () {
     const medicationCenterSection =
         document.getElementById("medicationCenterSection");
 
-    if (medicationCenterSection.style.display === "none") {
+    const isOpening =
+        medicationCenterSection.style.display === "none";
+
+    if (isOpening) {
 
         medicationCenterSection.style.display = "block";
 
-        document.getElementById("medicationCenter")
+        medicationCenterCardHeading.textContent =
+            "💊 Medication Center ▲";
+
+        document.getElementById("medicationCenterSection")
             .scrollIntoView({
                 behavior: "smooth"
             });
-            medicationCenterHeading.addEventListener("click", function () {
-
-    document.getElementById("medicationCenterSection")
-        .style.display = "none";
-
-    document.getElementById("greeting").scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-});
-
-});
 
     } else {
 
         medicationCenterSection.style.display = "none";
 
+        medicationCenterCardHeading.textContent =
+            "💊 Medication Center ▼";
+
     }
 
 });
+
+backToTop.addEventListener("click", function () {
+
+    document.getElementById("medicationCenterSection")
+        .style.display = "none";
+
+    medicationCenterCardHeading.textContent =
+        "💊 Medication Center ▼";
+
+    document.getElementById("greeting").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+});
+
+
+
 function saveMedicationLog() {
     localStorage.setItem(
         "medicationLog",
