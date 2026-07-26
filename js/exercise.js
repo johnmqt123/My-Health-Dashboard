@@ -37,6 +37,9 @@ const ebikeRideBtn =
     document.getElementById("ebikeRideBtn");
 
 const cancelExerciseBtn =
+<<<<<<< HEAD
+    document.getElementById("cancelExerciseBtn");
+=======
     document.getElementById("cancelExerciseBtn");
     function saveExerciseData() {
 
@@ -106,3 +109,4 @@ function displayExerciseLog() {
 
 // Show today's exercise when the page loads
 displayExerciseLog();
+>>>>>>> 20fac5bd75782d392b83ad805ac626840a6194b6
