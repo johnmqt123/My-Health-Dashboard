@@ -424,8 +424,7 @@ const weightHistoryButton =
     const weightHistorySection =
     document.getElementById("weightHistorySection");
 
-const backToWeight =
-    document.getElementById("backToWeight");
+
     const weightHistoryDisplay =
     document.getElementById("weightHistoryDisplay");
 const summaryBP =
@@ -582,6 +581,14 @@ localStorage.setItem(
 });
 weightHistoryButton.addEventListener("click", function () {
 
+    if (weightHistorySection.style.display === "block") {
+
+        weightHistorySection.style.display = "none";
+        weightHistoryButton.textContent = "📊 History";
+        return;
+
+    }
+
     weightHistoryDisplay.innerHTML = "";
 
     if (weightHistory.length === 0) {
@@ -609,22 +616,24 @@ weightHistoryButton.addEventListener("click", function () {
     }
 
     weightHistorySection.style.display = "block";
+    weightHistoryButton.textContent = "📊 Hide History";
 
     weightHistorySection.scrollIntoView({
         behavior: "smooth"
     });
 
 });
-backToWeight.addEventListener("click", function () {
 
-    weightHistorySection.style.display = "none";
+    
 
-    document.getElementById("weightButton")
-        .scrollIntoView({
-            behavior: "smooth"
-        });
+    weightHistorySection.style.display = "block";
 
-});
+    weightHistorySection.scrollIntoView({
+        behavior: "smooth"
+    });
+
+
+
 
 // Restore Wake-Up medication display
 if (
