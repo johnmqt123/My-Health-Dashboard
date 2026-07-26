@@ -618,9 +618,7 @@ weightHistoryButton.addEventListener("click", function () {
     weightHistorySection.style.display = "block";
     weightHistoryButton.textContent = "📊 Hide History";
 
-    weightHistorySection.scrollIntoView({
-        behavior: "smooth"
-    });
+    
 
 });
 
@@ -628,9 +626,7 @@ weightHistoryButton.addEventListener("click", function () {
 
     weightHistorySection.style.display = "block";
 
-    weightHistorySection.scrollIntoView({
-        behavior: "smooth"
-    });
+    
 
 
 
