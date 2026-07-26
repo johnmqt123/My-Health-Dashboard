@@ -1,0 +1,15 @@
+John's Assistant
+Version: 0.5.1
+
+Changes
+-------
+- Fixed Exercise History event handler.
+- Prevented duplicate event listeners.
+- Initial packaged project structure.
+
+Next planned work
+-----------------
+- Verify Exercise History.
+- Weight History cleanup.
+- Medication History.
+- CPAP Dashboard.

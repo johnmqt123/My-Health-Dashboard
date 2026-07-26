@@ -24,6 +24,8 @@ let weightLog =
 
 let weightHistory =
     JSON.parse(localStorage.getItem("weightHistory")) || [];
+  let exerciseHistory =
+    JSON.parse(localStorage.getItem("exerciseHistory")) || [];  
 // Restore Wake-Up medication status
 if (
     medicationLog.wakeUp?.logged &&
@@ -291,6 +293,21 @@ stationaryBikeBtn.addEventListener("click", function () {
     amount: minutes,
     unit: "minutes"
 });
+exerciseHistory.push({
+    type: "Stationary Bike",
+    amount: minutes,
+    unit: "minutes",
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    })
+});
+
+localStorage.setItem(
+    "exerciseHistory",
+    JSON.stringify(exerciseHistory)
+);
 localStorage.setItem(
     "exerciseLog",
     JSON.stringify(exerciseLog)
@@ -310,7 +327,21 @@ ebikeRideBtn.addEventListener("click", function () {
     amount: miles,
     unit: "miles"
 });
+exerciseHistory.push({
+    type: "E-Bike Ride",
+    amount: miles,
+    unit: "miles",
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    })
+});
 
+localStorage.setItem(
+    "exerciseHistory",
+    JSON.stringify(exerciseHistory)
+);
 localStorage.setItem(
     "exerciseLog",
     JSON.stringify(exerciseLog)
@@ -322,27 +353,7 @@ displayExerciseLog();
 });
 
 // Display all logged exercise entries
-function displayExerciseLog() {
 
-    exerciseDisplay.innerHTML = "";
-
-    exerciseLog.forEach(function (ride) {
-
-        exerciseDisplay.innerHTML +=
-            "🚴 " +
-            ride.type +
-            " - " +
-            ride.amount +
-            " " +
-            ride.unit +
-            "<br>";
-
-    });
-
-}
-if (exerciseLog.length > 0) {
-    displayExerciseLog();
-}
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
@@ -427,6 +438,14 @@ const weightHistoryButton =
 
     const weightHistoryDisplay =
     document.getElementById("weightHistoryDisplay");
+    const exerciseHistoryButton =
+    document.getElementById("exerciseHistoryButton");
+
+const exerciseHistorySection =
+    document.getElementById("exerciseHistorySection");
+
+const exerciseHistoryDisplay =
+    document.getElementById("exerciseHistoryDisplay");
 const summaryBP =
     document.getElementById("summaryBP");
         
@@ -612,7 +631,53 @@ weightHistoryButton.addEventListener("click", function () {
                     " lb</strong><br>";
 
             });
+console.log(exerciseHistoryButton);
+console.log(exerciseHistorySection);
+console.log(exerciseHistoryDisplay);
+console.log(exerciseHistory);
+            exerciseHistoryButton.addEventListener("click", function () {
 
+    if (exerciseHistorySection.style.display === "block") {
+
+        exerciseHistorySection.style.display = "none";
+        exerciseHistoryButton.textContent = "📊 History";
+        return;
+
+    }
+
+    exerciseHistoryDisplay.innerHTML = "";
+
+    if (exerciseHistory.length === 0) {
+
+        exerciseHistoryDisplay.textContent =
+            "No exercise entries yet.";
+
+    } else {
+
+        exerciseHistory
+            .slice()
+            .reverse()
+            .forEach(function (entry) {
+
+                exerciseHistoryDisplay.innerHTML +=
+                    entry.date +
+                    " • " +
+                    entry.time +
+                    " — <strong>" +
+                    entry.type +
+                    "</strong> - " +
+                    entry.amount +
+                    " " +
+                    entry.unit +
+                    "<br>";
+
+            });
+    }
+
+    exerciseHistorySection.style.display = "block";
+    exerciseHistoryButton.textContent = "📊 Hide History";
+
+});
     }
 
     weightHistorySection.style.display = "block";
@@ -630,6 +695,32 @@ weightHistoryButton.addEventListener("click", function () {
 
 
 
+
+
+exerciseHistoryButton.addEventListener("click", function () {
+
+    if (exerciseHistorySection.style.display === "block") {
+        exerciseHistorySection.style.display = "none";
+        exerciseHistoryButton.textContent = "📊 History";
+        return;
+    }
+
+    exerciseHistoryDisplay.innerHTML = "";
+
+    if (exerciseHistory.length === 0) {
+        exerciseHistoryDisplay.textContent = "No exercise entries yet.";
+    } else {
+        exerciseHistory.slice().reverse().forEach(function (entry) {
+            exerciseHistoryDisplay.innerHTML +=
+                entry.date + " • " + entry.time +
+                " — <strong>" + entry.type +
+                "</strong> - " + entry.amount + " " + entry.unit + "<br>";
+        });
+    }
+
+    exerciseHistorySection.style.display = "block";
+    exerciseHistoryButton.textContent = "📊 Hide History";
+});
 
 // Restore Wake-Up medication display
 if (
