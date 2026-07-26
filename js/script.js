@@ -19,7 +19,11 @@ if (!medicationLog.evening) {
 }
 
 
-let weightLog = JSON.parse(localStorage.getItem("weightLog")) || {};
+let weightLog =
+    JSON.parse(localStorage.getItem("weightLog")) || {};
+
+let weightHistory =
+    JSON.parse(localStorage.getItem("weightHistory")) || [];
 // Restore Wake-Up medication status
 if (
     medicationLog.wakeUp?.logged &&
@@ -415,6 +419,15 @@ const eveningStatus =
 const weightButton = document.getElementById("weightButton");
 const weightDisplay = document.getElementById("weightDisplay");
 const summaryWeight = document.getElementById("summaryWeight");
+const weightHistoryButton =
+    document.getElementById("weightHistoryButton");
+    const weightHistorySection =
+    document.getElementById("weightHistorySection");
+
+const backToWeight =
+    document.getElementById("backToWeight");
+    const weightHistoryDisplay =
+    document.getElementById("weightHistoryDisplay");
 const summaryBP =
     document.getElementById("summaryBP");
         
@@ -545,6 +558,19 @@ summaryWeight.textContent =
     weight + " lb";
 
       weightLog.current = weight;
+      weightHistory.push({
+    weight: weight,
+    date: new Date().toLocaleDateString(),
+    time: new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    })
+});
+
+localStorage.setItem(
+    "weightHistory",
+    JSON.stringify(weightHistory)
+);
 
 localStorage.setItem(
     "weightLog",
@@ -552,6 +578,51 @@ localStorage.setItem(
 );      
 
     }
+
+});
+weightHistoryButton.addEventListener("click", function () {
+
+    weightHistoryDisplay.innerHTML = "";
+
+    if (weightHistory.length === 0) {
+
+        weightHistoryDisplay.textContent =
+            "No weight entries yet.";
+
+    } else {
+
+        weightHistory
+            .slice()
+            .reverse()
+            .forEach(function (entry) {
+
+                weightHistoryDisplay.innerHTML +=
+                    entry.date +
+                    " • " +
+                    entry.time +
+                    " — <strong>" +
+                    entry.weight +
+                    " lb</strong><br>";
+
+            });
+
+    }
+
+    weightHistorySection.style.display = "block";
+
+    weightHistorySection.scrollIntoView({
+        behavior: "smooth"
+    });
+
+});
+backToWeight.addEventListener("click", function () {
+
+    weightHistorySection.style.display = "none";
+
+    document.getElementById("weightButton")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
 
 });
 
