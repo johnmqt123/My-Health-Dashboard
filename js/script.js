@@ -1,16 +1,3 @@
-/**************************************************************************
- * Storage Helpers
- **************************************************************************/
-
-function loadData(key, defaultValue) {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : defaultValue;
-}
-
-function saveData(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-}
-
 // Load saved medication status
 let medicationLog = loadData("medicationLog", {});
 let medicationHistory =
