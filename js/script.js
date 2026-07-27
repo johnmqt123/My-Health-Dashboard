@@ -1,7 +1,20 @@
+/**************************************************************************
+ * Storage Helpers
+ **************************************************************************/
+
+function loadData(key, defaultValue) {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : defaultValue;
+}
+
+function saveData(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
 // Load saved medication status
-let medicationLog = JSON.parse(localStorage.getItem("medicationLog")) || {};
+let medicationLog = loadData("medicationLog", {});
 let medicationHistory =
-    JSON.parse(localStorage.getItem("medicationHistory")) || [];
+    loadData("medicationHistory", []);
 // Load John's personal medication schedule
 let personalMedicationSchedule =
     JSON.parse(localStorage.getItem("personalMedicationSchedule"));
@@ -20,12 +33,12 @@ if (!medicationLog.evening) {
 
 
 let weightLog =
-    JSON.parse(localStorage.getItem("weightLog")) || {};
+    loadData("weightLog", {});
 
 let weightHistory =
-    JSON.parse(localStorage.getItem("weightHistory")) || [];
+    loadData("weightHistory", []);
   let exerciseHistory =
-    JSON.parse(localStorage.getItem("exerciseHistory")) || [];  
+    loadData("exerciseHistory", []);  
 // Restore Wake-Up medication status
 if (
     medicationLog.wakeUp?.logged &&
@@ -276,7 +289,7 @@ const ebikeRideBtn = document.getElementById("ebikeRideBtn");
 exerciseButton.addEventListener("click", function () {
     exerciseModal.style.display = "block";
 });
-let exerciseLog = JSON.parse(localStorage.getItem("exerciseLog")) || [];
+let exerciseLog = loadData("exerciseLog", []);
 cancelExerciseBtn.addEventListener("click", function () {
     exerciseModal.style.display = "none";
 });
@@ -304,14 +317,8 @@ exerciseHistory.push({
     })
 });
 
-localStorage.setItem(
-    "exerciseHistory",
-    JSON.stringify(exerciseHistory)
-);
-localStorage.setItem(
-    "exerciseLog",
-    JSON.stringify(exerciseLog)
-);
+saveData("exerciseHistory", exerciseHistory);
+saveData("exerciseLog", exerciseLog);
 
 displayExerciseLog();
 });
@@ -338,14 +345,8 @@ exerciseHistory.push({
     })
 });
 
-localStorage.setItem(
-    "exerciseHistory",
-    JSON.stringify(exerciseHistory)
-);
-localStorage.setItem(
-    "exerciseLog",
-    JSON.stringify(exerciseLog)
-);
+saveData("exerciseHistory", exerciseHistory);
+saveData("exerciseLog", exerciseLog);
 
 displayExerciseLog();
 
@@ -599,15 +600,9 @@ summaryWeight.textContent =
     })
 });
 
-localStorage.setItem(
-    "weightHistory",
-    JSON.stringify(weightHistory)
-);
+saveData("weightHistory", weightHistory);
 
-localStorage.setItem(
-    "weightLog",
-    JSON.stringify(weightLog)
-);      
+saveData("weightLog", weightLog);      
 
     }
 
