@@ -612,6 +612,16 @@ localStorage.setItem(
     }
 
 });
+// Initialize history panels closed on page load
+if (weightHistorySection) {
+    weightHistorySection.style.display = "none";
+    weightHistoryButton.textContent = "📊 History";
+}
+if (exerciseHistorySection) {
+    exerciseHistorySection.style.display = "none";
+    exerciseHistoryButton.textContent = "📊 History";
+}
+
 weightHistoryButton.addEventListener("click", function () {
 
     if (weightHistorySection.style.display === "block") {
@@ -656,14 +666,6 @@ weightHistoryButton.addEventListener("click", function () {
 });
 
     
-
-    weightHistorySection.style.display = "block";
-
-    
-
-
-
-
 
 exerciseHistoryButton.addEventListener("click", function () {
 
