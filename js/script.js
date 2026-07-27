@@ -24,8 +24,6 @@ let weightLog =
 
 let weightHistory =
     loadData("weightHistory", []);
-  let exerciseHistory =
-    loadData("exerciseHistory", []);  
 // Restore Wake-Up medication status
 if (
     medicationLog.wakeUp?.logged &&
@@ -67,95 +65,7 @@ today.textContent =
   
 // Medication Center moved to medicationCenter.js
 
-const exerciseButton = document.getElementById("exerciseButton");
-const exerciseDisplay = document.getElementById("exerciseDisplay");
-const exerciseModal = document.getElementById("exerciseModal");
-const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
-const stationaryBikeBtn = document.getElementById("stationaryBikeBtn");
-const ebikeRideBtn = document.getElementById("ebikeRideBtn");
-exerciseButton.addEventListener("click", function () {
-    exerciseModal.style.display = "block";
-});
-let exerciseLog = loadData("exerciseLog", []);
-cancelExerciseBtn.addEventListener("click", function () {
-    exerciseModal.style.display = "none";
-});
-stationaryBikeBtn.addEventListener("click", function () {
-
-    exerciseModal.style.display = "none";
-
-    const minutes = prompt("How many minutes did you ride the stationary bike?");
-
-    if (!minutes) return;
-
-    exerciseLog.push({
-    type: "Stationary Bike",
-    amount: minutes,
-    unit: "minutes"
-});
-exerciseHistory.push({
-    type: "Stationary Bike",
-    amount: minutes,
-    unit: "minutes",
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    })
-});
-
-saveData("exerciseHistory", exerciseHistory);
-saveData("exerciseLog", exerciseLog);
-
-displayExerciseLog();
-});
-ebikeRideBtn.addEventListener("click", function () {
-
-    exerciseModal.style.display = "none";
-
-    const miles = prompt("How many miles did you ride your e-bike?");
-
-    if (!miles) return;
-    exerciseLog.push({
-    type: "E-Bike Ride",
-    amount: miles,
-    unit: "miles"
-});
-exerciseHistory.push({
-    type: "E-Bike Ride",
-    amount: miles,
-    unit: "miles",
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    })
-});
-
-saveData("exerciseHistory", exerciseHistory);
-saveData("exerciseLog", exerciseLog);
-
-displayExerciseLog();
-
-    
-});
-
-function displayExerciseLog() {
-    if (!exerciseDisplay) return;
-    if (exerciseLog.length === 0) {
-        exerciseDisplay.textContent = "No exercise logged yet.";
-        return;
-    }
-    const latest = exerciseLog[exerciseLog.length - 1];
-    exerciseDisplay.innerHTML =
-        "Last Exercise: <strong>" + latest.type + "</strong> - " +
-        latest.amount + " " + latest.unit;
-}
-
-displayExerciseLog();
-
-// Display all logged exercise entries
-
+initExerciseCenter();
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
@@ -399,10 +309,6 @@ if (weightHistorySection) {
     weightHistorySection.style.display = "none";
     weightHistoryButton.textContent = "📊 History";
 }
-if (exerciseHistorySection) {
-    exerciseHistorySection.style.display = "none";
-    exerciseHistoryButton.textContent = "📊 History";
-}
 
 weightHistoryButton.addEventListener("click", function () {
 
@@ -445,33 +351,6 @@ weightHistoryButton.addEventListener("click", function () {
 
     
 
-});
-
-    
-
-exerciseHistoryButton.addEventListener("click", function () {
-
-    if (exerciseHistorySection.style.display === "block") {
-        exerciseHistorySection.style.display = "none";
-        exerciseHistoryButton.textContent = "📊 History";
-        return;
-    }
-
-    exerciseHistoryDisplay.innerHTML = "";
-
-    if (exerciseHistory.length === 0) {
-        exerciseHistoryDisplay.textContent = "No exercise entries yet.";
-    } else {
-        exerciseHistory.slice().reverse().forEach(function (entry) {
-            exerciseHistoryDisplay.innerHTML +=
-                entry.date + " • " + entry.time +
-                " — <strong>" + entry.type +
-                "</strong> - " + entry.amount + " " + entry.unit + "<br>";
-        });
-    }
-
-    exerciseHistorySection.style.display = "block";
-    exerciseHistoryButton.textContent = "📊 Hide History";
 });
 
 // Restore Wake-Up medication display
