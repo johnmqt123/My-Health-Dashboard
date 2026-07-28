@@ -67,6 +67,7 @@ today.textContent =
 
 initExerciseCenter();
 initWeightCenter();
+initBloodPressureCenter();
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
@@ -148,16 +149,6 @@ const exerciseHistorySection =
 
 const exerciseHistoryDisplay =
     document.getElementById("exerciseHistoryDisplay");
-const summaryBP =
-    document.getElementById("summaryBP");
-        
-
-
-
-
-const bpButton = document.getElementById("bpButton");
-const bpDisplay = document.getElementById("bpDisplay");
-const heartRateDisplay = document.getElementById("heartRateDisplay");
 const addTaskButton =
     document.getElementById("addTaskButton");
 
@@ -169,7 +160,6 @@ const todayList =
     const backToTop =
     document.getElementById("backToTop");
 
-let bpLog = JSON.parse(localStorage.getItem("bpLog")) || {};
 let todayTasks =
     JSON.parse(localStorage.getItem("todayTasks")) || [];
     let taskListDate =
@@ -205,58 +195,6 @@ if (todayTasks.length > 0) {
     displayTodayTasks();
 
 }
-if (bpLog.systolic) {
-
-    bpDisplay.textContent =
-        "Last Reading: " +
-        bpLog.systolic +
-        " / " +
-        bpLog.diastolic;
-
-    heartRateDisplay.textContent =
-        "Heart Rate: " +
-        bpLog.heartRate +
-        " bpm";
-
-    summaryBP.textContent =
-        bpLog.systolic +
-        " / " +
-        bpLog.diastolic;
-}
-bpButton.addEventListener("click", function () {
-
-    const systolic = prompt("Enter systolic pressure:");
-    const diastolic = prompt("Enter diastolic pressure:");
-    const heartRate = prompt("Enter heart rate:");
-
-    if (systolic && diastolic && heartRate) {
-
-        bpDisplay.textContent =
-    "Last Reading: " + systolic + " / " + diastolic;
-
-heartRateDisplay.textContent =
-    "Heart Rate: " + heartRate + " bpm";
-
-summaryBP.textContent =
-    systolic + " / " + diastolic;
-
-bpLog = {
-    systolic: systolic,
-    diastolic: diastolic,
-    heartRate: heartRate
-};
-
-localStorage.setItem(
-    "bpLog",
-    JSON.stringify(bpLog)
-);
-    systolic + " / " + diastolic;
-        heartRateDisplay.textContent =
-            "Heart Rate: " + heartRate + " bpm";
-
-    }
-
-}); 
 
 // Restore Wake-Up medication display
 if (

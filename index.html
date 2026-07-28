@@ -72,7 +72,19 @@
             <button id="bpButton">
     Log Blood Pressure
 </button>
+<button id="bpHistoryButton">
+    📊 History
+</button>
         </div>
+        <div class="summary-card" id="bpHistorySection" style="display: none;">
+
+    <h2>❤️ Blood Pressure History</h2>
+
+    <div id="bpHistoryDisplay">
+        No blood pressure entries yet.
+    </div>
+
+</div>
 
         <div class="card">
             <h2>⚖️ Weight</h2>
@@ -262,6 +274,31 @@
 </div>
 
 </div>
+<div id="bpModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Log Blood Pressure</h2>
+
+        <label for="systolicInput">Systolic:</label><br>
+        <input id="systolicInput" type="number" min="50" max="300"><br><br>
+
+        <label for="diastolicInput">Diastolic:</label><br>
+        <input id="diastolicInput" type="number" min="30" max="200"><br><br>
+
+        <label for="pulseInput">Pulse:</label><br>
+        <input id="pulseInput" type="number" min="30" max="220"><br><br>
+
+        <label for="bpNoteInput">Note (optional):</label><br>
+        <input id="bpNoteInput" type="text"><br><br>
+
+        <button id="saveBpBtn">
+            Save
+        </button>
+
+        <button id="cancelBpBtn">
+            Cancel
+        </button>
+    </div>
+</div>
 <div id="exerciseModal" class="modal">
     <div class="modal-content">
         <h2>Log Exercise</h2>
@@ -284,5 +321,6 @@
 <script src="js/medications.js"></script>
 <script src="js/exercise.js"></script>
 <script src="js/weightCenter.js"></script>
+<script src="js/bloodPressureCenter.js"></script>
 <!-- <script src="js/medicationCenter.js"></script> -->
 <script src="js/script.js"></script>
