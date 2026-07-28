@@ -66,6 +66,7 @@ today.textContent =
 // Medication Center moved to medicationCenter.js
 
 initExerciseCenter();
+initWeightCenter();
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");
@@ -139,18 +140,7 @@ const eveningStatus =
     document.getElementById("eveningStatus");
 
 
-const weightButton = document.getElementById("weightButton");
-const weightDisplay = document.getElementById("weightDisplay");
-const summaryWeight = document.getElementById("summaryWeight");
-const weightHistoryButton =
-    document.getElementById("weightHistoryButton");
-    const weightHistorySection =
-    document.getElementById("weightHistorySection");
-
-
-    const weightHistoryDisplay =
-    document.getElementById("weightHistoryDisplay");
-    const exerciseHistoryButton =
+const exerciseHistoryButton =
     document.getElementById("exerciseHistoryButton");
 
 const exerciseHistorySection =
@@ -186,14 +176,6 @@ let todayTasks =
     localStorage.getItem("taskListDate") ||
     new Date().toDateString();
 
-if (weightLog.current) {
-
-    weightDisplay.textContent =
-        "Last Weight: " + weightLog.current + " lb";
-
-    summaryWeight.textContent =
-        weightLog.current + " lb";
-}
 if (taskListDate !== new Date().toDateString()) {
 
     todayTasks = todayTasks
@@ -275,83 +257,6 @@ localStorage.setItem(
     }
 
 }); 
-weightButton.addEventListener("click", function () {
-   
-
-    const weight = prompt("Enter your current weight:");
-
-    if (weight) {
-
-        weightDisplay.textContent =
-            "Last Weight: " + weight + " lb";
-summaryWeight.textContent =
-    weight + " lb";
-
-      weightLog.current = weight;
-      weightHistory.push({
-    weight: weight,
-    date: new Date().toLocaleDateString(),
-    time: new Date().toLocaleTimeString([], {
-        hour: "numeric",
-        minute: "2-digit"
-    })
-});
-
-saveData("weightHistory", weightHistory);
-
-saveData("weightLog", weightLog);      
-
-    }
-
-});
-// Initialize history panels closed on page load
-if (weightHistorySection) {
-    weightHistorySection.style.display = "none";
-    weightHistoryButton.textContent = "📊 History";
-}
-
-weightHistoryButton.addEventListener("click", function () {
-
-    if (weightHistorySection.style.display === "block") {
-
-        weightHistorySection.style.display = "none";
-        weightHistoryButton.textContent = "📊 History";
-        return;
-
-    }
-
-    weightHistoryDisplay.innerHTML = "";
-
-    if (weightHistory.length === 0) {
-
-        weightHistoryDisplay.textContent =
-            "No weight entries yet.";
-
-    } else {
-
-        weightHistory
-            .slice()
-            .reverse()
-            .forEach(function (entry) {
-
-                weightHistoryDisplay.innerHTML +=
-                    entry.date +
-                    " • " +
-                    entry.time +
-                    " — <strong>" +
-                    entry.weight +
-                    " lb</strong><br>";
-
-            });
-
-    }
-
-    weightHistorySection.style.display = "block";
-    weightHistoryButton.textContent = "📊 Hide History";
-
-    
-
-});
 
 // Restore Wake-Up medication display
 if (
