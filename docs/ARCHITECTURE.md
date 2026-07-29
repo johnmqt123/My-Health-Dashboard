@@ -172,3 +172,26 @@ Medication schedules, reminders, and daily tasks should reflect how the user act
 The dashboard should remain clean and uncluttered.
 
 Only the most important information should appear on the main screen.
+
+# Architecture
+
+Current Architecture
+
+HTML
+│
+├── CSS
+│
+├── JavaScript Modules
+│   ├── medicationCenter.js
+│   ├── weightCenter.js
+│   ├── exercise.js
+│   ├── bloodPressureCenter.js
+│   └── storage.js
+│
+└── Local Storage
+
+Future
+
+Database
+Cloud Sync
+Authentication

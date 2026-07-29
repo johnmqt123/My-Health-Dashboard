@@ -26,3 +26,14 @@ All notable changes to this project will be documented in this file.
 - Weight tracker
 - CPAP tracker
 - Weather integration
+
+# Changelog
+
+## Version 0.1
+
+- Initial project created.
+- Medication Center added.
+- Weight Center added.
+- Exercise Center added.
+- Documentation established.
+

@@ -39,3 +39,17 @@ Next Steps:
 - Save medication status between sessions.
 - Display the actual medication list.
 - Add Blood Pressure logging.
+
+# Development Journal
+
+Use this document to record major design decisions.
+
+Examples:
+
+- Why a feature was added.
+- Why code was reorganized.
+- Lessons learned.
+- Problems encountered.
+- Ideas that affected architecture.
+
+This is the engineering notebook for the project.

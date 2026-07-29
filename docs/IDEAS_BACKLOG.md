@@ -76,3 +76,42 @@ Ideas are grouped by category and prioritized later.
 # Future Ideas
 
 (Add new ideas here as they occur.)
+
+# Ideas Backlog
+
+## User Interface
+
+- Numeric keypad on iPhone for numeric fields
+- Larger touch targets
+- Faster data entry
+- Better mobile layout
+
+## Nutrition
+
+- Daily calorie tracking
+- Protein tracking
+- Fruit servings
+- Vegetable servings
+- Fiber tracking
+- Water tracking
+
+## Exercise
+
+- Calories burned
+- Distance
+- Heart rate
+- Exercise history
+
+## Medication
+
+- Injection site rotation
+- Refill reminders
+- Medication history
+- Missed dose tracking
+
+## AI
+
+- Analyze meals
+- Analyze progress
+- Voice entry
+- Photo meal recognition

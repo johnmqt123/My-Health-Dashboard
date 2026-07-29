@@ -65,3 +65,37 @@ Verify:
 Identify the exact point where execution stops.
 
 Do not modify any files.
+
+# GitHub Copilot Instructions
+
+Project: My Health Dashboard
+
+Coding Standards
+
+- Keep code simple.
+- Prefer readable code over clever code.
+- Use modular JavaScript.
+- One responsibility per file.
+- Comment major functions.
+- Never duplicate code.
+- Use descriptive variable names.
+
+UI Standards
+
+- Mobile first.
+- Large touch targets.
+- Numeric keyboard for numeric fields.
+- Consistent spacing.
+- Accessible controls.
+
+Development Philosophy
+
+This application is intended for a single user.
+
+Reliability is more important than complexity.
+
+Minimize typing whenever possible.
+
+Keep the interface simple enough to use every day.
+
+Always preserve existing functionality when adding new features.
