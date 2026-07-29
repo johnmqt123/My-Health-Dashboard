@@ -68,6 +68,7 @@ today.textContent =
 initExerciseCenter();
 initWeightCenter();
 initBloodPressureCenter();
+initZepboundCenter();
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");

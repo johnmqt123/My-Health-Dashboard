@@ -41,6 +41,19 @@
    
 
     </header>
+
+    <section class="summary-card" id="zepboundCenterSection" style="display: none;">
+        <h2>💉 Zepbound Treatment Center</h2>
+        <p>Welcome to the Zepbound Treatment Center.</p>
+        <button id="closeZepboundButton">← Back to Dashboard</button>
+
+        <div class="card">
+            <h2>💉 Injection Log</h2>
+            <p>Record each Zepbound injection.</p>
+            <button id="logInjectionButton">Log Injection</button>
+            <div id="injectionLogDisplay"></div>
+        </div>
+    </section>
      
 
     <section class="briefing">
@@ -64,6 +77,14 @@
 
 
 
+
+        <div class="card">
+    <h2>💉 Zepbound Treatment Center</h2>
+    <p>Track injections, rotation sites, prescriptions, and costs.</p>
+    <button id="zepboundButton">
+        Open Treatment Center
+    </button>
+</div>
 
         <div class="card">
             <h2>❤️ Blood Pressure</h2>
@@ -316,11 +337,49 @@
         </button>
     </div>
 </div>
+<div id="injectionModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Log Injection</h2>
+
+        <label for="injectionDate">Date</label>
+        <input type="date" id="injectionDate">
+
+        <label for="injectionTime">Time</label>
+        <input type="time" id="injectionTime">
+
+        <label for="doseSelect">Dose</label>
+        <select id="doseSelect">
+            <option value="2.5 mg">2.5 mg</option>
+            <option value="5 mg">5 mg</option>
+            <option value="7.5 mg">7.5 mg</option>
+            <option value="10 mg">10 mg</option>
+            <option value="12.5 mg">12.5 mg</option>
+            <option value="15 mg">15 mg</option>
+        </select>
+
+        <label for="siteSelect">Injection Site</label>
+        <select id="siteSelect">
+            <option value="Left Abdomen">Left Abdomen</option>
+            <option value="Right Abdomen">Right Abdomen</option>
+            <option value="Left Thigh">Left Thigh</option>
+            <option value="Right Thigh">Right Thigh</option>
+            <option value="Left Upper Arm">Left Upper Arm</option>
+            <option value="Right Upper Arm">Right Upper Arm</option>
+        </select>
+
+        <label for="injectionNotes">Notes</label>
+        <textarea id="injectionNotes"></textarea>
+
+        <button id="saveInjectionBtn">Save</button>
+        <button id="cancelInjectionBtn">Cancel</button>
+    </div>
+</div>
 <script src="js/storage.js"></script>
 <script src="js/userProfile.js"></script>
 <script src="js/medications.js"></script>
 <script src="js/exercise.js"></script>
 <script src="js/weightCenter.js"></script>
 <script src="js/bloodPressureCenter.js"></script>
+<script src="js/zepboundCenter.js"></script>
 <!-- <script src="js/medicationCenter.js"></script> -->
 <script src="js/script.js"></script>
