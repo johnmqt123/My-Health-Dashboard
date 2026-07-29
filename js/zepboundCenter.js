@@ -5,6 +5,9 @@ function initZepboundCenter() {
     const mainDashboardHeader = document.querySelector("header");
     const mainDashboardBriefing = document.querySelector("section.briefing");
     const logInjectionButton = document.getElementById("logInjectionButton");
+    const historyInjectionButton = document.getElementById("historyInjectionButton");
+    const historyInjectionSection = document.getElementById("historyInjectionSection");
+    const historyInjectionDisplay = document.getElementById("historyInjectionDisplay");
     const injectionModal = document.getElementById("injectionModal");
     const saveInjectionBtn = document.getElementById("saveInjectionBtn");
     const cancelInjectionBtn = document.getElementById("cancelInjectionBtn");
@@ -56,6 +59,32 @@ function initZepboundCenter() {
         if (injectionNotesInput) {
             injectionNotesInput.value = "";
         }
+    }
+
+    function renderHistory() {
+        if (!historyInjectionSection || !historyInjectionDisplay) {
+            return;
+        }
+
+        const reversedHistory = [...history].reverse();
+
+        if (!reversedHistory.length) {
+            historyInjectionDisplay.innerHTML = "<p>No injection history yet.</p>";
+            return;
+        }
+
+        historyInjectionDisplay.innerHTML = reversedHistory.map(function (entry) {
+            const notesMarkup = entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : "";
+            return `
+                <div style="margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
+                    <p><strong>Date:</strong> ${entry.date}</p>
+                    <p><strong>Time:</strong> ${entry.time}</p>
+                    <p><strong>Dose:</strong> ${entry.dose}</p>
+                    <p><strong>Site:</strong> ${entry.site}</p>
+                    ${notesMarkup}
+                </div>
+            `;
+        }).join("");
     }
 
     function showDashboard() {
@@ -112,6 +141,18 @@ function initZepboundCenter() {
         });
     }
 
+    if (historyInjectionButton && historyInjectionSection && historyInjectionDisplay) {
+        historyInjectionButton.addEventListener("click", function () {
+            const isHidden = historyInjectionSection.style.display === "none";
+            historyInjectionSection.style.display = isHidden ? "block" : "none";
+            historyInjectionButton.textContent = isHidden ? "Hide History" : "📊 History";
+
+            if (isHidden) {
+                renderHistory();
+            }
+        });
+    }
+
     if (saveInjectionBtn && injectionModal) {
         saveInjectionBtn.addEventListener("click", function () {
             const injectionEntry = {
@@ -127,6 +168,10 @@ function initZepboundCenter() {
             injectionModal.style.display = "none";
             clearModalFields();
             renderLatestInjection();
+
+            if (historyInjectionSection && historyInjectionSection.style.display === "block") {
+                renderHistory();
+            }
         });
     }
 
@@ -138,4 +183,5 @@ function initZepboundCenter() {
     }
 
     renderLatestInjection();
+    renderHistory();
 }
