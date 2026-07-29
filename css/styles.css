@@ -67,22 +67,43 @@ button {
     font-size: 1em;
 }
 .summary-card {
-
     background: white;
-
     border-left: 6px solid #1f4e79;
-
     padding: 20px;
-
     margin-top: 20px;
-
     margin-bottom: 30px;
-
     border-radius: 12px;
-
     box-shadow: 0 3px 10px rgba(0,0,0,.12);
-
+    --feature-center-heading-gap: 16px;
+    --feature-center-nav-gap: 20px;
 }
+
+.summary-card > h2 {
+    margin-top: 0;
+    margin-bottom: var(--feature-center-heading-gap);
+}
+
+.summary-card > button {
+    margin-top: 0;
+    margin-bottom: var(--feature-center-nav-gap);
+}
+
+.summary-card > .card,
+.summary-card > .briefing > .card {
+    margin-top: 0;
+}
+
+.summary-card > .briefing {
+    margin-top: 0;
+}
+
+@media (max-width: 600px) {
+    .summary-card {
+        --feature-center-heading-gap: 12px;
+        --feature-center-nav-gap: 16px;
+    }
+}
+
 #manageMedicationsBtn {
     padding: 10px 16px;
     margin: 10px 0 15px 0;

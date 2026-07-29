@@ -43,9 +43,8 @@
     </header>
 
     <section class="summary-card" id="zepboundCenterSection" style="display: none;">
-        <h2>💉 Zepbound Treatment Center</h2>
-        <p>Welcome to the Zepbound Treatment Center.</p>
-        <button id="closeZepboundButton">← Back to Dashboard</button>
+        <h2 style="text-align: center;">💉 Zepbound Center</h2>
+        <button id="closeZepboundButton">← Back to At a Glance</button>
 
         <div class="card">
             <h2>💉 Injection Log</h2>
@@ -79,11 +78,10 @@
 
 
         <div class="card">
-    <h2>💉 Zepbound Treatment Center</h2>
+    <h2 id="zepboundButton" style="cursor: pointer;">
+    💉 Zepbound Center ▼
+</h2>
     <p>Track injections, rotation sites, prescriptions, and costs.</p>
-    <button id="zepboundButton">
-        Open Treatment Center
-    </button>
 </div>
 
         <div class="card">
@@ -191,9 +189,9 @@
     💊 Medication Center
 </h2>
     
-<p id="backToTop" style="cursor: pointer;">
-    ⬆ Back to At a Glance
-</p>
+<button id="backToTop" type="button">
+    ← Back to At a Glance
+</button>
     <div id="manageMedicationsPanel" style="display: none;">
     <h3>Manage Medications</h3>
 
