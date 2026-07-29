@@ -1,3 +1,7 @@
+## Guiding Principle
+
+The application should minimize data entry while maximizing useful information. Whenever practical, the application should calculate values automatically instead of requiring the user to enter them manually.
+
 # My Health Dashboard
 ## Ideas Backlog
 
@@ -115,3 +119,50 @@ Ideas are grouped by category and prioritized later.
 - Analyze progress
 - Voice entry
 - Photo meal recognition
+
+# Ideas Backlog
+
+## Mobile User Interface
+
+- Use the numeric keyboard on iPhone for all numeric fields.
+- Weight should default to a numeric keypad.
+- Exercise minutes should default to a numeric keypad.
+- Calories should default to a numeric keypad.
+- Distance should default to a numeric keypad.
+- Heart rate should default to a numeric keypad.
+- Blood pressure fields should default to a numeric keypad.
+
+## Nutrition Tracking
+
+- Track daily calories.
+- Track daily protein intake.
+- Track carbohydrates.
+- Track fat.
+- Track fiber.
+- Track fruit servings.
+- Track vegetable servings.
+- Track water intake.
+- Display running daily totals and progress toward goals.
+
+## AI Nutrition Assistant
+
+- Allow meals to be entered in plain English.
+- Automatically estimate calories.
+- Automatically estimate protein.
+- Automatically estimate carbohydrates, fat, and fiber.
+- Save meal totals with one tap.
+- Future enhancement: analyze meals from a photo.
+
+## Zepbound Support
+
+- Help ensure adequate calorie intake while taking Zepbound.
+- Help ensure adequate daily protein intake.
+- Provide nutrition summaries focused on GLP-1 users.
+- Show daily progress toward calorie and protein goals.
+
+## General Usability
+
+- Minimize typing whenever possible.
+- Make the app easy to use on an iPhone.
+- Prefer automatic calculations over manual entry.
+- Reduce the number of taps required for common tasks.
