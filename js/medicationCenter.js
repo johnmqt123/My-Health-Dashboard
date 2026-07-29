@@ -15,6 +15,102 @@ const medicationEditor =
 const medicationEditArea =
     document.getElementById("medicationEditArea");
 
+const logTylenolButton =
+    document.getElementById("logTylenolButton");
+
+const tylenolModal =
+    document.getElementById("tylenolModal");
+
+const saveTylenolBtn =
+    document.getElementById("saveTylenolBtn");
+
+const cancelTylenolBtn =
+    document.getElementById("cancelTylenolBtn");
+
+const tylenolTabletCount =
+    document.getElementById("tylenolTabletCount");
+
+const tylenolTakenAt =
+    document.getElementById("tylenolTakenAt");
+
+const tylenolNote =
+    document.getElementById("tylenolNote");
+
+const tylenolLastTakenDisplay =
+    document.getElementById("tylenolLastTakenDisplay");
+
+let asNeededMedicationHistory =
+    loadData("asNeededMedicationHistory", []);
+
+function getDefaultDateTimeValue() {
+    const now = new Date();
+    const offset = now.getTimezoneOffset();
+    const localTime = new Date(now.getTime() - offset * 60000);
+    return localTime.toISOString().slice(0, 16);
+}
+
+function formatDateTime(value) {
+    if (!value) {
+        return "Not logged yet";
+    }
+
+    const date = new Date(value);
+
+    if (!isNaN(date.getTime())) {
+        return date.toLocaleString([], {
+            dateStyle: "medium",
+            timeStyle: "short"
+        });
+    }
+
+    return value;
+}
+
+function renderTylenolLastTaken() {
+    if (!tylenolLastTakenDisplay) {
+        return;
+    }
+
+    if (!asNeededMedicationHistory.length) {
+        tylenolLastTakenDisplay.textContent = "No Tylenol logged yet.";
+        return;
+    }
+
+    const latest = asNeededMedicationHistory[asNeededMedicationHistory.length - 1];
+    const tabletsText = latest.tablets === 2 ? "2 tablets" : "1 tablet";
+    const noteText = latest.note ? ` — ${latest.note}` : "";
+    tylenolLastTakenDisplay.textContent =
+        `Last taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
+}
+
+function resetTylenolForm() {
+    if (tylenolTabletCount) {
+        tylenolTabletCount.value = "1";
+    }
+
+    if (tylenolTakenAt) {
+        tylenolTakenAt.value = getDefaultDateTimeValue();
+    }
+
+    if (tylenolNote) {
+        tylenolNote.value = "";
+    }
+}
+
+function openTylenolModal() {
+    resetTylenolForm();
+
+    if (tylenolModal) {
+        tylenolModal.style.display = "block";
+    }
+}
+
+function closeTylenolModal() {
+    if (tylenolModal) {
+        tylenolModal.style.display = "none";
+    }
+}
+
 manageMedicationsBtn.addEventListener("click", function () {
 
     if (manageMedicationsPanel.style.display === "block") {
@@ -217,3 +313,28 @@ Save
         });
 
 }
+
+if (logTylenolButton) {
+    logTylenolButton.addEventListener("click", openTylenolModal);
+}
+
+if (saveTylenolBtn) {
+    saveTylenolBtn.addEventListener("click", function () {
+        const entry = {
+            dateTime: tylenolTakenAt ? tylenolTakenAt.value : getDefaultDateTimeValue(),
+            tablets: tylenolTabletCount ? Number(tylenolTabletCount.value) : 1,
+            note: tylenolNote ? tylenolNote.value.trim() : ""
+        };
+
+        asNeededMedicationHistory.push(entry);
+        saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+        closeTylenolModal();
+        renderTylenolLastTaken();
+    });
+}
+
+if (cancelTylenolBtn) {
+    cancelTylenolBtn.addEventListener("click", closeTylenolModal);
+}
+
+renderTylenolLastTaken();

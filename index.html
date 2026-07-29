@@ -290,10 +290,36 @@
     <button id="eveningButton">
         Log Evening Medications
     </button>
+</div>
+<div class="card" id="asNeededMedicationCard">
+    <h2>🩹 As-Needed Medications</h2>
+    <p>Tylenol as needed.</p>
+    <p id="tylenolLastTakenDisplay">No Tylenol logged yet.</p>
+    <button id="logTylenolButton">Log Tylenol</button>
+</div>
     </section>
 </div>
-</div>
 
+</div>
+<div id="tylenolModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Log Tylenol</h2>
+
+        <label for="tylenolTabletCount">Tablets</label>
+        <select id="tylenolTabletCount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+        </select>
+
+        <label for="tylenolTakenAt">Date and Time</label>
+        <input type="datetime-local" id="tylenolTakenAt">
+
+        <label for="tylenolNote">Note (optional)</label>
+        <textarea id="tylenolNote"></textarea>
+
+        <button id="saveTylenolBtn">Save</button>
+        <button id="cancelTylenolBtn">Cancel</button>
+    </div>
 </div>
 <div id="bpModal" class="modal" style="display: none;">
     <div class="modal-content">
