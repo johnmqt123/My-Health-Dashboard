@@ -166,3 +166,92 @@ Ideas are grouped by category and prioritized later.
 - Make the app easy to use on an iPhone.
 - Prefer automatic calculations over manual entry.
 - Reduce the number of taps required for common tasks.
+
+## Low Priority
+
+### Optional Bowel Movement Log
+
+Potential one-tap health log for users who wish to track bowel movements.
+
+Current approach:
+- Use calendar entries to determine whether long-term tracking is useful.
+
+If implemented:
+- Date/time only
+- Optional feature
+- No reminders
+- No analysis
+- No recommendations
+
+Priority: Low
+
+## Medication Enhancements
+
+### Flexible Medication Times
+
+Allow medication groups to use descriptive times of day rather than requiring exact clock times.
+
+Examples:
+
+- Wake Up
+- Breakfast (~8:00 AM)
+- Midday (~12:00 PM)
+- Evening Meal (~5:00 PM)
+- Bedtime (~9:00 PM)
+
+Approximate times should be shown in parentheses to help establish a routine while allowing flexibility.
+
+---
+
+### Medication Counts by Time Period
+
+Allow users to record the quantity taken for each medication during its scheduled time period.
+
+Examples:
+
+Morning
+- Pantoprazole (1)
+- Hydrochlorothiazide (1)
+- Metoprolol XR (1)
+
+Midday
+- Gabapentin (1 or 2)
+
+Bedtime
+- Gabapentin (1 or 2)
+- Rosuvastatin (1)
+- Nifedipine (1)
+- Aspirin 81 mg (1)
+
+The quantity control should be easy to read and easy to tap.
+
+Future enhancements could include configurable quantities and optional notes.
+
+## Quick Access / Morning Startup Ideas
+
+### Quick Access Shortcuts
+- Add Apple Weather as a one-tap shortcut.
+- Add Apple News as a one-tap shortcut.
+- Add Apple Messages as a one-tap shortcut.
+- Add Gmail as a one-tap shortcut.
+- Add ChatGPT as a one-tap shortcut.
+- Consider additional shortcuts for Google Calendar, Apple Reminders, MyChart, Medicare, Social Security, and other frequently used services.
+
+### User Customization
+- Allow users to reorder Quick Access buttons using drag-and-drop.
+- Allow users to hide or show individual Quick Access buttons.
+- Allow users to add custom shortcuts to installed apps or websites.
+- Support multiple Quick Access layouts for different routines (Morning, Evening, Travel, etc.).
+
+### Morning Startup Routine
+- Create an optional Morning Startup mode that guides users through their preferred daily routine.
+- Allow users to define the order of Quick Access items.
+- Visually indicate the next recommended item in the routine.
+- Allow users to mark steps as completed.
+- Optionally remember the user's progress if they leave John's Assistant and later return.
+
+### Future Enhancements
+- Display notification badges where supported by the operating system (for example, unread email or upcoming calendar events).
+- Add optional widgets showing today's weather, next calendar event, or medication reminders.
+- Allow Quick Access shortcuts to launch apps using native deep links when available.
+- Explore in-app browser support for compatible web services to simplify returning to John's Assistant.

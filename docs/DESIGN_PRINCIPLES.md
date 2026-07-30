@@ -184,3 +184,49 @@ Before implementing any feature, ask:
 
 If the answer to several of these questions is "No," reconsider the design before writing code.
 "Technology should adapt to people—not require people to adapt to technology."
+
+## User Configurable by Default
+
+Whenever practical, features should be configurable rather than hard-coded.
+
+Examples include:
+
+- Approximate times of day
+- Reminder preferences
+- Home screen shortcuts
+- Health tracking options
+- Favorite links
+- Themes
+- Units of measure
+- Assistant behavior
+
+The software should adapt to the user rather than expecting the user to adapt to the software.
+
+Hard-coded values should be avoided unless they represent true system requirements.
+
+## Simplicity First
+
+Every feature should answer a simple question:
+
+"Does this make the assistant easier and more valuable to use?"
+
+If yes, consider adding it.
+
+If not, leave it out.
+
+Avoid adding settings or features simply because they are possible.
+
+## Configurable Where It Adds Value
+
+Allow users to customize features that reflect personal routines or preferences.
+
+Examples:
+- Medication schedules
+- Approximate times of day
+- Home screen shortcuts
+- Health tracking options
+- Favorite links
+
+Keep the interface consistent where customization provides little practical benefit.
+
+The goal is flexibility without unnecessary complexity.

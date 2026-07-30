@@ -36,34 +36,11 @@ if (
 } else {
     medicationLog.wakeUp = {};
 }
-const greeting = document.getElementById("greeting");
 
-const hour = new Date().getHours();
-
-if (hour < 12) {
-    greeting.textContent = "Good Morning, " + userProfile.firstName;
-} else if (hour < 18) {
-    greeting.textContent = "Good Afternoon, " + userProfile.firstName;
-} else {
-    greeting.textContent = "Good Evening, " + userProfile.firstName;
-}
-console.log("John's Assistant started.");
-
-console.log(medicationSchedule);
-
-const today = document.getElementById("today");
-
-const options = {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric"
-};
-
-today.textContent =
-    new Date().toLocaleDateString("en-US", options);
   
 // Medication Center moved to medicationCenter.js
+
+initializeHome();
 
 initExerciseCenter();
 initWeightCenter();
