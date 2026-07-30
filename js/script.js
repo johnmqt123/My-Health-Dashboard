@@ -41,6 +41,7 @@ if (
 // Medication Center moved to medicationCenter.js
 
 initializeHome();
+initDailyRoutine();
 
 initExerciseCenter();
 initWeightCenter();
