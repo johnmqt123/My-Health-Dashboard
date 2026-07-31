@@ -10,8 +10,8 @@ let dailyRoutine = [
     order: 1
 },
     {
-        id: "breakfast",
-        name: "Breakfast",
+        id: "morning",
+        name: "Morning",
         icon: "🍳",
         time: "08:00",
         enabled: true,
