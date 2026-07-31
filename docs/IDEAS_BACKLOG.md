@@ -255,3 +255,42 @@ Future enhancements could include configurable quantities and optional notes.
 - Add optional widgets showing today's weather, next calendar event, or medication reminders.
 - Allow Quick Access shortcuts to launch apps using native deep links when available.
 - Explore in-app browser support for compatible web services to simplify returning to John's Assistant.
+
+## Session – July 30, 2026
+
+High Priority
+
+Add approximate times to each Medication Center section (Wake Up, Breakfast, Midday, Evening).
+Use user-friendly 12-hour time formatting throughout the app.
+Keep Medication Center visible near the top of the dashboard to minimize scrolling.
+
+Medium Priority
+
+Revisit Daily Routine layout after more real-world usage.
+Consider expandable Daily Routine sections once enough content exists to justify them.
+
+Design Notes
+
+Daily Routine answers: "What part of my day am I in?"
+Medication Center answers: "What medications should I be thinking about now?"
+Global items like Weather should remain independently accessible and not belong to a single routine period.
+
+## Future Vision
+
+### Trusted Caregiver Access
+- Role-based permissions.
+- Caregiver Mode with limited access.
+- Emergency Information screen.
+- User-controlled sharing of sensitive information.
+- Separate private information from shared health information.
+
+### Medication Center
+- Integrate Zepbound into the Medication Center rather than creating a separate Zepbound Center.
+- Display only a brief summary by default (e.g., next injection date/status).
+- Expand to show detailed information (dose, injection site, weight, side effects, history) only when the user taps or clicks the Zepbound section.
+- Keep the Medication Center focused on daily medications while providing quick access to weekly medications like Zepbound.
+
+### Future UI Modernization
+- Reevaluate input controls based on the type of information being entered rather than using a single control style everywhere.
+- For small fixed choices (e.g., Tylenol 1–3 tablets), consider direct selection buttons.
+- For variable quantities, use larger +/- controls or other appropriate input methods.

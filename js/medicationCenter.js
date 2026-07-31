@@ -77,7 +77,8 @@ function renderTylenolLastTaken() {
     }
 
     const latest = asNeededMedicationHistory[asNeededMedicationHistory.length - 1];
-    const tabletsText = latest.tablets === 2 ? "2 tablets" : "1 tablet";
+    const tabletsText =
+    `${latest.tablets} tablet${latest.tablets === 1 ? "" : "s"}`;
     const noteText = latest.note ? ` — ${latest.note}` : "";
     tylenolLastTakenDisplay.textContent =
         `Last taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
