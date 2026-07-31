@@ -2,15 +2,17 @@
 
 let dailyRoutine = [
     {
-        id: "wakeUp",
-        name: "Wake Up",
-        time: "07:00",
-        enabled: true,
-        order: 1
-    },
+    id: "wakeUp",
+    name: "Wake Up",
+    icon: "🌅",
+    time: "07:00",
+    enabled: true,
+    order: 1
+},
     {
         id: "breakfast",
         name: "Breakfast",
+        icon: "🍳",
         time: "08:00",
         enabled: true,
         order: 2
@@ -18,6 +20,7 @@ let dailyRoutine = [
     {
         id: "midday",
         name: "Midday",
+        icon: "☀️",
         time: "13:00",
         enabled: true,
         order: 3
@@ -25,6 +28,7 @@ let dailyRoutine = [
     {
         id: "evening",
         name: "Evening",
+        icon: "🌙",
         time: "19:00",
         enabled: true,
         order: 4
@@ -47,7 +51,7 @@ function displayDailyRoutine() {
 
     dailyRoutine.forEach(item => {
         list.innerHTML += `
-            <p><strong>${item.name}</strong> — ${item.time}</p>
+            <p>${item.icon} <strong>${item.name}</strong> — ${item.time}</p>
         `;
     });
 }
