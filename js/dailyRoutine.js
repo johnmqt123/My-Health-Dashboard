@@ -34,7 +34,21 @@ let dailyRoutine = [
         order: 4
     }
 ];
+function formatTime(time) {
+    let [hours, minutes] = time.split(":");
 
+    hours = Number(hours);
+
+    const suffix = hours >= 12 ? "PM" : "AM";
+
+    if (hours === 0) {
+        hours = 12;
+    } else if (hours > 12) {
+        hours -= 12;
+    }
+
+    return `${hours}:${minutes} ${suffix}`;
+}
 function initDailyRoutine() {
     showDailyRoutine();
     displayDailyRoutine();
@@ -51,7 +65,7 @@ function displayDailyRoutine() {
 
     dailyRoutine.forEach(item => {
         list.innerHTML += `
-            <p>${item.icon} <strong>${item.name}</strong> — ${item.time}</p>
+            <p>${item.icon} <strong>${item.name}</strong> — ${formatTime(item.time)}</p>
         `;
     });
 }
