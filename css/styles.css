@@ -313,3 +313,7 @@ button:active,
         align-self: stretch;
     }
 }
+.approx-time {
+    font-size: 0.8em;
+    color: #666;
+}

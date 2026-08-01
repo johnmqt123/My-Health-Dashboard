@@ -352,3 +352,35 @@ Optional voice entry.
 Estimated Priority
 
 Implement after higher-priority health tracking features are complete.
+
+Medication Center – Heading Formatting Bug
+
+When a medication group (Wake-Up, Breakfast, Midday, Dinner, or Evening) is expanded and collapsed, the approximate time loses its custom formatting and becomes full-size text.
+
+Likely Cause:
+The JavaScript that expands/collapses medication groups appears to rebuild or replace the heading instead of preserving the <span class="approx-time"> element.
+
+Future Fix:
+Update the expand/collapse code to preserve the heading HTML and CSS formatting.
+
+Medication Schedule Customization
+
+Allow users to customize each medication group.
+
+Configuration should include:
+• Group name (Wake-Up, Breakfast, etc.)
+• Approximate time
+• Display order
+• Enable/disable group
+
+Use sensible defaults for new users while allowing complete personalization later.
+
+Development Principle
+
+Whenever possible, place reusable formatting, colors, sizes, and layout rules in CSS rather than inline HTML.
+
+Benefits:
+• One change updates the entire application.
+• Easier maintenance.
+• Consistent appearance.
+• Cleaner HTML.
