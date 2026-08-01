@@ -294,3 +294,61 @@ Global items like Weather should remain independently accessible and not belong 
 - Reevaluate input controls based on the type of information being entered rather than using a single control style everywhere.
 - For small fixed choices (e.g., Tylenol 1–3 tablets), consider direct selection buttons.
 - For variable quantities, use larger +/- controls or other appropriate input methods.
+
+Future Enhancement – Improve Tylenol Logging UI
+
+Priority: Medium
+
+Status: Backlog
+
+Goal
+
+Redesign the Tylenol logging dialog to be faster and easier to use on an iPhone while preserving the existing logging functionality.
+
+Current Status
+Supports 1–3 tablets.
+Automatically records the date and time.
+Optional note field.
+History displays the correct timestamp and tablet count.
+Functionally complete.
+Planned Improvements
+1. Replace the tablet drop-down
+
+Replace the current drop-down list with large − and + buttons and a large centered number.
+
+Example:
+
+Tablets
+
+   −    2    +
+
+Benefits:
+
+Easier one-handed operation.
+Larger touch targets.
+More modern appearance.
+Faster logging.
+2. Improve button appearance
+
+Make:
+
+Save button larger and more prominent.
+Cancel button secondary.
+
+Increase spacing between controls.
+
+3. Mobile-friendly layout
+
+Optimize spacing, font sizes, and touch targets for iPhone use.
+
+4. Optional future enhancements
+
+Possible additions:
+
+Remember the previously selected tablet count.
+Quick buttons for common doses.
+Medication-specific icons.
+Optional voice entry.
+Estimated Priority
+
+Implement after higher-priority health tracking features are complete.
