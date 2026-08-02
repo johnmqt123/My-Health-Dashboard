@@ -28,13 +28,37 @@
         saveData("exerciseLog", exerciseLog);
     }
 
+    function hideExerciseAmountField() {
+        if (exerciseAmountLabel) {
+            exerciseAmountLabel.style.display = "none";
+        }
+        if (exerciseAmountInput) {
+            exerciseAmountInput.style.display = "none";
+            exerciseAmountInput.value = "";
+        }
+        if (saveExerciseBtn) {
+            saveExerciseBtn.style.display = "none";
+        }
+    }
+
+    function showExerciseAmountField() {
+        if (exerciseAmountLabel) {
+            exerciseAmountLabel.style.display = "block";
+        }
+        if (exerciseAmountInput) {
+            exerciseAmountInput.style.display = "block";
+            exerciseAmountInput.value = "";
+            exerciseAmountInput.focus();
+        }
+        if (saveExerciseBtn) {
+            saveExerciseBtn.style.display = "block";
+        }
+    }
+
     function openExerciseModal() {
         if (exerciseModal) {
             exerciseModal.style.display = "block";
-            if (exerciseAmountInput) {
-                exerciseAmountInput.value = "";
-                exerciseAmountInput.focus();
-            }
+            hideExerciseAmountField();
         }
     }
 
@@ -42,9 +66,7 @@
         if (exerciseModal) {
             exerciseModal.style.display = "none";
         }
-        if (exerciseAmountInput) {
-            exerciseAmountInput.value = "";
-        }
+        hideExerciseAmountField();
     }
 
     function addExerciseEntry(type, amount, unit) {
@@ -83,6 +105,8 @@
     }
 
     function initExerciseCenter() {
+        hideExerciseAmountField();
+
         if (exerciseButton) {
             exerciseButton.addEventListener("click", openExerciseModal);
         }
@@ -103,11 +127,8 @@
                     exerciseAmountInput.step = "1";
                     exerciseAmountInput.setAttribute("inputmode", "numeric");
                     exerciseAmountInput.value = "";
-                    exerciseAmountInput.focus();
                 }
-                if (exerciseModal) {
-                    exerciseModal.style.display = "block";
-                }
+                showExerciseAmountField();
             });
         }
 
@@ -123,11 +144,8 @@
                     exerciseAmountInput.step = "0.1";
                     exerciseAmountInput.setAttribute("inputmode", "decimal");
                     exerciseAmountInput.value = "";
-                    exerciseAmountInput.focus();
                 }
-                if (exerciseModal) {
-                    exerciseModal.style.display = "block";
-                }
+                showExerciseAmountField();
             });
         }
 
