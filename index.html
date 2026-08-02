@@ -277,9 +277,9 @@
 </div>
 <div class="card" id="asNeededMedicationCard">
     <h2>🩹 As-Needed Medications</h2>
-    <p>Tylenol as needed.</p>
-    <p id="tylenolLastTakenDisplay">No Tylenol logged yet.</p>
-    <button id="logTylenolButton">Log Tylenol</button>
+    <p>Tylenol and Alpha-Lipoic Acid (ALA) as needed.</p>
+    <p id="tylenolLastTakenDisplay">No as-needed medication logged yet.</p>
+    <button id="logTylenolButton">Log As-Needed Medication</button>
 </div>
     </section>
 </div>
@@ -287,7 +287,13 @@
 </div>
 <div id="tylenolModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <h2>Log Tylenol</h2>
+        <h2>Log As-Needed Medication</h2>
+
+        <label for="asNeededMedicationSelect">Medication</label>
+        <select id="asNeededMedicationSelect">
+            <option value="Tylenol">Tylenol</option>
+            <option value="ALA">Alpha-Lipoic Acid (ALA)</option>
+        </select>
 
         <label for="tylenolTabletCount">Tablets</label>
         <select id="tylenolTabletCount">

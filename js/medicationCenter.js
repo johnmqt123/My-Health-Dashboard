@@ -27,6 +27,9 @@ const saveTylenolBtn =
 const cancelTylenolBtn =
     document.getElementById("cancelTylenolBtn");
 
+const asNeededMedicationSelect =
+    document.getElementById("asNeededMedicationSelect");
+
 const tylenolTabletCount =
     document.getElementById("tylenolTabletCount");
 
@@ -72,19 +75,24 @@ function renderTylenolLastTaken() {
     }
 
     if (!asNeededMedicationHistory.length) {
-        tylenolLastTakenDisplay.textContent = "No Tylenol logged yet.";
+        tylenolLastTakenDisplay.textContent = "No as-needed medication logged yet.";
         return;
     }
 
     const latest = asNeededMedicationHistory[asNeededMedicationHistory.length - 1];
+    const medicationName = latest.medication || "Tylenol";
     const tabletsText =
     `${latest.tablets} tablet${latest.tablets === 1 ? "" : "s"}`;
     const noteText = latest.note ? ` — ${latest.note}` : "";
     tylenolLastTakenDisplay.textContent =
-        `Last taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
+        `Last taken: ${formatDateTime(latest.dateTime)} · ${medicationName} · ${tabletsText}${noteText}`;
 }
 
 function resetTylenolForm() {
+    if (asNeededMedicationSelect) {
+        asNeededMedicationSelect.value = "Tylenol";
+    }
+
     if (tylenolTabletCount) {
         tylenolTabletCount.value = "1";
     }
@@ -322,6 +330,7 @@ if (logTylenolButton) {
 if (saveTylenolBtn) {
     saveTylenolBtn.addEventListener("click", function () {
         const entry = {
+            medication: asNeededMedicationSelect ? asNeededMedicationSelect.value : "Tylenol",
             dateTime: tylenolTakenAt ? tylenolTakenAt.value : getDefaultDateTimeValue(),
             tablets: tylenolTabletCount ? Number(tylenolTabletCount.value) : 1,
             note: tylenolNote ? tylenolNote.value.trim() : ""
