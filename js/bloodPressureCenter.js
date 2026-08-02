@@ -30,18 +30,22 @@
     }
 
     function renderCurrentReading() {
-        if (!bpDisplay || !heartRateDisplay || !summaryBP) return;
+        if (!bpDisplay || !heartRateDisplay) return;
 
         if (bpLog.systolic && bpLog.diastolic) {
             const pulseValue = bpLog.pulse || bpLog.heartRate || "--";
 
             bpDisplay.textContent = "Last Reading: " + bpLog.systolic + " / " + bpLog.diastolic;
             heartRateDisplay.textContent = "Heart Rate: " + pulseValue + " bpm";
-            summaryBP.textContent = bpLog.systolic + " / " + bpLog.diastolic;
+            if (summaryBP) {
+                summaryBP.textContent = bpLog.systolic + " / " + bpLog.diastolic;
+            }
         } else {
             bpDisplay.textContent = "Last Reading: -- / --";
             heartRateDisplay.textContent = "Heart Rate: -- bpm";
-            summaryBP.textContent = "Not Recorded";
+            if (summaryBP) {
+                summaryBP.textContent = "Not Recorded";
+            }
         }
     }
 

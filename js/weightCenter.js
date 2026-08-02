@@ -20,14 +20,18 @@
     }
 
     function renderCurrentWeight() {
-        if (!weightDisplay || !summaryWeight) return;
+        if (!weightDisplay) return;
 
         if (weightLog.current) {
             weightDisplay.textContent = "Last Weight: " + weightLog.current + " lb";
-            summaryWeight.textContent = weightLog.current + " lb";
+            if (summaryWeight) {
+                summaryWeight.textContent = weightLog.current + " lb";
+            }
         } else {
             weightDisplay.textContent = "Last Weight: --";
-            summaryWeight.textContent = "Not Recorded";
+            if (summaryWeight) {
+                summaryWeight.textContent = "Not Recorded";
+            }
         }
     }
 

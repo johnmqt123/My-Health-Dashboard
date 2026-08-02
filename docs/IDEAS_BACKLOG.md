@@ -524,3 +524,17 @@ Requirements:
 Design Principle:
 
 The Medication Center should adapt to the user's medication regimen rather than requiring application changes whenever medications change.
+
+## Floating Back to Top Button
+
+Add a floating "Back to Top" button that appears after the user scrolls down the Dashboard.
+
+Requirements:
+- Fixed in the lower-right corner.
+- Visible only after scrolling beyond a threshold.
+- Smoothly scrolls to the top.
+- Works on desktop and iPhone.
+- Replaces the need for multiple "Back to Top" links throughout the Dashboard.
+
+Design goal:
+Provide quick navigation while keeping the interface clean and uncluttered.
