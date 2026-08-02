@@ -14,9 +14,14 @@
     const exerciseHistorySection = document.getElementById("exerciseHistorySection");
     const exerciseHistoryDisplay = document.getElementById("exerciseHistoryDisplay");
     const exerciseModal = document.getElementById("exerciseModal");
+    const exerciseAmountInput = document.getElementById("exerciseAmountInput");
+    const exerciseAmountLabel = document.getElementById("exerciseAmountLabel");
+    const saveExerciseBtn = document.getElementById("saveExerciseBtn");
     const stationaryBikeBtn = document.getElementById("stationaryBikeBtn");
     const ebikeRideBtn = document.getElementById("ebikeRideBtn");
     const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
+    let activeExerciseType = "Stationary Bike";
+    let activeExerciseUnit = "minutes";
 
     function saveExerciseData() {
         saveData("exerciseHistory", exerciseHistory);
@@ -26,12 +31,19 @@
     function openExerciseModal() {
         if (exerciseModal) {
             exerciseModal.style.display = "block";
+            if (exerciseAmountInput) {
+                exerciseAmountInput.value = "";
+                exerciseAmountInput.focus();
+            }
         }
     }
 
     function closeExerciseModal() {
         if (exerciseModal) {
             exerciseModal.style.display = "none";
+        }
+        if (exerciseAmountInput) {
+            exerciseAmountInput.value = "";
         }
     }
 
@@ -81,29 +93,57 @@
 
         if (stationaryBikeBtn) {
             stationaryBikeBtn.addEventListener("click", function () {
-                if (exerciseModal) {
-                    exerciseModal.style.display = "none";
+                activeExerciseType = "Stationary Bike";
+                activeExerciseUnit = "minutes";
+                if (exerciseAmountLabel) {
+                    exerciseAmountLabel.textContent = "Minutes";
                 }
-
-                const minutes = prompt("How many minutes did you ride the stationary bike?");
-
-                if (!minutes) return;
-
-                addExerciseEntry("Stationary Bike", minutes, "minutes");
+                if (exerciseAmountInput) {
+                    exerciseAmountInput.type = "number";
+                    exerciseAmountInput.step = "1";
+                    exerciseAmountInput.setAttribute("inputmode", "numeric");
+                    exerciseAmountInput.value = "";
+                    exerciseAmountInput.focus();
+                }
+                if (exerciseModal) {
+                    exerciseModal.style.display = "block";
+                }
             });
         }
 
         if (ebikeRideBtn) {
             ebikeRideBtn.addEventListener("click", function () {
+                activeExerciseType = "E-Bike Ride";
+                activeExerciseUnit = "miles";
+                if (exerciseAmountLabel) {
+                    exerciseAmountLabel.textContent = "Miles";
+                }
+                if (exerciseAmountInput) {
+                    exerciseAmountInput.type = "number";
+                    exerciseAmountInput.step = "0.1";
+                    exerciseAmountInput.setAttribute("inputmode", "decimal");
+                    exerciseAmountInput.value = "";
+                    exerciseAmountInput.focus();
+                }
                 if (exerciseModal) {
-                    exerciseModal.style.display = "none";
+                    exerciseModal.style.display = "block";
+                }
+            });
+        }
+
+        if (saveExerciseBtn) {
+            saveExerciseBtn.addEventListener("click", function () {
+                if (!exerciseAmountInput) return;
+
+                const value = exerciseAmountInput.value.trim();
+
+                if (!value) {
+                    alert("Please enter the exercise amount.");
+                    return;
                 }
 
-                const miles = prompt("How many miles did you ride your e-bike?");
-
-                if (!miles) return;
-
-                addExerciseEntry("E-Bike Ride", miles, "miles");
+                addExerciseEntry(activeExerciseType, value, activeExerciseUnit);
+                closeExerciseModal();
             });
         }
 

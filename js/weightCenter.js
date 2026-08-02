@@ -13,6 +13,11 @@
     const weightHistoryButton = document.getElementById("weightHistoryButton");
     const weightHistorySection = document.getElementById("weightHistorySection");
     const weightHistoryDisplay = document.getElementById("weightHistoryDisplay");
+    const weightModal = document.getElementById("weightModal");
+    const weightInput = document.getElementById("weightInput");
+    const weightNoteInput = document.getElementById("weightNoteInput");
+    const saveWeightBtn = document.getElementById("saveWeightBtn");
+    const cancelWeightBtn = document.getElementById("cancelWeightBtn");
 
     function saveWeightData() {
         saveData("weightHistory", weightHistory);
@@ -104,15 +109,42 @@
             weightHistoryButton.addEventListener("click", toggleWeightHistory);
         }
 
+        if (cancelWeightBtn) {
+            cancelWeightBtn.addEventListener("click", function () {
+                if (weightModal) {
+                    weightModal.style.display = "none";
+                }
+                if (weightInput) weightInput.value = "";
+                if (weightNoteInput) weightNoteInput.value = "";
+            });
+        }
+
+        if (saveWeightBtn) {
+            saveWeightBtn.addEventListener("click", function () {
+                if (!weightInput) return;
+
+                const weight = weightInput.value.trim();
+
+                if (!weight) {
+                    alert("Please enter your current weight.");
+                    return;
+                }
+
+                const note = weightNoteInput ? weightNoteInput.value.trim() : "";
+                addWeightEntry(weight, note);
+
+                weightInput.value = "";
+                if (weightNoteInput) weightNoteInput.value = "";
+                if (weightModal) weightModal.style.display = "none";
+            });
+        }
+
         if (weightButton) {
             weightButton.addEventListener("click", function () {
-                const weight = prompt("Enter your current weight:");
-
-                if (!weight) return;
-
-                const note = prompt("Enter an optional note for this weight entry (leave blank for none):") || "";
-
-                addWeightEntry(weight, note);
+                if (weightModal) {
+                    weightModal.style.display = "block";
+                    if (weightInput) weightInput.focus();
+                }
             });
         }
     }
