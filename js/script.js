@@ -82,12 +82,7 @@ function setupMedicationToggle(headingId, listId) {
 
     heading.addEventListener("click", () => {
         const isHidden = list.style.display === "none";
-
         list.style.display = isHidden ? "block" : "none";
-
-        heading.textContent =
-            (isHidden ? "▼ " : "▶ ") +
-            heading.textContent.substring(2);
     });
 }
 
