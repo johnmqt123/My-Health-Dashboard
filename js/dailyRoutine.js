@@ -61,6 +61,10 @@ function showDailyRoutine() {
 function displayDailyRoutine() {
     const list = document.getElementById("dailyRoutineList");
 
+    if (!list) {
+        return;
+    }
+
     list.innerHTML = "";
 
     dailyRoutine.forEach(item => {

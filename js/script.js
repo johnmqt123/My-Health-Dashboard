@@ -41,7 +41,10 @@ if (
 // Medication Center moved to medicationCenter.js
 
 initializeHome();
-initDailyRoutine();
+
+if (document.getElementById("dailyRoutineList")) {
+    initDailyRoutine();
+}
 
 initExerciseCenter();
 initWeightCenter();
@@ -128,10 +131,13 @@ const addTaskButton =
 
 const todayList =
     document.getElementById("todayList");
+
+const quickAccessButtons =
+    document.querySelectorAll(".quick-access-button");
     
-    const medicationCenterCardHeading =
+const medicationCenterCardHeading =
     document.getElementById("medicationCenterCardHeading");
-    const backToTop =
+const backToTop =
     document.getElementById("backToTop");
 
 let todayTasks =
@@ -164,7 +170,16 @@ if (taskListDate !== new Date().toDateString()) {
     );
 }
 
-if (todayTasks.length > 0) {
+if (quickAccessButtons.length) {
+    quickAccessButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            const feature = this.dataset.feature || "This feature";
+            alert(feature + " is under development.");
+        });
+    });
+}
+
+if (todayTasks.length > 0 && todayList) {
 
     displayTodayTasks();
 
@@ -570,27 +585,33 @@ function updateDashboard() {
 
 updateDashboard();
 console.log(medicationHistory);
-addTaskButton.addEventListener("click", function () {
+if (addTaskButton) {
+    addTaskButton.addEventListener("click", function () {
 
-    const task = prompt("Enter a task for today:");
+        const task = prompt("Enter a task for today:");
 
-    if (!task) {
+        if (!task) {
+            return;
+        }
+
+        todayTasks.push({
+        text: task,
+        completed: false
+    });
+
+    displayTodayTasks();
+
+    localStorage.setItem(
+        "todayTasks",
+        JSON.stringify(todayTasks)
+    );
+    });
+}
+function displayTodayTasks() {
+
+    if (!todayList) {
         return;
     }
-
-    todayTasks.push({
-    text: task,
-    completed: false
-});
-
-displayTodayTasks();
-
-localStorage.setItem(
-    "todayTasks",
-    JSON.stringify(todayTasks)
-);
-});
-function displayTodayTasks() {
 
     if (todayTasks.length === 0) {
 

@@ -384,3 +384,48 @@ Benefits:
 • Easier maintenance.
 • Consistent appearance.
 • Cleaner HTML.
+
+## Dashboard Layout Redesign – Quick Access
+
+### Background
+
+As John's Assistant has evolved, the original "Daily Routine" card has become redundant. The Medication Center now provides the time-of-day organization for medications, making the Daily Routine timeline unnecessary.
+
+### Proposed Changes
+
+- Move the **Medication Center** directly below the **At a Glance** card.
+- Replace the **Daily Routine** card with a **Quick Access** section.
+- Design Quick Access as a compact horizontal row of icons or buttons to minimize scrolling.
+- Keep the Medication Center visible without requiring the user to scroll.
+
+### Initial Quick Access Items
+
+- Nutrition Center
+- Weight Center
+- Weather
+- MyChart
+- Google Calendar
+- Gmail
+- Grocery List
+- Financial Spreadsheet
+- Additional user-configurable links
+
+### Future Enhancement
+
+Allow users to customize:
+- Which Quick Access items are displayed.
+- The order of the items.
+- Icons and labels for each shortcut.
+
+### Design Principle
+
+Design the dashboard based on **frequency of use**, not time of day.
+
+Features used multiple times per day should require the fewest taps and the least scrolling.
+
+### Priority
+
+Medium-High
+
+Implement after the Nutrition Center and Weight Center are functional.
+Real-world usage should drive dashboard layout. As new features are added, the Home screen should be reorganized based on how frequently they are used rather than preserving the original layout.
