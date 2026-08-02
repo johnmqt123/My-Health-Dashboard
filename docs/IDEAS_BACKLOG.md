@@ -429,3 +429,83 @@ Medium-High
 
 Implement after the Nutrition Center and Weight Center are functional.
 Real-world usage should drive dashboard layout. As new features are added, the Home screen should be reorganized based on how frequently they are used rather than preserving the original layout.
+## Medication Center Enhancements
+
+### Zepbound Integration
+
+Move Zepbound into the Medication Center instead of maintaining a separate Zepbound Center.
+
+- Remove the standalone "Zepbound Center."
+- Add a collapsible "Zepbound" section within the Medication Center.
+- Since Zepbound is currently the only weekly medication, a separate "Weekly Medications" section is not necessary.
+- Display:
+  - Last injection date
+  - Next scheduled injection
+  - Log Injection button
+  - Injection history
+
+### As-Needed Medications
+
+Add Alpha-Lipoic Acid (ALA) to the "As Needed" medication section.
+
+Allow ALA to be logged the same way as other as-needed medications.
+
+### Medication Quantity Logging
+
+Enhance medication logging to support recording quantities when needed.
+
+Example:
+
+- Gabapentin
+  - Morning: 1 capsule
+  - Midday: 2 capsules
+  - Evening: 1 capsule
+
+Rather than only recording that a medication was taken, optionally record the quantity taken for medications where dosage may vary.
+
+This enhancement should be optional and should not complicate medications that are always taken in fixed amounts.
+## Quick Links Customization
+
+Allow users to customize the order of Quick Links.
+
+Requirements:
+
+- Press and hold to reorder Quick Links.
+- Support drag-and-drop on desktop and iPhone.
+- Automatically save the new order.
+- Preserve the customized layout between sessions.
+
+Design Principle:
+
+Quick Links should reflect each user's workflow rather than a fixed priority established by the application.
+
+## Dashboard Layout Refinements
+
+### Reorder Dashboard Sections
+
+Reorder the dashboard to better reflect daily usage.
+
+Proposed order:
+
+1. At a Glance
+2. Medication Center
+3. Quick Links
+4. Weight
+5. Exercise
+6. Blood Pressure
+7. Other tracking sections as added
+
+### Rationale
+
+Weight is logged almost every day.
+
+Exercise is reviewed and logged more frequently than blood pressure.
+
+Blood pressure is typically recorded only once or twice per week and therefore should appear below Weight and Exercise.
+
+### Design Principle
+
+Arrange Dashboard sections according to actual user workflow and frequency of interaction rather than the order in which features were originally developed.
+Redefine the At a Glance card as an exception and status summary rather than a collection of dashboard information.
+
+The card should highlight items requiring attention today, while routine information belongs in its own center or section.
