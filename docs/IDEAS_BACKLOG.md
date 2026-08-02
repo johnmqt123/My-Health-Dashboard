@@ -509,3 +509,18 @@ Arrange Dashboard sections according to actual user workflow and frequency of in
 Redefine the At a Glance card as an exception and status summary rather than a collection of dashboard information.
 
 The card should highlight items requiring attention today, while routine information belongs in its own center or section.
+## User-Managed As Needed Medications
+
+Replace hard-coded as-needed medications with a user-managed list.
+
+Requirements:
+
+- Add new as-needed medications.
+- Rename medications.
+- Delete or archive medications that are no longer used.
+- Preserve each medication's independent history and Last Taken information.
+- No code changes should be required when the user's medication list changes.
+
+Design Principle:
+
+The Medication Center should adapt to the user's medication regimen rather than requiring application changes whenever medications change.

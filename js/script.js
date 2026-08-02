@@ -174,6 +174,20 @@ if (quickAccessButtons.length) {
     quickAccessButtons.forEach(function (button) {
         button.addEventListener("click", function () {
             const feature = this.dataset.feature || "This feature";
+            const url = this.dataset.url;
+
+            if (url) {
+                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+                if (isIOS) {
+                    window.location.href = url;
+                    return;
+                }
+
+                window.open(url, "_blank", "noopener,noreferrer");
+                return;
+            }
+
             alert(feature + " is under development.");
         });
     });
