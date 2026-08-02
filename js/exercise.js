@@ -119,6 +119,10 @@
             stationaryBikeBtn.addEventListener("click", function () {
                 activeExerciseType = "Stationary Bike";
                 activeExerciseUnit = "minutes";
+                stationaryBikeBtn.classList.add("selected");
+                if (ebikeRideBtn) {
+                    ebikeRideBtn.classList.remove("selected");
+                }
                 if (exerciseAmountLabel) {
                     exerciseAmountLabel.textContent = "Minutes";
                 }
@@ -136,6 +140,10 @@
             ebikeRideBtn.addEventListener("click", function () {
                 activeExerciseType = "E-Bike Ride";
                 activeExerciseUnit = "miles";
+                ebikeRideBtn.classList.add("selected");
+                if (stationaryBikeBtn) {
+                    stationaryBikeBtn.classList.remove("selected");
+                }
                 if (exerciseAmountLabel) {
                     exerciseAmountLabel.textContent = "Miles";
                 }
