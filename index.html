@@ -283,11 +283,14 @@
         </select>
 
         <label for="tylenolTabletCount">Tablets</label>
-        <select id="tylenolTabletCount">
-            <option value="1">1 tablet</option>
-            <option value="2">2 tablets</option>
-<option value="3">3 tablets</option>
-        </select>
+        <input
+            id="tylenolTabletCount"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            value="1"
+        >
 
         
 
@@ -303,13 +306,13 @@
         <h2>Log Blood Pressure</h2>
 
         <label for="systolicInput">Systolic:</label><br>
-        <input id="systolicInput" type="number" min="50" max="300"><br><br>
+        <input id="systolicInput" type="number" min="50" max="300" step="1" inputmode="numeric"><br><br>
 
         <label for="diastolicInput">Diastolic:</label><br>
-        <input id="diastolicInput" type="number" min="30" max="200"><br><br>
+        <input id="diastolicInput" type="number" min="30" max="200" step="1" inputmode="numeric"><br><br>
 
         <label for="pulseInput">Pulse:</label><br>
-        <input id="pulseInput" type="number" min="30" max="220"><br><br>
+        <input id="pulseInput" type="number" min="30" max="220" step="1" inputmode="numeric"><br><br>
 
         <label for="bpNoteInput">Note (optional):</label><br>
         <input id="bpNoteInput" type="text"><br><br>
