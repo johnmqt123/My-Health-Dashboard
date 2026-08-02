@@ -42,6 +42,9 @@ const tylenolNote =
 const tylenolLastTakenDisplay =
     document.getElementById("tylenolLastTakenDisplay");
 
+const alaLastTakenDisplay =
+    document.getElementById("alaLastTakenDisplay");
+
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 
@@ -69,23 +72,37 @@ function formatDateTime(value) {
     return value;
 }
 
-function renderTylenolLastTaken() {
-    if (!tylenolLastTakenDisplay) {
+function getMedicationHistoryFor(medicationName) {
+    return asNeededMedicationHistory.filter(function (entry) {
+        return (entry.medication || "Tylenol") === medicationName;
+    });
+}
+
+function renderMedicationLastTaken(displayElement, medicationName) {
+    if (!displayElement) {
         return;
     }
 
-    if (!asNeededMedicationHistory.length) {
-        tylenolLastTakenDisplay.textContent = "No as-needed medication logged yet.";
+    const history = getMedicationHistoryFor(medicationName);
+
+    if (!history.length) {
+        displayElement.innerHTML =
+            `<strong>${medicationName}</strong><br>Last Taken: Not logged yet.`;
         return;
     }
 
-    const latest = asNeededMedicationHistory[asNeededMedicationHistory.length - 1];
-    const medicationName = latest.medication || "Tylenol";
+    const latest = history[history.length - 1];
     const tabletsText =
-    `${latest.tablets} tablet${latest.tablets === 1 ? "" : "s"}`;
+        `${latest.tablets} tablet${latest.tablets === 1 ? "" : "s"}`;
     const noteText = latest.note ? ` — ${latest.note}` : "";
-    tylenolLastTakenDisplay.textContent =
-        `Last taken: ${formatDateTime(latest.dateTime)} · ${medicationName} · ${tabletsText}${noteText}`;
+
+    displayElement.innerHTML =
+        `<strong>${medicationName}</strong><br>Last Taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
+}
+
+function renderTylenolLastTaken() {
+    renderMedicationLastTaken(tylenolLastTakenDisplay, "Tylenol");
+    renderMedicationLastTaken(alaLastTakenDisplay, "ALA");
 }
 
 function resetTylenolForm() {
