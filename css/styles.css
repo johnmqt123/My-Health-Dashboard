@@ -91,6 +91,17 @@ header p {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-height: 75vh;
+    overflow: hidden;
+}
+
+.summary-card > [id$="HistoryDisplay"],
+.summary-card > #historyInjectionDisplay {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    max-height: 60vh;
+    padding-right: 4px;
 }
 
 .card > :first-child,
