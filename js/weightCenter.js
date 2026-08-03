@@ -83,6 +83,10 @@
         if (weightHistorySection && weightHistorySection.style.display === "block") {
             renderWeightHistory();
         }
+
+        if (typeof window.updateAtAGlanceStatus === "function") {
+            window.updateAtAGlanceStatus();
+        }
     }
 
     function toggleWeightHistory() {

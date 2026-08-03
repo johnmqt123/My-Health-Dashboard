@@ -139,6 +139,10 @@ const medicationCenterCardHeading =
     document.getElementById("medicationCenterCardHeading");
 const backToTop =
     document.getElementById("backToTop");
+const summaryWeightStatus =
+    document.getElementById("summaryWeightStatus");
+const summaryBreakfastStatus =
+    document.getElementById("summaryBreakfastStatus");
 
 let todayTasks =
     JSON.parse(localStorage.getItem("todayTasks")) || [];
@@ -203,6 +207,46 @@ if (todayTasks.length > 0 && todayList) {
 
 }
 
+function updateAtAGlanceStatus() {
+    if (summaryWeightStatus) {
+        const currentWeightHistory = loadData("weightHistory", []);
+        const todayDate = new Date().toLocaleDateString();
+        let latestTodayWeight = null;
+
+        for (let index = currentWeightHistory.length - 1; index >= 0; index -= 1) {
+            const entry = currentWeightHistory[index];
+
+            if (entry && entry.date === todayDate) {
+                latestTodayWeight = entry;
+                break;
+            }
+        }
+
+        if (latestTodayWeight && latestTodayWeight.weight) {
+            const weightTime = latestTodayWeight.time ? " at " + latestTodayWeight.time : "";
+            summaryWeightStatus.textContent = "⚖️ Today's weight: " + latestTodayWeight.weight + " lb" + weightTime;
+        } else {
+            summaryWeightStatus.textContent = "⚖️ Weight not recorded today";
+        }
+    }
+
+    if (summaryBreakfastStatus) {
+        const currentMedicationHistory = loadData("medicationHistory", []);
+        const todayDate = new Date().toDateString();
+
+        const breakfastEntryToday = currentMedicationHistory.some(function (entry) {
+            return entry && entry.period === "Breakfast" && entry.date === todayDate;
+        });
+
+        summaryBreakfastStatus.textContent = breakfastEntryToday
+            ? "🍳 Breakfast medications complete"
+            : "🍳 Breakfast medications pending";
+    }
+}
+
+window.updateAtAGlanceStatus = updateAtAGlanceStatus;
+updateAtAGlanceStatus();
+
 // Restore Wake-Up medication display
 if (
     medicationLog.wakeUp?.logged &&
@@ -236,6 +280,8 @@ if (
 
     breakfastButton.textContent = "✅ Logged Today";
     breakfastButton.disabled = false;
+
+    updateAtAGlanceStatus();
 }
 // Restore Midday medication display
 if (
@@ -365,6 +411,8 @@ medicationLog.breakfast = {};
 
 saveMedicationLog();
 
+    updateAtAGlanceStatus();
+
     return;
 }
 
@@ -398,6 +446,8 @@ localStorage.setItem(
 
     breakfastButton.textContent = "✅ Logged Today";
     breakfastButton.disabled = false;
+
+    updateAtAGlanceStatus();
 
 });
 
