@@ -164,6 +164,7 @@
                     } else {
                         delete entry.note;
                     }
+                    weightLog.current = weight;
                 } else {
                     addWeightEntry(weight, note);
                 }

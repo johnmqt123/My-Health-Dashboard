@@ -125,7 +125,6 @@
     }
 
     function closeModal() {
-        editingBpIndex = null;
         if (bpModal) {
             bpModal.style.display = "none";
         }
@@ -160,7 +159,14 @@
         }
 
         if (cancelBpBtn) {
-            cancelBpBtn.addEventListener("click", closeModal);
+            cancelBpBtn.addEventListener("click", function () {
+                editingBpIndex = null;
+                if (systolicInput) systolicInput.value = "";
+                if (diastolicInput) diastolicInput.value = "";
+                if (pulseInput) pulseInput.value = "";
+                if (bpNoteInput) bpNoteInput.value = "";
+                closeModal();
+            });
         }
 
         if (saveBpBtn) {
@@ -205,27 +211,13 @@
                     addReading(entry);
                 }
 
-                closeModal();
-
-                if (editingBpIndex === null) {
-                    if (systolicInput) systolicInput.value = "";
-                    if (diastolicInput) diastolicInput.value = "";
-                    if (pulseInput) pulseInput.value = "";
-                    if (bpNoteInput) bpNoteInput.value = "";
-                }
-
-                if (editingBpIndex !== null) {
-                    if (systolicInput) systolicInput.value = "";
-                    if (diastolicInput) diastolicInput.value = "";
-                    if (pulseInput) pulseInput.value = "";
-                    if (bpNoteInput) bpNoteInput.value = "";
-                    refreshBpData();
-                }
-
-                if (editingBpIndex === null) {
-                    refreshBpData();
-                }
                 editingBpIndex = null;
+                if (systolicInput) systolicInput.value = "";
+                if (diastolicInput) diastolicInput.value = "";
+                if (pulseInput) pulseInput.value = "";
+                if (bpNoteInput) bpNoteInput.value = "";
+                closeModal();
+                refreshBpData();
             });
         }
 
