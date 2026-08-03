@@ -221,8 +221,8 @@ function updateAtAGlanceStatus() {
         });
 
         summaryMedicationStatus.textContent = nextPeriod
-            ? "💊 Next medications: " + nextPeriod.label
-            : "💊 All scheduled medications completed today.";
+            ? "💊 Next due: " + nextPeriod.label + " medications"
+            : "💊 All scheduled medications completed today. ✓";
     }
 }
 
