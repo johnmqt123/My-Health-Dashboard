@@ -23,7 +23,6 @@
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
-    let editingBpIndex = null;
 
     function saveBloodPressureData() {
         saveData("bpLog", bpLog);
@@ -117,16 +116,19 @@
     }
 
     function openModal() {
-        editingBpIndex = null;
         if (bpModal) {
-            bpModal.style.display = "block";
-            if (systolicInput) systolicInput.focus();
+            bpModal.classList.add("is-open");
+            if (systolicInput) {
+                requestAnimationFrame(function () {
+                    systolicInput.focus();
+                });
+            }
         }
     }
 
     function closeModal() {
         if (bpModal) {
-            bpModal.style.display = "none";
+            bpModal.classList.remove("is-open");
         }
     }
 
@@ -160,7 +162,6 @@
 
         if (cancelBpBtn) {
             cancelBpBtn.addEventListener("click", function () {
-                editingBpIndex = null;
                 if (systolicInput) systolicInput.value = "";
                 if (diastolicInput) diastolicInput.value = "";
                 if (pulseInput) pulseInput.value = "";
@@ -196,60 +197,27 @@
                     entry.note = note;
                 }
 
-                if (editingBpIndex !== null && bpHistory[editingBpIndex]) {
-                    const existing = bpHistory[editingBpIndex];
-                    existing.systolic = systolic;
-                    existing.diastolic = diastolic;
-                    existing.pulse = pulse;
-                    if (note) {
-                        existing.note = note;
-                    } else {
-                        delete existing.note;
-                    }
-                    bpHistory[editingBpIndex] = existing;
-                } else {
-                    addReading(entry);
-                }
+                addReading(entry);
+                closeModal();
 
-                editingBpIndex = null;
                 if (systolicInput) systolicInput.value = "";
                 if (diastolicInput) diastolicInput.value = "";
                 if (pulseInput) pulseInput.value = "";
                 if (bpNoteInput) bpNoteInput.value = "";
-                closeModal();
                 refreshBpData();
             });
         }
 
         if (bpHistoryDisplay) {
             bpHistoryDisplay.addEventListener("click", function (event) {
-                const editButton = event.target.closest(".history-edit-btn");
                 const deleteButton = event.target.closest(".history-delete-btn");
+                if (!deleteButton) return;
 
-                if (editButton) {
-                    const index = Number(editButton.getAttribute("data-index"));
-                    const entry = bpHistory[index];
-                    if (!entry) return;
+                const index = Number(deleteButton.getAttribute("data-index"));
+                if (!confirmHistoryDelete()) return;
 
-                    editingBpIndex = index;
-                    if (bpModal) {
-                        bpModal.style.display = "block";
-                    }
-                    if (systolicInput) systolicInput.value = entry.systolic;
-                    if (diastolicInput) diastolicInput.value = entry.diastolic;
-                    if (pulseInput) pulseInput.value = entry.pulse || "";
-                    if (bpNoteInput) bpNoteInput.value = entry.note || "";
-                    if (systolicInput) systolicInput.focus();
-                    return;
-                }
-
-                if (deleteButton) {
-                    const index = Number(deleteButton.getAttribute("data-index"));
-                    if (!confirmHistoryDelete()) return;
-
-                    removeHistoryEntry(bpHistory, index);
-                    refreshBpData();
-                }
+                removeHistoryEntry(bpHistory, index);
+                refreshBpData();
             });
         }
     }
