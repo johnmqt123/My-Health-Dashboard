@@ -95,6 +95,11 @@ header p {
     overflow: hidden;
 }
 
+#medicationCenterSection {
+    max-height: none;
+    overflow: visible;
+}
+
 .summary-card > [id$="HistoryDisplay"],
 .summary-card > #historyInjectionDisplay {
     overflow-y: auto;
