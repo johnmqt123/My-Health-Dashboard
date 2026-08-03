@@ -23,6 +23,7 @@
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
+    let editingBpIndex = null;
 
     function saveBloodPressureData() {
         saveData("bpLog", bpLog);
@@ -127,6 +128,7 @@
     }
 
     function closeModal() {
+        editingBpIndex = null;
         if (bpModal) {
             bpModal.classList.remove("is-open");
         }
@@ -157,7 +159,10 @@
         }
 
         if (bpButton) {
-            bpButton.addEventListener("click", openModal);
+            bpButton.addEventListener("click", function () {
+                editingBpIndex = null;
+                openModal();
+            });
         }
 
         if (cancelBpBtn) {
@@ -182,22 +187,35 @@
                     return;
                 }
 
-                const entry = {
-                    date: new Date().toLocaleDateString(),
-                    time: new Date().toLocaleTimeString([], {
-                        hour: "numeric",
-                        minute: "2-digit"
-                    }),
-                    systolic: systolic,
-                    diastolic: diastolic,
-                    pulse: pulse
-                };
+                if (editingBpIndex !== null && bpHistory[editingBpIndex]) {
+                    const existing = bpHistory[editingBpIndex];
+                    existing.systolic = systolic;
+                    existing.diastolic = diastolic;
+                    existing.pulse = pulse;
+                    if (note) {
+                        existing.note = note;
+                    } else {
+                        delete existing.note;
+                    }
+                } else {
+                    const entry = {
+                        date: new Date().toLocaleDateString(),
+                        time: new Date().toLocaleTimeString([], {
+                            hour: "numeric",
+                            minute: "2-digit"
+                        }),
+                        systolic: systolic,
+                        diastolic: diastolic,
+                        pulse: pulse
+                    };
 
-                if (note) {
-                    entry.note = note;
+                    if (note) {
+                        entry.note = note;
+                    }
+
+                    addReading(entry);
                 }
 
-                addReading(entry);
                 closeModal();
 
                 if (systolicInput) systolicInput.value = "";
@@ -210,7 +228,31 @@
 
         if (bpHistoryDisplay) {
             bpHistoryDisplay.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".history-edit-btn");
                 const deleteButton = event.target.closest(".history-delete-btn");
+
+                if (editButton) {
+                    const index = Number(editButton.getAttribute("data-index"));
+                    const entry = bpHistory[index];
+                    if (!entry) return;
+
+                    editingBpIndex = index;
+                    if (systolicInput) {
+                        systolicInput.value = entry.systolic;
+                    }
+                    if (diastolicInput) {
+                        diastolicInput.value = entry.diastolic;
+                    }
+                    if (pulseInput) {
+                        pulseInput.value = entry.pulse;
+                    }
+                    if (bpNoteInput) {
+                        bpNoteInput.value = entry.note || "";
+                    }
+                    openModal();
+                    return;
+                }
+
                 if (!deleteButton) return;
 
                 const index = Number(deleteButton.getAttribute("data-index"));

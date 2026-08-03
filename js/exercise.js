@@ -42,13 +42,13 @@
         }
     }
 
-    function showExerciseAmountField() {
+    function showExerciseAmountField(prefilledValue) {
         if (exerciseAmountLabel) {
             exerciseAmountLabel.style.display = "block";
         }
         if (exerciseAmountInput) {
             exerciseAmountInput.style.display = "block";
-            exerciseAmountInput.value = "";
+            exerciseAmountInput.value = prefilledValue !== undefined ? prefilledValue : "";
             exerciseAmountInput.focus();
         }
         if (saveExerciseBtn) {
@@ -268,14 +268,13 @@
                     }
                     if (exerciseAmountInput) {
                         exerciseAmountInput.type = "number";
-                        exerciseAmountInput.value = entry.amount;
                         exerciseAmountInput.step = activeExerciseUnit === "miles" ? "0.1" : "1";
                         exerciseAmountInput.setAttribute("inputmode", activeExerciseUnit === "miles" ? "decimal" : "numeric");
                     }
                     if (exerciseModal) {
                         exerciseModal.style.display = "block";
                     }
-                    showExerciseAmountField();
+                    showExerciseAmountField(entry.amount);
                     return;
                 }
 
