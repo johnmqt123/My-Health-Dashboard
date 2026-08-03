@@ -316,9 +316,49 @@ button:active,
         min-height: 40px;
     }
 
+    #bpModal {
+        padding: 10px;
+    }
+
     #bpModal .modal-content {
-        padding: 14px 14px 12px;
-        max-width: min(94vw, 320px);
+        width: min(100%, 320px);
+        max-width: 320px;
+        max-height: min(82vh, 500px);
+        padding: 12px 12px 10px;
+        overflow-y: auto;
+    }
+
+    #bpModal .modal-content h2 {
+        margin-bottom: 8px;
+        font-size: 1.05rem;
+    }
+
+    #bpModal .modal-content label {
+        margin-top: 5px;
+        margin-bottom: 3px;
+        font-size: 0.9rem;
+    }
+
+    #bpModal .modal-content input,
+    #bpModal .modal-content textarea {
+        width: calc(100% - 12px);
+        margin: 0 6px 6px;
+        padding: 8px 10px;
+        font-size: 15px;
+    }
+
+    #bpModal .modal-content textarea {
+        min-height: 56px;
+    }
+
+    #bpModal .modal-content button {
+        margin: 4px 0 0;
+        padding: 10px 12px;
+        font-size: 15px;
+    }
+
+    #bpModal br {
+        display: none;
     }
 }
 
@@ -412,39 +452,6 @@ button:active,
 .modal-content textarea {
     min-height: 80px;
     resize: vertical;
-}
-
-#bpModal .modal-content {
-    padding: 16px 16px 12px;
-    max-width: 320px;
-    max-height: min(86vh, 560px);
-}
-
-#bpModal .modal-content h2 {
-    margin-bottom: 10px;
-    font-size: 1.15rem;
-}
-
-#bpModal .modal-content label {
-    margin-top: 6px;
-    margin-bottom: 4px;
-    font-size: 0.95rem;
-}
-
-#bpModal .modal-content input,
-#bpModal .modal-content textarea {
-    margin-bottom: 8px;
-    padding: 8px 10px;
-}
-
-#bpModal .modal-content button {
-    margin: 6px 0 0;
-    padding: 11px 12px;
-    font-size: 16px;
-}
-
-#bpModal br {
-    display: none;
 }
 
 .modal-content button {
