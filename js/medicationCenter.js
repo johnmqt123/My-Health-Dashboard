@@ -129,6 +129,10 @@ function openTylenolModal() {
     if (tylenolModal) {
         tylenolModal.style.display = "block";
     }
+
+    if (asNeededMedicationSelect) {
+        asNeededMedicationSelect.focus();
+    }
 }
 
 function closeTylenolModal() {

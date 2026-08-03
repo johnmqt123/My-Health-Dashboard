@@ -70,6 +70,11 @@ function initAsNeededMedicationCenter() {
             resetForm();
             tylenolModal.style.display = "block";
         }
+
+        const medicationSelect = document.getElementById("asNeededMedicationSelect");
+        if (medicationSelect) {
+            medicationSelect.focus();
+        }
     }
 
     function closeModal() {
@@ -80,6 +85,15 @@ function initAsNeededMedicationCenter() {
 
     if (logTylenolButton) {
         logTylenolButton.addEventListener("click", openModal);
+    }
+
+    const medicationSelect = document.getElementById("asNeededMedicationSelect");
+    if (medicationSelect) {
+        medicationSelect.addEventListener("change", function () {
+            if (tylenolTabletCount) {
+                tylenolTabletCount.focus();
+            }
+        });
     }
 
     if (saveTylenolBtn) {

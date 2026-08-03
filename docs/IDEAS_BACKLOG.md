@@ -538,3 +538,111 @@ Requirements:
 
 Design goal:
 Provide quick navigation while keeping the interface clean and uncluttered.
+
+## Next Development Priorities
+
+### 1. Fix iPhone Safari Auto-Zoom (Highest Priority)
+Eliminate the automatic zoom that occurs when entering data in logging dialogs.
+
+Current behavior:
+- Weight and other logging dialogs cause Safari to zoom into the input fields.
+- After saving, the user must manually pinch back out before continuing to navigate.
+
+Requirements:
+- Eliminate unwanted automatic zoom during data entry.
+- Preserve the correct numeric/decimal keyboards.
+- Do not disable user zoom globally.
+- Keep dialogs comfortable to use on both desktop and iPhone.
+
+Goal:
+Remove the extra pinch gesture after logging and make data entry seamless.
+
+---
+
+### 2. Automatic Focus
+Improve data-entry speed by automatically placing the cursor in the first appropriate input field when a logging dialog opens.
+
+Examples:
+- Weight → focus Weight field and open decimal keypad.
+- Blood Pressure → focus Systolic field.
+- Exercise → after selecting Stationary Bike or E-Bike Ride, automatically focus the numeric entry field.
+- As Needed Medications → focus the first editable field.
+
+Goal:
+Reduce taps and make data entry feel instantaneous.
+
+---
+
+### 3. Continue Quick Links Development
+Implement the remaining Quick Links using the Nutrition link as the standard pattern.
+
+Priority order:
+1. Weather
+2. Reminders
+3. Calendar
+4. Gmail
+5. News
+
+Requirements:
+- Preserve the existing Quick Links architecture.
+- Reuse the same implementation pattern established for Nutrition.
+- Keep the Dashboard compact and optimized for iPhone.
+
+Goal:
+Make John's Assistant the primary starting point for the user's daily workflow.
+
+## History Management
+
+### Edit and Delete History Entries
+
+Add the ability to edit or delete previously logged history entries throughout John's Assistant.
+
+Purpose:
+- Correct accidental duplicate entries created during testing.
+- Fix incorrect values (weight, blood pressure, exercise, medications, etc.).
+- Maintain accurate historical data for future reporting, averages, and trends.
+
+Requirements:
+- Allow individual history entries to be edited.
+- Allow individual history entries to be deleted.
+- Display a confirmation before deleting an entry.
+- Immediately refresh any related Dashboard summaries after editing or deleting.
+- Preserve chronological order after edits.
+- Use a consistent editing experience across all history sections.
+
+Applies to:
+- Medication History
+- Weight History
+- Blood Pressure History
+- Exercise History
+- Zepbound History
+- Future Nutrition History
+
+Design goal:
+Provide complete history management while keeping the interface simple and consistent.
+
+## Application Branding
+
+### Create a Custom John's Assistant App Icon
+
+Replace the current default Home Screen "J" icon with a custom application icon.
+
+Requirements:
+- Create a clean, modern, and recognizable icon.
+- Reflect John's Assistant as a personal daily assistant, not solely a health or medication app.
+- Avoid medical-specific imagery (medical cross, heartbeat, stethoscope, etc.).
+- Use a simple design that remains clear at small iPhone icon sizes.
+- Support future branding across iPhone, iPad, desktop, and web.
+
+Possible design directions:
+- A stylized "J"
+- A modern monogram
+- A subtle assistant/dashboard concept
+- Blue, white, or other clean professional color palette
+
+Implementation:
+- Add the icon to the web app manifest and favicon configuration.
+- Verify it appears correctly when John's Assistant is added to the iPhone Home Screen.
+
+Design goal:
+Create an icon that represents John's Assistant as a polished personal assistant and daily command center.
