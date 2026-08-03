@@ -18,6 +18,7 @@
     const weightNoteInput = document.getElementById("weightNoteInput");
     const saveWeightBtn = document.getElementById("saveWeightBtn");
     const cancelWeightBtn = document.getElementById("cancelWeightBtn");
+    let editingWeightIndex = null;
 
     function saveWeightData() {
         saveData("weightHistory", weightHistory);
@@ -58,7 +59,11 @@
                 html += " — " + entry.note;
             }
 
-            html += ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete weight entry">🗑️</button><br>`;
+            html += `
+                <div class="history-action-row">
+                    <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
+                    <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
+                </div><br>`;
             weightHistoryDisplay.innerHTML += html;
         });
     }
@@ -132,6 +137,7 @@
                 if (weightModal) {
                     weightModal.style.display = "none";
                 }
+                editingWeightIndex = null;
                 if (weightInput) weightInput.value = "";
                 if (weightNoteInput) weightNoteInput.value = "";
             });
@@ -149,16 +155,30 @@
                 }
 
                 const note = weightNoteInput ? weightNoteInput.value.trim() : "";
-                addWeightEntry(weight, note);
 
+                if (editingWeightIndex !== null && weightHistory[editingWeightIndex]) {
+                    const entry = weightHistory[editingWeightIndex];
+                    entry.weight = weight;
+                    if (note) {
+                        entry.note = note;
+                    } else {
+                        delete entry.note;
+                    }
+                } else {
+                    addWeightEntry(weight, note);
+                }
+
+                editingWeightIndex = null;
                 weightInput.value = "";
                 if (weightNoteInput) weightNoteInput.value = "";
                 if (weightModal) weightModal.style.display = "none";
+                refreshWeightData();
             });
         }
 
         if (weightButton) {
             weightButton.addEventListener("click", function () {
+                editingWeightIndex = null;
                 if (weightModal) {
                     weightModal.style.display = "block";
                     if (weightInput) weightInput.focus();
@@ -168,14 +188,37 @@
 
         if (weightHistoryDisplay) {
             weightHistoryDisplay.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".history-edit-btn");
                 const deleteButton = event.target.closest(".history-delete-btn");
-                if (!deleteButton) return;
 
-                const index = Number(deleteButton.getAttribute("data-index"));
-                if (!confirmHistoryDelete()) return;
+                if (editButton) {
+                    const index = Number(editButton.getAttribute("data-index"));
+                    const entry = weightHistory[index];
+                    if (!entry) return;
 
-                removeHistoryEntry(weightHistory, index);
-                refreshWeightData();
+                    editingWeightIndex = index;
+                    if (weightModal) {
+                        weightModal.style.display = "block";
+                    }
+                    if (weightInput) {
+                        weightInput.value = entry.weight;
+                    }
+                    if (weightNoteInput) {
+                        weightNoteInput.value = entry.note || "";
+                    }
+                    if (weightInput) {
+                        weightInput.focus();
+                    }
+                    return;
+                }
+
+                if (deleteButton) {
+                    const index = Number(deleteButton.getAttribute("data-index"));
+                    if (!confirmHistoryDelete()) return;
+
+                    removeHistoryEntry(weightHistory, index);
+                    refreshWeightData();
+                }
             });
         }
     }

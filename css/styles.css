@@ -104,6 +104,39 @@ header p {
     padding-right: 4px;
 }
 
+.history-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.history-action-btn {
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.history-action-btn.edit {
+    background: #e0f2fe;
+    border-color: #7dd3fc;
+    color: #075985;
+}
+
+.history-action-btn.delete {
+    background: #fff1f2;
+    border-color: #fecdd3;
+    color: #9f1239;
+}
+
 .card > :first-child,
 .summary-card > :first-child {
     margin-top: 0;

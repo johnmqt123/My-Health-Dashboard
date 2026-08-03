@@ -22,6 +22,7 @@
     const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
     let activeExerciseType = "Stationary Bike";
     let activeExerciseUnit = "minutes";
+    let editingExerciseIndex = null;
 
     function saveExerciseData() {
         saveData("exerciseHistory", exerciseHistory);
@@ -56,6 +57,7 @@
     }
 
     function openExerciseModal() {
+        editingExerciseIndex = null;
         if (exerciseModal) {
             exerciseModal.style.display = "block";
             hideExerciseAmountField();
@@ -63,6 +65,7 @@
     }
 
     function closeExerciseModal() {
+        editingExerciseIndex = null;
         if (exerciseModal) {
             exerciseModal.style.display = "none";
         }
@@ -137,7 +140,11 @@
                 entry.date + " • " + entry.time +
                 " — <strong>" + entry.type + "</strong> - " +
                 entry.amount + " " + entry.unit +
-                ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete exercise entry">🗑️</button><br>`;
+                `
+                <div class="history-action-row">
+                    <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
+                    <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
+                </div><br>`;
         });
     }
 
@@ -205,8 +212,17 @@
                     return;
                 }
 
-                addExerciseEntry(activeExerciseType, value, activeExerciseUnit);
+                if (editingExerciseIndex !== null && exerciseHistory[editingExerciseIndex]) {
+                    const existing = exerciseHistory[editingExerciseIndex];
+                    existing.type = activeExerciseType;
+                    existing.amount = value;
+                    existing.unit = activeExerciseUnit;
+                } else {
+                    addExerciseEntry(activeExerciseType, value, activeExerciseUnit);
+                }
+
                 closeExerciseModal();
+                refreshExerciseData();
             });
         }
 
@@ -236,14 +252,40 @@
 
         if (exerciseHistoryDisplay) {
             exerciseHistoryDisplay.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".history-edit-btn");
                 const deleteButton = event.target.closest(".history-delete-btn");
-                if (!deleteButton) return;
 
-                const index = Number(deleteButton.getAttribute("data-index"));
-                if (!confirmHistoryDelete()) return;
+                if (editButton) {
+                    const index = Number(editButton.getAttribute("data-index"));
+                    const entry = exerciseHistory[index];
+                    if (!entry) return;
 
-                removeHistoryEntry(exerciseHistory, index);
-                refreshExerciseData();
+                    editingExerciseIndex = index;
+                    activeExerciseType = entry.type;
+                    activeExerciseUnit = entry.unit;
+                    if (exerciseAmountLabel) {
+                        exerciseAmountLabel.textContent = activeExerciseType === "E-Bike Ride" ? "Miles" : "Minutes";
+                    }
+                    if (exerciseAmountInput) {
+                        exerciseAmountInput.type = "number";
+                        exerciseAmountInput.value = entry.amount;
+                        exerciseAmountInput.step = activeExerciseUnit === "miles" ? "0.1" : "1";
+                        exerciseAmountInput.setAttribute("inputmode", activeExerciseUnit === "miles" ? "decimal" : "numeric");
+                    }
+                    if (exerciseModal) {
+                        exerciseModal.style.display = "block";
+                    }
+                    showExerciseAmountField();
+                    return;
+                }
+
+                if (deleteButton) {
+                    const index = Number(deleteButton.getAttribute("data-index"));
+                    if (!confirmHistoryDelete()) return;
+
+                    removeHistoryEntry(exerciseHistory, index);
+                    refreshExerciseData();
+                }
             });
         }
 

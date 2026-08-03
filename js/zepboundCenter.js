@@ -84,9 +84,9 @@ function initZepboundCenter() {
                     <p><strong>Dose:</strong> ${entry.dose}</p>
                     <p><strong>Site:</strong> ${entry.site}</p>
                     ${notesMarkup}
-                    <div style="margin-top: 8px;">
-                        <button type="button" class="history-edit-btn" data-index="${originalIndex}">Edit</button>
-                        <button type="button" class="history-delete-btn" data-index="${originalIndex}">Delete</button>
+                    <div class="history-action-row">
+                        <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
+                        <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
                     </div>
                 </div>
             `;

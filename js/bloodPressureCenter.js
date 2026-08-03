@@ -23,6 +23,7 @@
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
+    let editingBpIndex = null;
 
     function saveBloodPressureData() {
         saveData("bpLog", bpLog);
@@ -71,7 +72,11 @@
                 html += " — " + entry.note;
             }
 
-            html += ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete blood pressure entry">🗑️</button><br>`;
+            html += `
+                <div class="history-action-row">
+                    <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
+                    <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
+                </div><br>`;
             bpHistoryDisplay.innerHTML += html;
         });
     }
@@ -112,6 +117,7 @@
     }
 
     function openModal() {
+        editingBpIndex = null;
         if (bpModal) {
             bpModal.style.display = "block";
             if (systolicInput) systolicInput.focus();
@@ -119,6 +125,7 @@
     }
 
     function closeModal() {
+        editingBpIndex = null;
         if (bpModal) {
             bpModal.style.display = "none";
         }
@@ -183,26 +190,74 @@
                     entry.note = note;
                 }
 
-                addReading(entry);
+                if (editingBpIndex !== null && bpHistory[editingBpIndex]) {
+                    const existing = bpHistory[editingBpIndex];
+                    existing.systolic = systolic;
+                    existing.diastolic = diastolic;
+                    existing.pulse = pulse;
+                    if (note) {
+                        existing.note = note;
+                    } else {
+                        delete existing.note;
+                    }
+                    bpHistory[editingBpIndex] = existing;
+                } else {
+                    addReading(entry);
+                }
+
                 closeModal();
 
-                if (systolicInput) systolicInput.value = "";
-                if (diastolicInput) diastolicInput.value = "";
-                if (pulseInput) pulseInput.value = "";
-                if (bpNoteInput) bpNoteInput.value = "";
+                if (editingBpIndex === null) {
+                    if (systolicInput) systolicInput.value = "";
+                    if (diastolicInput) diastolicInput.value = "";
+                    if (pulseInput) pulseInput.value = "";
+                    if (bpNoteInput) bpNoteInput.value = "";
+                }
+
+                if (editingBpIndex !== null) {
+                    if (systolicInput) systolicInput.value = "";
+                    if (diastolicInput) diastolicInput.value = "";
+                    if (pulseInput) pulseInput.value = "";
+                    if (bpNoteInput) bpNoteInput.value = "";
+                    refreshBpData();
+                }
+
+                if (editingBpIndex === null) {
+                    refreshBpData();
+                }
+                editingBpIndex = null;
             });
         }
 
         if (bpHistoryDisplay) {
             bpHistoryDisplay.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".history-edit-btn");
                 const deleteButton = event.target.closest(".history-delete-btn");
-                if (!deleteButton) return;
 
-                const index = Number(deleteButton.getAttribute("data-index"));
-                if (!confirmHistoryDelete()) return;
+                if (editButton) {
+                    const index = Number(editButton.getAttribute("data-index"));
+                    const entry = bpHistory[index];
+                    if (!entry) return;
 
-                removeHistoryEntry(bpHistory, index);
-                refreshBpData();
+                    editingBpIndex = index;
+                    if (bpModal) {
+                        bpModal.style.display = "block";
+                    }
+                    if (systolicInput) systolicInput.value = entry.systolic;
+                    if (diastolicInput) diastolicInput.value = entry.diastolic;
+                    if (pulseInput) pulseInput.value = entry.pulse || "";
+                    if (bpNoteInput) bpNoteInput.value = entry.note || "";
+                    if (systolicInput) systolicInput.focus();
+                    return;
+                }
+
+                if (deleteButton) {
+                    const index = Number(deleteButton.getAttribute("data-index"));
+                    if (!confirmHistoryDelete()) return;
+
+                    removeHistoryEntry(bpHistory, index);
+                    refreshBpData();
+                }
             });
         }
     }
