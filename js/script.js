@@ -175,10 +175,14 @@ if (quickAccessButtons.length) {
         button.addEventListener("click", function () {
             const feature = this.dataset.feature || "This feature";
             const url = this.dataset.url;
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            if (feature === "Reminders" && !isIOS) {
+                alert("The Reminders Quick Link is available only on supported Apple devices.");
+                return;
+            }
 
             if (url) {
-                const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
                 if (isIOS) {
                     window.location.href = url;
                     return;
