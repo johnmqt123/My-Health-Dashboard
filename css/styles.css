@@ -95,8 +95,11 @@ header p {
     overflow: hidden;
 }
 
-#medicationCenterSection {
+#medicationCenterSection,
+#medicationCenterSection .briefing,
+#medicationCenterSection .briefing .card {
     max-height: none;
+    height: auto;
     overflow: visible;
 }
 
