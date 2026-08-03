@@ -315,6 +315,11 @@ button:active,
         font-size: 0.9rem;
         min-height: 40px;
     }
+
+    #bpModal .modal-content {
+        padding: 14px 14px 12px;
+        max-width: min(94vw, 320px);
+    }
 }
 
 #medicationCenter {
@@ -407,6 +412,39 @@ button:active,
 .modal-content textarea {
     min-height: 80px;
     resize: vertical;
+}
+
+#bpModal .modal-content {
+    padding: 16px 16px 12px;
+    max-width: 320px;
+    max-height: min(86vh, 560px);
+}
+
+#bpModal .modal-content h2 {
+    margin-bottom: 10px;
+    font-size: 1.15rem;
+}
+
+#bpModal .modal-content label {
+    margin-top: 6px;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+}
+
+#bpModal .modal-content input,
+#bpModal .modal-content textarea {
+    margin-bottom: 8px;
+    padding: 8px 10px;
+}
+
+#bpModal .modal-content button {
+    margin: 6px 0 0;
+    padding: 11px 12px;
+    font-size: 16px;
+}
+
+#bpModal br {
+    display: none;
 }
 
 .modal-content button {
