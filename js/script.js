@@ -141,7 +141,7 @@ const backToTop =
     document.getElementById("backToTop");
 const summaryWeightStatus =
     document.getElementById("summaryWeightStatus");
-const summaryBreakfastStatus =
+const summaryMedicationStatus =
     document.getElementById("summaryBreakfastStatus");
 
 let todayTasks =
@@ -230,17 +230,23 @@ function updateAtAGlanceStatus() {
         }
     }
 
-    if (summaryBreakfastStatus) {
-        const currentMedicationHistory = loadData("medicationHistory", []);
+    if (summaryMedicationStatus) {
         const todayDate = new Date().toDateString();
+        const medicationPeriods = [
+            { key: "breakfast", label: "Breakfast" },
+            { key: "midday", label: "Midday" },
+            { key: "dinner", label: "Dinner" },
+            { key: "evening", label: "Bedtime" }
+        ];
 
-        const breakfastEntryToday = currentMedicationHistory.some(function (entry) {
-            return entry && entry.period === "Breakfast" && entry.date === todayDate;
+        const nextPeriod = medicationPeriods.find(function (period) {
+            const logEntry = medicationLog[period.key];
+            return !(logEntry && logEntry.logged && logEntry.date === todayDate);
         });
 
-        summaryBreakfastStatus.textContent = breakfastEntryToday
-            ? "🍳 Breakfast medications complete"
-            : "🍳 Breakfast medications pending";
+        summaryMedicationStatus.textContent = nextPeriod
+            ? "💊 Next medications: " + nextPeriod.label
+            : "💊 All scheduled medications completed today.";
     }
 }
 
@@ -473,6 +479,8 @@ medicationLog.midday = {};
 
 saveMedicationLog();
 
+    updateAtAGlanceStatus();
+
     return;
 }
 
@@ -506,6 +514,8 @@ localStorage.setItem(
     middayButton.textContent = "✅ Logged Today";
     middayButton.disabled = false;
 
+    updateAtAGlanceStatus();
+
 });
 dinnerButton.addEventListener("click", function () {
     if (
@@ -528,6 +538,8 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.dinner = {};
 
 saveMedicationLog();
+
+updateAtAGlanceStatus();
 
 return;
 }
@@ -564,6 +576,8 @@ localStorage.setItem(
 dinnerButton.textContent = "✅ Logged Today";
 dinnerButton.disabled = false;
 
+updateAtAGlanceStatus();
+
 });
 eveningButton.addEventListener("click", function () {
     if (
@@ -586,6 +600,8 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.evening = {};
 
 saveMedicationLog();
+
+updateAtAGlanceStatus();
 
 return;
 }
@@ -622,6 +638,8 @@ localStorage.setItem(
 
     eveningButton.textContent = "✅ Logged Today";
     eveningButton.disabled = false;
+
+    updateAtAGlanceStatus();
 
 });
 
