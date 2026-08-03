@@ -242,7 +242,7 @@ function initZepboundCenter() {
 
             if (deleteButton) {
                 const index = Number(deleteButton.getAttribute("data-index"));
-                if (window.confirm("Delete this injection record?")) {
+                if (confirmHistoryDelete()) {
                     history.splice(index, 1);
                     saveData("zepboundInjectionHistory", history);
                     renderHistory();

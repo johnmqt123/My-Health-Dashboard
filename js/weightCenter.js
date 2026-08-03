@@ -50,16 +50,34 @@
             return;
         }
 
-        weightHistory.slice().reverse().forEach(function (entry) {
+        weightHistory.slice().reverse().forEach(function (entry, index) {
+            const originalIndex = weightHistory.length - 1 - index;
             let html = entry.date + " • " + entry.time + " — <strong>" + entry.weight + " lb</strong>";
 
             if (entry.note) {
                 html += " — " + entry.note;
             }
 
-            html += "<br>";
+            html += ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete weight entry">🗑️</button><br>`;
             weightHistoryDisplay.innerHTML += html;
         });
+    }
+
+    function refreshWeightData() {
+        const latestEntry = weightHistory.length ? weightHistory[weightHistory.length - 1] : null;
+        if (latestEntry) {
+            weightLog.current = latestEntry.weight;
+        } else {
+            weightLog.current = null;
+        }
+
+        saveData("weightLog", weightLog);
+        saveData("weightHistory", weightHistory);
+        renderCurrentWeight();
+
+        if (weightHistorySection && weightHistorySection.style.display === "block") {
+            renderWeightHistory();
+        }
     }
 
     function toggleWeightHistory() {
@@ -145,6 +163,19 @@
                     weightModal.style.display = "block";
                     if (weightInput) weightInput.focus();
                 }
+            });
+        }
+
+        if (weightHistoryDisplay) {
+            weightHistoryDisplay.addEventListener("click", function (event) {
+                const deleteButton = event.target.closest(".history-delete-btn");
+                if (!deleteButton) return;
+
+                const index = Number(deleteButton.getAttribute("data-index"));
+                if (!confirmHistoryDelete()) return;
+
+                removeHistoryEntry(weightHistory, index);
+                refreshWeightData();
             });
         }
     }

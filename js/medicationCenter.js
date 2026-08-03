@@ -97,7 +97,7 @@ function renderMedicationLastTaken(displayElement, medicationName) {
     const noteText = latest.note ? ` — ${latest.note}` : "";
 
     displayElement.innerHTML =
-        `<strong>${medicationName}</strong><br>Last Taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
+        `<strong>${medicationName}</strong><br>Last Taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText} <button type="button" class="history-delete-btn medication-delete-btn" data-medication="${medicationName}" aria-label="Delete medication entry">🗑️</button>`;
 }
 
 function renderTylenolLastTaken() {
@@ -361,6 +361,46 @@ if (saveTylenolBtn) {
         saveData("asNeededMedicationHistory", asNeededMedicationHistory);
         closeTylenolModal();
         renderTylenolLastTaken();
+    });
+}
+
+if (tylenolLastTakenDisplay) {
+    tylenolLastTakenDisplay.addEventListener("click", function (event) {
+        const deleteButton = event.target.closest(".medication-delete-btn");
+        if (!deleteButton) return;
+
+        const medication = deleteButton.getAttribute("data-medication");
+        if (!medication || !confirmHistoryDelete()) return;
+
+        const medicationHistory = getMedicationHistoryFor(medication);
+        if (!medicationHistory.length) return;
+
+        const latestIndex = asNeededMedicationHistory.lastIndexOf(medicationHistory[medicationHistory.length - 1]);
+        if (latestIndex >= 0) {
+            asNeededMedicationHistory.splice(latestIndex, 1);
+            saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+            renderTylenolLastTaken();
+        }
+    });
+}
+
+if (alaLastTakenDisplay) {
+    alaLastTakenDisplay.addEventListener("click", function (event) {
+        const deleteButton = event.target.closest(".medication-delete-btn");
+        if (!deleteButton) return;
+
+        const medication = deleteButton.getAttribute("data-medication");
+        if (!medication || !confirmHistoryDelete()) return;
+
+        const medicationHistory = getMedicationHistoryFor(medication);
+        if (!medicationHistory.length) return;
+
+        const latestIndex = asNeededMedicationHistory.lastIndexOf(medicationHistory[medicationHistory.length - 1]);
+        if (latestIndex >= 0) {
+            asNeededMedicationHistory.splice(latestIndex, 1);
+            saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+            renderTylenolLastTaken();
+        }
     });
 }
 

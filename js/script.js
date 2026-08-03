@@ -177,8 +177,8 @@ if (quickAccessButtons.length) {
             const url = this.dataset.url;
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            if (feature === "Reminders" && !isIOS) {
-                alert("The Reminders Quick Link is available only on supported Apple devices.");
+            if (feature === "Reminders") {
+                alert("Apple Reminders does not currently expose a supported URL scheme that Safari can launch from a web page. Open the Reminders app manually.");
                 return;
             }
 

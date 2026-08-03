@@ -104,6 +104,43 @@
             latest.amount + " " + latest.unit;
     }
 
+    function refreshExerciseData() {
+        exerciseLog = exerciseHistory.map(function (entry) {
+            return {
+                type: entry.type,
+                amount: entry.amount,
+                unit: entry.unit
+            };
+        });
+
+        saveExerciseData();
+        displayExerciseLog();
+
+        if (exerciseHistorySection && exerciseHistorySection.style.display === "block") {
+            renderExerciseHistory();
+        }
+    }
+
+    function renderExerciseHistory() {
+        if (!exerciseHistoryDisplay) return;
+
+        exerciseHistoryDisplay.innerHTML = "";
+
+        if (exerciseHistory.length === 0) {
+            exerciseHistoryDisplay.textContent = "No exercise entries yet.";
+            return;
+        }
+
+        exerciseHistory.slice().reverse().forEach(function (entry, index) {
+            const originalIndex = exerciseHistory.length - 1 - index;
+            exerciseHistoryDisplay.innerHTML +=
+                entry.date + " • " + entry.time +
+                " — <strong>" + entry.type + "</strong> - " +
+                entry.amount + " " + entry.unit +
+                ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete exercise entry">🗑️</button><br>`;
+        });
+    }
+
     function initExerciseCenter() {
         hideExerciseAmountField();
 
@@ -190,21 +227,23 @@
                     return;
                 }
 
-                exerciseHistoryDisplay.innerHTML = "";
-
-                if (exerciseHistory.length === 0) {
-                    exerciseHistoryDisplay.textContent = "No exercise entries yet.";
-                } else {
-                    exerciseHistory.slice().reverse().forEach(function (entry) {
-                        exerciseHistoryDisplay.innerHTML +=
-                            entry.date + " • " + entry.time +
-                            " — <strong>" + entry.type +
-                            "</strong> - " + entry.amount + " " + entry.unit + "<br>";
-                    });
-                }
+                renderExerciseHistory();
 
                 exerciseHistorySection.style.display = "block";
                 exerciseHistoryButton.textContent = "📊 Hide History";
+            });
+        }
+
+        if (exerciseHistoryDisplay) {
+            exerciseHistoryDisplay.addEventListener("click", function (event) {
+                const deleteButton = event.target.closest(".history-delete-btn");
+                if (!deleteButton) return;
+
+                const index = Number(deleteButton.getAttribute("data-index"));
+                if (!confirmHistoryDelete()) return;
+
+                removeHistoryEntry(exerciseHistory, index);
+                refreshExerciseData();
             });
         }
 

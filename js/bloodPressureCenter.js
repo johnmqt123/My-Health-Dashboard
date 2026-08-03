@@ -59,7 +59,8 @@
             return;
         }
 
-        bpHistory.slice().reverse().forEach(function (entry) {
+        bpHistory.slice().reverse().forEach(function (entry, index) {
+            const originalIndex = bpHistory.length - 1 - index;
             let html = entry.date + " • " + entry.time + " — <strong>" + entry.systolic + " / " + entry.diastolic + "</strong>";
 
             if (entry.pulse) {
@@ -70,9 +71,30 @@
                 html += " — " + entry.note;
             }
 
-            html += "<br>";
+            html += ` <button type="button" class="history-delete-btn" data-index="${originalIndex}" aria-label="Delete blood pressure entry">🗑️</button><br>`;
             bpHistoryDisplay.innerHTML += html;
         });
+    }
+
+    function refreshBpData() {
+        const latestEntry = bpHistory.length ? bpHistory[bpHistory.length - 1] : null;
+
+        if (latestEntry) {
+            bpLog = {
+                systolic: latestEntry.systolic,
+                diastolic: latestEntry.diastolic,
+                pulse: latestEntry.pulse
+            };
+        } else {
+            bpLog = {};
+        }
+
+        saveBloodPressureData();
+        renderCurrentReading();
+
+        if (bpHistorySection && bpHistorySection.style.display === "block") {
+            renderHistory();
+        }
     }
 
     function toggleHistory() {
@@ -168,6 +190,19 @@
                 if (diastolicInput) diastolicInput.value = "";
                 if (pulseInput) pulseInput.value = "";
                 if (bpNoteInput) bpNoteInput.value = "";
+            });
+        }
+
+        if (bpHistoryDisplay) {
+            bpHistoryDisplay.addEventListener("click", function (event) {
+                const deleteButton = event.target.closest(".history-delete-btn");
+                if (!deleteButton) return;
+
+                const index = Number(deleteButton.getAttribute("data-index"));
+                if (!confirmHistoryDelete()) return;
+
+                removeHistoryEntry(bpHistory, index);
+                refreshBpData();
             });
         }
     }
