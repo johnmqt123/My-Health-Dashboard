@@ -20,6 +20,8 @@ const logTylenolButton =
 
 const tylenolModal =
     document.getElementById("tylenolModal");
+const tylenolModalTitle =
+    tylenolModal ? tylenolModal.querySelector("h2") : null;
 
 const saveTylenolBtn =
     document.getElementById("saveTylenolBtn");
@@ -129,6 +131,10 @@ function resetTylenolForm() {
 
 function openTylenolModal() {
     resetTylenolForm();
+
+    if (tylenolModalTitle) {
+        tylenolModalTitle.textContent = "Log As-Needed Medication";
+    }
 
     if (tylenolModal) {
         tylenolModal.style.display = "block";
@@ -405,6 +411,9 @@ function openMedicationEditFor(medication) {
     }
     if (tylenolTakenAt) {
         tylenolTakenAt.value = latestEntry.dateTime || getDefaultDateTimeValue();
+    }
+    if (tylenolModalTitle) {
+        tylenolModalTitle.textContent = "Edit As-Needed Medication";
     }
     if (tylenolModal) {
         tylenolModal.style.display = "block";

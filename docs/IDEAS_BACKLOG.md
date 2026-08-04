@@ -646,3 +646,28 @@ Implementation:
 
 Design goal:
 Create an icon that represents John's Assistant as a polished personal assistant and daily command center.
+
+## UI Consistency – Standardize Expand/Collapse Indicators
+
+**Goal:**
+Improve discoverability by making all expandable sections clearly identifiable and visually consistent.
+
+**Implementation:**
+- Use a disclosure arrow on every expandable section:
+  - ▶ Collapsed
+  - ▼ Expanded
+- Make the entire header row tappable.
+- Apply the same behavior throughout the application, including:
+  - Wake-Up Medications
+  - Breakfast Medications
+  - Midday Medications
+  - Evening Medications
+  - Bedtime Medications
+  - As-Needed Medications
+  - Any future expandable sections
+- Ensure the disclosure arrow automatically updates as each section expands or collapses.
+
+**Design Goal:**
+A first-time user should immediately recognize which sections can be expanded without needing to experiment or receive instructions.
+
+**Priority:** Medium (UI Polish)

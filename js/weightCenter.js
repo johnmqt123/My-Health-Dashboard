@@ -14,6 +14,7 @@
     const weightHistorySection = document.getElementById("weightHistorySection");
     const weightHistoryDisplay = document.getElementById("weightHistoryDisplay");
     const weightModal = document.getElementById("weightModal");
+    const weightModalTitle = weightModal ? weightModal.querySelector("h2") : null;
     const weightInput = document.getElementById("weightInput");
     const weightNoteInput = document.getElementById("weightNoteInput");
     const saveWeightBtn = document.getElementById("saveWeightBtn");
@@ -184,6 +185,9 @@
         if (weightButton) {
             weightButton.addEventListener("click", function () {
                 editingWeightIndex = null;
+                if (weightModalTitle) {
+                    weightModalTitle.textContent = "Log Weight";
+                }
                 if (weightModal) {
                     weightModal.style.display = "block";
                     if (weightInput) weightInput.focus();
@@ -202,6 +206,9 @@
                     if (!entry) return;
 
                     editingWeightIndex = index;
+                    if (weightModalTitle) {
+                        weightModalTitle.textContent = "Edit Weight";
+                    }
                     if (weightModal) {
                         weightModal.style.display = "block";
                     }

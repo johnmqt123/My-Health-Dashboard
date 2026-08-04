@@ -13,6 +13,7 @@
     const summaryBP = document.getElementById("summaryBP");
 
     const bpModal = document.getElementById("bpModal");
+    const bpModalTitle = bpModal ? bpModal.querySelector("h2") : null;
     const cancelBpBtn = document.getElementById("cancelBpBtn");
     const saveBpBtn = document.getElementById("saveBpBtn");
     const systolicInput = document.getElementById("systolicInput");
@@ -161,6 +162,9 @@
         if (bpButton) {
             bpButton.addEventListener("click", function () {
                 editingBpIndex = null;
+                if (bpModalTitle) {
+                    bpModalTitle.textContent = "Log Blood Pressure";
+                }
                 openModal();
             });
         }
@@ -248,6 +252,9 @@
                     }
                     if (bpNoteInput) {
                         bpNoteInput.value = entry.note || "";
+                    }
+                    if (bpModalTitle) {
+                        bpModalTitle.textContent = "Edit Blood Pressure";
                     }
                     openModal();
                     return;

@@ -14,6 +14,7 @@
     const exerciseHistorySection = document.getElementById("exerciseHistorySection");
     const exerciseHistoryDisplay = document.getElementById("exerciseHistoryDisplay");
     const exerciseModal = document.getElementById("exerciseModal");
+    const exerciseModalTitle = exerciseModal ? exerciseModal.querySelector("h2") : null;
     const exerciseAmountInput = document.getElementById("exerciseAmountInput");
     const exerciseAmountLabel = document.getElementById("exerciseAmountLabel");
     const saveExerciseBtn = document.getElementById("saveExerciseBtn");
@@ -58,6 +59,9 @@
 
     function openExerciseModal() {
         editingExerciseIndex = null;
+        if (exerciseModalTitle) {
+            exerciseModalTitle.textContent = "Log Exercise";
+        }
         if (exerciseModal) {
             exerciseModal.style.display = "block";
             hideExerciseAmountField();
@@ -273,6 +277,9 @@
                     }
                     if (exerciseModal) {
                         exerciseModal.style.display = "block";
+                    }
+                    if (exerciseModalTitle) {
+                        exerciseModalTitle.textContent = "Edit Exercise";
                     }
                     showExerciseAmountField(entry.amount);
                     return;
