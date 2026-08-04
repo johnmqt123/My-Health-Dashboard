@@ -728,3 +728,27 @@ The dashboard should answer the question:
 rather than focusing on a single category such as medications.
 
 **Priority:** Future Enhancement
+
+## UI Enhancement – Add Back to Top Navigation
+
+**Goal:**
+Provide a quick way to return to the top of the dashboard after scrolling.
+
+**Implementation Ideas:**
+- Add a "↑ Back to Top" button at the bottom of the page.
+- After the dashboard is renamed, consider "↑ Back to Coming Up."
+- Smooth-scroll to the top of the page.
+
+**Priority:** Medium
+
+## Future Enhancement – Mobile Quantity Stepper
+
+**Goal:**
+Evaluate replacing the numeric quantity input for As-Needed Medications with a mobile-friendly stepper control.
+
+**Implementation Ideas:**
+- Display [-] Quantity [+].
+- Minimize keyboard use on iPhone.
+- Keep desktop behavior unchanged unless beneficial.
+
+**Priority:** Future Enhancement

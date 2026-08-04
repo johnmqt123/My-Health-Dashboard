@@ -140,6 +140,8 @@ const medicationCenterCardHeading =
     document.getElementById("medicationCenterCardHeading");
 const backToTop =
     document.getElementById("backToTop");
+const pageBackToTop =
+    document.getElementById("pageBackToTop");
 const summaryMedicationStatus =
     document.getElementById("summaryBreakfastStatus");
 
@@ -799,6 +801,15 @@ backToTop.addEventListener("click", function () {
     });
 
 });
+
+if (pageBackToTop) {
+    pageBackToTop.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+}
 
 
 
