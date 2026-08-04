@@ -703,3 +703,28 @@ Simplify the Exercise edit dialog by removing the exercise-type selector during 
 Editing should focus on correcting the existing record, not changing it into a different type of exercise. The dialog should be simpler, more compact, and less confusing.
 
 **Priority:** Medium (UI Polish)
+
+## Dashboard Enhancement – Evolve "At a Glance" into "Coming Up"
+
+**Goal:**
+Transform the current "At a Glance" card into a more helpful daily assistant by presenting upcoming items instead of focusing only on medication status.
+
+**Implementation Ideas:**
+- Consider renaming the card from **At a Glance** to **Coming Up**.
+- Display the next several important items rather than a single status.
+- Examples of future "Coming Up" items:
+  - Next medication period
+  - Weekly recurring events (e.g., Zepbound injection day)
+  - Calendar appointments
+  - Reminders and to-do items
+  - Grocery reminders
+  - Other important daily events
+- Prioritize items by urgency and time.
+
+**Design Goal:**
+The dashboard should answer the question:
+> **"What's coming up that I should know about?"**
+
+rather than focusing on a single category such as medications.
+
+**Priority:** Future Enhancement

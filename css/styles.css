@@ -413,6 +413,39 @@ button:active,
     -webkit-overflow-scrolling: touch;
 }
 
+@media (min-width: 481px) {
+    #bpModal .modal-content {
+        padding: 14px 16px 12px;
+        max-width: 340px;
+        max-height: min(82vh, 560px);
+    }
+
+    #bpModal .modal-content h2 {
+        margin-bottom: 10px;
+    }
+
+    #bpModal .modal-content label {
+        margin-top: 8px;
+        margin-bottom: 4px;
+    }
+
+    #bpModal .modal-content input,
+    #bpModal .modal-content textarea {
+        margin: 0 0 8px;
+        padding: 8px 10px;
+    }
+
+    #bpModal .modal-content button {
+        margin: 6px 0 0;
+        padding: 11px 12px;
+        font-size: 16px;
+    }
+
+    #bpModal br {
+        display: none;
+    }
+}
+
 .modal-content h2 {
     margin-top: 0;
     margin-bottom: 16px;
