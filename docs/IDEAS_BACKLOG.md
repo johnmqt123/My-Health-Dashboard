@@ -671,3 +671,35 @@ Improve discoverability by making all expandable sections clearly identifiable a
 A first-time user should immediately recognize which sections can be expanded without needing to experiment or receive instructions.
 
 **Priority:** Medium (UI Polish)
+
+## UI Polish – Compact Blood Pressure Edit Dialog
+
+**Goal:**
+Reduce the height of the Blood Pressure edit dialog on desktop while preserving the current iPhone layout.
+
+**Implementation Ideas:**
+- Reduce unnecessary vertical spacing.
+- Keep Save and Cancel visible without requiring scrolling on desktop.
+- Preserve the current mobile-friendly layout.
+- Do not modify any blood pressure logging or editing logic.
+
+**Design Goal:**
+Editing a blood pressure entry should feel compact and efficient, with all primary controls visible on a typical desktop display.
+
+**Priority:** Medium (UI Polish)
+
+## UI Polish – Simplify Exercise Edit Dialog
+
+**Goal:**
+Simplify the Exercise edit dialog by removing the exercise-type selector during edit mode.
+
+**Implementation Ideas:**
+- When logging a new exercise, continue allowing the user to choose the exercise type.
+- When editing an existing exercise, display the exercise type as read-only text instead of a drop-down selector.
+- Allow editing only the values associated with that exercise (minutes, miles, notes, etc.).
+- Reduce dialog height and improve visibility of the "Edit Exercise" title.
+
+**Design Goal:**
+Editing should focus on correcting the existing record, not changing it into a different type of exercise. The dialog should be simpler, more compact, and less confusing.
+
+**Priority:** Medium (UI Polish)
