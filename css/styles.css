@@ -103,6 +103,19 @@ header p {
     overflow: visible;
 }
 
+#zepboundCenterSection {
+    max-height: none;
+    overflow: visible;
+}
+
+#historyInjectionSection {
+    max-height: 60vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 4px;
+}
+
 .summary-card > [id$="HistoryDisplay"],
 .summary-card > #historyInjectionDisplay {
     overflow-y: auto;
