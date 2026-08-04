@@ -378,6 +378,10 @@ if (saveTylenolBtn) {
         saveData("asNeededMedicationHistory", asNeededMedicationHistory);
         closeTylenolModal();
         renderTylenolLastTaken();
+        const asNeededContent = document.getElementById("asNeededMedicationContent");
+        if (asNeededContent) {
+            asNeededContent.style.display = "none";
+        }
         editingAsNeededIndex = null;
     });
 }
@@ -464,6 +468,10 @@ if (cancelTylenolBtn) {
     cancelTylenolBtn.addEventListener("click", function () {
         editingAsNeededIndex = null;
         closeTylenolModal();
+        const asNeededContent = document.getElementById("asNeededMedicationContent");
+        if (asNeededContent) {
+            asNeededContent.style.display = "none";
+        }
     });
 }
 

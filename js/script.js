@@ -94,6 +94,7 @@ setupMedicationToggle("breakfastHeading", "breakfastMedicationList");
 setupMedicationToggle("middayHeading", "middayMedicationList");
 setupMedicationToggle("dinnerHeading", "dinnerMedicationList");
 setupMedicationToggle("eveningHeading", "eveningMedicationList");
+setupMedicationToggle("asNeededHeading", "asNeededMedicationContent");
 const breakfastButton =
     document.getElementById("breakfastButton");
 
@@ -754,6 +755,11 @@ medicationCenterCardHeading.addEventListener("click", function () {
     if (isOpening) {
 
         medicationCenterSection.style.display = "block";
+
+        const asNeededContent = document.getElementById("asNeededMedicationContent");
+        if (asNeededContent) {
+            asNeededContent.style.display = "none";
+        }
 
         medicationCenterCardHeading.textContent =
             "💊 Medication Center ▲";
