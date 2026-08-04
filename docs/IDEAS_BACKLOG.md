@@ -539,23 +539,7 @@ Requirements:
 Design goal:
 Provide quick navigation while keeping the interface clean and uncluttered.
 
-## Next Development Priorities
-
-### 1. Fix iPhone Safari Auto-Zoom (Highest Priority)
-Eliminate the automatic zoom that occurs when entering data in logging dialogs.
-
-Current behavior:
-- Weight and other logging dialogs cause Safari to zoom into the input fields.
-- After saving, the user must manually pinch back out before continuing to navigate.
-
-Requirements:
-- Eliminate unwanted automatic zoom during data entry.
-- Preserve the correct numeric/decimal keyboards.
-- Do not disable user zoom globally.
-- Keep dialogs comfortable to use on both desktop and iPhone.
-
-Goal:
-Remove the extra pinch gesture after logging and make data entry seamless.
+ make data entry seamless.
 
 ---
 
@@ -573,7 +557,7 @@ Reduce taps and make data entry feel instantaneous.
 
 ---
 
-### 3. Continue Quick Links Development
+### 2. Continue Quick Links Development
 Implement the remaining Quick Links using the Nutrition link as the standard pattern.
 
 Priority order:
@@ -752,3 +736,25 @@ Evaluate replacing the numeric quantity input for As-Needed Medications with a m
 - Keep desktop behavior unchanged unless beneficial.
 
 **Priority:** Future Enhancement
+
+### Make "Coming Up" Items Actionable
+
+Allow items shown in the dashboard's "Coming Up" (currently "At a Glance") section to be tappable.
+
+Examples:
+- "Midday Medications" opens the Medication Center with the Midday section expanded.
+- "Zepbound Injection Today" opens the Zepbound Center.
+- Future calendar appointments open the Calendar.
+- Future reminders open the appropriate reminder or task.
+
+Goal:
+Transform the dashboard from an informational summary into an actionable command center, reducing navigation and making the next task only one tap away.
+
+### Investigate Blood Pressure Auto-Focus on iPhone
+
+Current behavior:
+- Website correctly places the cursor in the Systolic field.
+- iPhone opens the dialog but does not place the cursor in the Systolic field.
+
+Goal:
+Determine whether this is an iOS Safari limitation or whether the application can reliably improve the behavior without introducing side effects.

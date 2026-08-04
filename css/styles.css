@@ -422,9 +422,19 @@ button:active,
 
 .dashboardDivider {
     width: 70%;
-    margin: 10px auto 25px;
+    margin: 8px auto 12px;
     border: none;
     border-top: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+#atAGlanceHeading {
+    margin: 14px 0 6px;
+    font-size: 1.35rem;
+}
+
+#summaryBreakfastStatus {
+    margin: 0;
+    line-height: 1.35;
 }
 
 .modal {
@@ -575,6 +585,15 @@ button:active,
 @media (max-width: 600px) {
     header {
         padding: 20px;
+    }
+
+    #atAGlanceHeading {
+        margin: 12px 0 4px;
+        font-size: 1.2rem;
+    }
+
+    .dashboardDivider {
+        margin: 6px auto 10px;
     }
 
     .card,
