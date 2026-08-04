@@ -145,6 +145,35 @@ header p {
     color: #9f1239;
 }
 
+#asNeededMedicationContent #tylenolLastTakenDisplay,
+#asNeededMedicationContent #alaLastTakenDisplay {
+    padding: 8px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#asNeededMedicationContent .as-needed-disclosure {
+    display: inline-block;
+    width: 1em;
+    margin-right: 4px;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+#asNeededMedicationContent .history-action-row {
+    display: none;
+}
+
+#asNeededMedicationContent .as-needed-active {
+    border-color: #7dd3fc;
+    background: #f8fdff;
+}
+
+#asNeededMedicationContent .as-needed-active .history-action-row {
+    display: flex;
+}
+
 .card > :first-child,
 .summary-card > :first-child {
     margin-top: 0;

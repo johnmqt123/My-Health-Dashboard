@@ -31,6 +31,10 @@ const cancelTylenolBtn =
 
 const asNeededMedicationSelect =
     document.getElementById("asNeededMedicationSelect");
+const asNeededHeading =
+    document.getElementById("asNeededHeading");
+const asNeededMedicationContent =
+    document.getElementById("asNeededMedicationContent");
 
 const tylenolTabletCount =
     document.getElementById("tylenolTabletCount");
@@ -99,7 +103,7 @@ function renderMedicationLastTaken(displayElement, medicationName) {
     const noteText = latest.note ? ` — ${latest.note}` : "";
 
     displayElement.innerHTML =
-        `<strong>${medicationName}</strong><br>Last Taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}
+        `<span class="as-needed-disclosure" aria-hidden="true">▶</span> <strong>${medicationName}</strong><br>Last Taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}
         <div class="history-action-row">
             <button type="button" class="history-action-btn edit medication-edit-btn" data-medication="${medicationName}">Edit</button>
             <button type="button" class="history-action-btn delete medication-delete-btn" data-medication="${medicationName}">Delete</button>
@@ -109,6 +113,58 @@ function renderMedicationLastTaken(displayElement, medicationName) {
 function renderTylenolLastTaken() {
     renderMedicationLastTaken(tylenolLastTakenDisplay, "Tylenol");
     renderMedicationLastTaken(alaLastTakenDisplay, "ALA");
+    setActiveAsNeededDisplay(null);
+}
+
+function updateDisclosureIndicators() {
+    [tylenolLastTakenDisplay, alaLastTakenDisplay].forEach(function (element) {
+        if (!element) return;
+        const disclosure = element.querySelector(".as-needed-disclosure");
+        if (!disclosure) return;
+        disclosure.textContent = element.classList.contains("as-needed-active") ? "▼" : "▶";
+    });
+}
+
+function setActiveAsNeededDisplay(displayElement) {
+    [tylenolLastTakenDisplay, alaLastTakenDisplay].forEach(function (element) {
+        if (!element) return;
+        element.classList.remove("as-needed-active");
+    });
+
+    if (displayElement) {
+        displayElement.classList.add("as-needed-active");
+    }
+
+    updateDisclosureIndicators();
+}
+
+function toggleAsNeededDisplay(displayElement) {
+    if (!displayElement) {
+        return;
+    }
+
+    const isActive = displayElement.classList.contains("as-needed-active");
+    setActiveAsNeededDisplay(isActive ? null : displayElement);
+}
+
+function focusAndSelectQuantityField() {
+    if (!tylenolTabletCount) {
+        return;
+    }
+
+    requestAnimationFrame(function () {
+        tylenolTabletCount.focus();
+        tylenolTabletCount.select();
+
+        if (typeof tylenolTabletCount.setSelectionRange === "function") {
+            const valueLength = String(tylenolTabletCount.value || "").length;
+            try {
+                tylenolTabletCount.setSelectionRange(0, valueLength);
+            } catch (error) {
+                // Safari on numeric inputs may not support setSelectionRange.
+            }
+        }
+    });
 }
 
 function resetTylenolForm() {
@@ -140,14 +196,7 @@ function openTylenolModal() {
         tylenolModal.style.display = "block";
     }
 
-    if (asNeededMedicationSelect) {
-        asNeededMedicationSelect.focus();
-    }
-
-    if (tylenolTabletCount) {
-        tylenolTabletCount.focus();
-        tylenolTabletCount.select();
-    }
+    focusAndSelectQuantityField();
 }
 
 function closeTylenolModal() {
@@ -363,6 +412,31 @@ if (logTylenolButton) {
     logTylenolButton.addEventListener("click", openTylenolModal);
 }
 
+if (asNeededMedicationSelect) {
+    asNeededMedicationSelect.addEventListener("change", function () {
+        if (tylenolTabletCount) {
+            tylenolTabletCount.value = "1";
+        }
+
+        focusAndSelectQuantityField();
+    });
+}
+
+if (asNeededHeading && asNeededMedicationContent) {
+    asNeededHeading.addEventListener("click", function () {
+        setTimeout(function () {
+            if (asNeededMedicationContent.style.display === "block") {
+                setActiveAsNeededDisplay(null);
+                const focusTarget = logTylenolButton || asNeededHeading;
+                focusTarget.scrollIntoView({
+                    behavior: "smooth",
+                    block: "nearest"
+                });
+            }
+        }, 0);
+    });
+}
+
 let editingAsNeededIndex = null;
 
 if (saveTylenolBtn) {
@@ -423,19 +497,19 @@ function openMedicationEditFor(medication) {
     if (tylenolModal) {
         tylenolModal.style.display = "block";
     }
-    if (asNeededMedicationSelect) {
-        asNeededMedicationSelect.focus();
-    }
-    if (tylenolTabletCount) {
-        tylenolTabletCount.focus();
-        tylenolTabletCount.select();
-    }
+
+    focusAndSelectQuantityField();
 }
 
 if (tylenolLastTakenDisplay) {
     tylenolLastTakenDisplay.addEventListener("click", function (event) {
         const editButton = event.target.closest(".medication-edit-btn");
         const deleteButton = event.target.closest(".medication-delete-btn");
+
+        if (!editButton && !deleteButton) {
+            toggleAsNeededDisplay(tylenolLastTakenDisplay);
+            return;
+        }
 
         if (editButton) {
             openMedicationEditFor("Tylenol");
@@ -461,6 +535,11 @@ if (alaLastTakenDisplay) {
     alaLastTakenDisplay.addEventListener("click", function (event) {
         const editButton = event.target.closest(".medication-edit-btn");
         const deleteButton = event.target.closest(".medication-delete-btn");
+
+        if (!editButton && !deleteButton) {
+            toggleAsNeededDisplay(alaLastTakenDisplay);
+            return;
+        }
 
         if (editButton) {
             openMedicationEditFor("ALA");
