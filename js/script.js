@@ -804,6 +804,29 @@ backToTop.addEventListener("click", function () {
 
 if (pageBackToTop) {
     pageBackToTop.addEventListener("click", function () {
+        const zepboundCenterSection = document.getElementById("zepboundCenterSection");
+        const closeZepboundButton = document.getElementById("closeZepboundButton");
+
+        if (
+            zepboundCenterSection &&
+            zepboundCenterSection.style.display === "block" &&
+            closeZepboundButton
+        ) {
+            closeZepboundButton.click();
+            return;
+        }
+
+        const medicationCenterSection = document.getElementById("medicationCenterSection");
+
+        if (
+            medicationCenterSection &&
+            medicationCenterSection.style.display === "block" &&
+            backToTop
+        ) {
+            backToTop.click();
+            return;
+        }
+
         window.scrollTo({
             top: 0,
             behavior: "smooth"
