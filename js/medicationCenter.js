@@ -143,6 +143,11 @@ function openTylenolModal() {
     if (asNeededMedicationSelect) {
         asNeededMedicationSelect.focus();
     }
+
+    if (tylenolTabletCount) {
+        tylenolTabletCount.focus();
+        tylenolTabletCount.select();
+    }
 }
 
 function closeTylenolModal() {
@@ -420,6 +425,10 @@ function openMedicationEditFor(medication) {
     }
     if (asNeededMedicationSelect) {
         asNeededMedicationSelect.focus();
+    }
+    if (tylenolTabletCount) {
+        tylenolTabletCount.focus();
+        tylenolTabletCount.select();
     }
 }
 
