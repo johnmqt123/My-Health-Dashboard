@@ -210,6 +210,7 @@ function updateAtAGlanceStatus() {
     if (summaryMedicationStatus) {
         const todayDate = new Date().toDateString();
         const medicationPeriods = [
+            { key: "wakeUp", label: "Wake-Up" },
             { key: "breakfast", label: "Breakfast" },
             { key: "midday", label: "Midday" },
             { key: "dinner", label: "Dinner" },
@@ -334,6 +335,8 @@ localStorage.setItem(
 
     wakeUpButton.textContent = "Wake-Up Medications";
 
+    updateAtAGlanceStatus();
+
     return;
 }
 
@@ -368,6 +371,8 @@ localStorage.setItem(
 
     wakeUpButton.textContent = "✅ Logged Today";
     wakeUpButton.disabled = false;
+
+    updateAtAGlanceStatus();
 
 });
 
