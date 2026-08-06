@@ -85,8 +85,16 @@ function setupMedicationToggle(headingId, listId) {
 
     heading.addEventListener("click", () => {
         const isHidden = list.style.display === "none";
-        list.style.display = isHidden ? "block" : "none";
+        setMedicationSectionExpanded(list, isHidden);
     });
+}
+
+function setMedicationSectionExpanded(list, isExpanded) {
+    if (!list) {
+        return;
+    }
+
+    list.style.display = isExpanded ? "block" : "none";
 }
 
 setupMedicationToggle("wakeUpHeading", "wakeUpMedicationList");
@@ -144,6 +152,73 @@ const pageBackToTop =
     document.getElementById("pageBackToTop");
 const summaryMedicationStatus =
     document.getElementById("summaryBreakfastStatus");
+
+const medicationSectionConfig = {
+    wakeUp: {
+        cardId: "medCard"
+    },
+    breakfast: {
+        cardId: "breakfastCard"
+    },
+    midday: {
+        cardId: "middayCard"
+    },
+    dinner: {
+        cardId: "dinnerCard"
+    },
+    evening: {
+        cardId: "eveningCard"
+    }
+};
+
+function scrollMedicationCenterTo(targetElement) {
+    const elementToScroll =
+        targetElement || document.getElementById("medicationCenterSection");
+
+    if (!elementToScroll) {
+        return;
+    }
+
+    requestAnimationFrame(function () {
+        elementToScroll.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    });
+}
+
+function openMedicationCenter(targetElement) {
+    const medicationCenterSection =
+        document.getElementById("medicationCenterSection");
+
+    if (!medicationCenterSection) {
+        return;
+    }
+
+    medicationCenterSection.style.display = "block";
+
+    const asNeededContent = document.getElementById("asNeededMedicationContent");
+    if (asNeededContent) {
+        asNeededContent.style.display = "none";
+    }
+
+    if (medicationCenterCardHeading) {
+        medicationCenterCardHeading.textContent =
+            "💊 Medication Center ▲";
+    }
+
+    scrollMedicationCenterTo(targetElement);
+}
+
+function openMedicationCenterForPeriod(periodKey) {
+    const config = medicationSectionConfig[periodKey];
+
+    if (!config) {
+        return;
+    }
+
+    openMedicationCenter(document.getElementById(config.cardId));
+}
 
 let todayTasks =
     JSON.parse(localStorage.getItem("todayTasks")) || [];
@@ -216,7 +291,7 @@ function updateAtAGlanceStatus() {
             { key: "breakfast", label: "Breakfast" },
             { key: "midday", label: "Midday" },
             { key: "dinner", label: "Dinner" },
-            { key: "evening", label: "Bedtime" }
+            { key: "evening", label: "Evening" }
         ];
 
         const nextPeriod = medicationPeriods.find(function (period) {
@@ -224,9 +299,18 @@ function updateAtAGlanceStatus() {
             return !(logEntry && logEntry.logged && logEntry.date === todayDate);
         });
 
-        summaryMedicationStatus.textContent = nextPeriod
-            ? "Next due: " + nextPeriod.label + " medications"
-            : "All scheduled medications completed today. ✓";
+        if (nextPeriod) {
+            summaryMedicationStatus.innerHTML =
+                'Next due: <button type="button" class="summary-medication-link" data-period-key="' +
+                nextPeriod.key +
+                '">' +
+                nextPeriod.label +
+                ' Medications</button>';
+            return;
+        }
+
+        summaryMedicationStatus.textContent =
+            "All scheduled medications completed today. ✓";
     }
 }
 
@@ -760,21 +844,7 @@ medicationCenterCardHeading.addEventListener("click", function () {
         medicationCenterSection.style.display === "none";
 
     if (isOpening) {
-
-        medicationCenterSection.style.display = "block";
-
-        const asNeededContent = document.getElementById("asNeededMedicationContent");
-        if (asNeededContent) {
-            asNeededContent.style.display = "none";
-        }
-
-        medicationCenterCardHeading.textContent =
-            "💊 Medication Center ▲";
-
-        document.getElementById("medicationCenterSection")
-            .scrollIntoView({
-                behavior: "smooth"
-            });
+        openMedicationCenter();
 
     } else {
 
@@ -786,6 +856,18 @@ medicationCenterCardHeading.addEventListener("click", function () {
     }
 
 });
+
+if (summaryMedicationStatus) {
+    summaryMedicationStatus.addEventListener("click", function (event) {
+        const periodTrigger = event.target.closest(".summary-medication-link");
+
+        if (!periodTrigger) {
+            return;
+        }
+
+        openMedicationCenterForPeriod(periodTrigger.dataset.periodKey);
+    });
+}
 
 backToTop.addEventListener("click", function () {
 

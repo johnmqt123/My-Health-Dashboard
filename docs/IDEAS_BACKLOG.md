@@ -758,3 +758,25 @@ Current behavior:
 
 Goal:
 Determine whether this is an iOS Safari limitation or whether the application can reliably improve the behavior without introducing side effects.
+
+### Integrate Zepbound into Medication Center
+
+Move the standalone Zepbound Center into the Medication Center as a dedicated long-term therapy section.
+
+Goals:
+- Treat Zepbound as a medication rather than a separate center.
+- Consolidate all medication-related information into one location.
+- Reduce dashboard complexity by eliminating a separate Zepbound Center.
+- Preserve all existing Zepbound functionality, including:
+  - Injection history
+  - Injection site tracking
+  - Dose information
+  - Notes
+  - Weekly schedule
+- Present Zepbound as a collapsible section similar to other medication groups where appropriate.
+
+Benefits:
+- More intuitive organization.
+- One destination for all medication management.
+- Supports future user-profile architecture by keeping personal medication information together.
+- Simplifies future navigation and dashboard integration.
