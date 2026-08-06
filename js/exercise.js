@@ -251,6 +251,16 @@
 
                 exerciseHistorySection.style.display = "block";
                 exerciseHistoryButton.textContent = "📊 Hide History";
+
+                if (typeof window.scrollMedicationCenterTo === "function") {
+                    window.scrollMedicationCenterTo(exerciseHistoryButton);
+                    return;
+                }
+
+                exerciseHistoryButton.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             });
         }
 

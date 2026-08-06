@@ -189,6 +189,16 @@ function initZepboundCenter() {
 
             if (isHidden) {
                 renderHistory();
+
+                if (typeof window.scrollMedicationCenterTo === "function") {
+                    window.scrollMedicationCenterTo(historyInjectionButton);
+                    return;
+                }
+
+                historyInjectionButton.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             }
         });
     }

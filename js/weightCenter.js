@@ -102,6 +102,16 @@
         renderWeightHistory();
         weightHistorySection.style.display = "block";
         weightHistoryButton.textContent = "📊 Hide History";
+
+        if (typeof window.scrollMedicationCenterTo === "function") {
+            window.scrollMedicationCenterTo(weightHistoryButton);
+            return;
+        }
+
+        weightHistoryButton.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
     }
 
     function addWeightEntry(weightValue, note) {

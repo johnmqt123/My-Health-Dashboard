@@ -115,6 +115,16 @@
         renderHistory();
         bpHistorySection.style.display = "block";
         bpHistoryButton.textContent = "📊 Hide History";
+
+        if (typeof window.scrollMedicationCenterTo === "function") {
+            window.scrollMedicationCenterTo(bpHistoryButton);
+            return;
+        }
+
+        bpHistoryButton.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
     }
 
     function openModal() {

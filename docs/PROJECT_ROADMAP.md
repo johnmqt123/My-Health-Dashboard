@@ -65,3 +65,37 @@ Benefits:
 - Simplifies future profile management.
 - Reduces hard-coded personal information.
 - Prepares for optional multi-user support.
+
+### Shared History Framework – Standardized History Actions
+
+As part of the Shared History Framework, all history views (Weight, Blood Pressure, Exercise, Medication, Zepbound, and future history modules) should use a common disclosure-style layout.
+
+**Design Goals**
+- Each history entry is collapsed by default.
+- Tapping a history entry expands only that entry.
+- Expanded entries reveal their available actions.
+- Edit and Delete should be presented as a compact horizontal action row rather than stacked full-width buttons.
+- Reuse a shared secondary button style throughout the application for these actions.
+- Standardize spacing, typography, animations, and disclosure behavior across all history modules.
+- The framework should allow future history types to inherit the same appearance and behavior without duplicating code.
+
+**Benefits**
+- Significantly reduces vertical scrolling.
+- Eliminates repetitive "Edit / Delete" clutter.
+- Creates a consistent user experience across all history views.
+- Centralizes future UI changes into a shared component rather than requiring updates in multiple modules.
+### Shared UI Design System
+
+Continue standardizing reusable interface components throughout the application.
+
+Areas to standardize include:
+- Navigation buttons (Back to Dashboard, Back to Top)
+- Primary action buttons
+- Secondary action buttons
+- Button sizing, spacing, and typography
+- Card spacing and section spacing
+- History disclosure rows
+- Shared animations and scrolling behavior
+
+Goal:
+Create a consistent visual language so future UI improvements can be made centrally instead of independently in each feature.
