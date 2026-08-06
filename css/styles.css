@@ -261,6 +261,29 @@ button:active,
     margin-bottom: 20px;
 }
 
+.action-pair-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-items: stretch;
+}
+
+.action-pair-row > button,
+.action-pair-row > .btn {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
+.action-pair-row > #manageMedicationsBtn {
+    min-height: 42px;
+    padding: 8px 10px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+}
+
 .summary-card > .card,
 .summary-card > .briefing > .card {
     margin-top: 0;
@@ -356,6 +379,17 @@ button:active,
     .quick-access-button {
         font-size: 0.9rem;
         min-height: 40px;
+    }
+
+    .action-pair-row > button,
+    .action-pair-row > .btn {
+        min-height: 40px;
+        font-size: 0.9rem;
+    }
+
+    .action-pair-row > #manageMedicationsBtn {
+        min-height: 40px;
+        font-size: 0.9rem;
     }
 
     #bpModal {
