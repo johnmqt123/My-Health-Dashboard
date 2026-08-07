@@ -18,8 +18,124 @@
     const weightInput = document.getElementById("weightInput");
     const weightNoteInput = document.getElementById("weightNoteInput");
     const saveWeightBtn = document.getElementById("saveWeightBtn");
+    const deleteWeightBtn = document.getElementById("deleteWeightBtn");
     const cancelWeightBtn = document.getElementById("cancelWeightBtn");
+    const weightDetailModal = document.getElementById("weightDetailModal");
+    const weightDetailContent = document.getElementById("weightDetailContent");
+    const weightDetailEditBtn = document.getElementById("weightDetailEditBtn");
+    const weightDetailDeleteBtn = document.getElementById("weightDetailDeleteBtn");
+    const weightDetailCloseBtn = document.getElementById("weightDetailCloseBtn");
     let editingWeightIndex = null;
+    let activeDetailIndex = null;
+
+    function parseHistoryDate(entry) {
+        if (!entry || !entry.date) return null;
+
+        const withTime = entry.time ? new Date(entry.date + " " + entry.time) : new Date(entry.date);
+        if (!Number.isNaN(withTime.getTime())) {
+            return withTime;
+        }
+
+        const parts = String(entry.date).split("/");
+        if (parts.length === 3) {
+            const month = Number(parts[0]);
+            const day = Number(parts[1]);
+            const year = Number(parts[2]);
+            if (!Number.isNaN(month) && !Number.isNaN(day) && !Number.isNaN(year)) {
+                const parsed = new Date(year, month - 1, day);
+                if (!Number.isNaN(parsed.getTime())) {
+                    return parsed;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    function formatMonthHeader(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "Unknown Month";
+        return parsed.toLocaleDateString([], {
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+    function formatRowDate(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return entry.date || "Unknown Date";
+        return parsed.toLocaleDateString([], {
+            month: "short",
+            day: "numeric"
+        });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function closeWeightDetailModal() {
+        if (weightDetailModal) {
+            weightDetailModal.style.display = "none";
+        }
+    }
+
+    function openWeightDetailModal(index) {
+        const entry = weightHistory[index];
+        if (!entry || !weightDetailModal || !weightDetailContent) return;
+
+        activeDetailIndex = index;
+
+        const safeWeight = escapeHtml(entry.weight + " lb");
+        const safeDate = escapeHtml(entry.date || "--");
+        const safeTime = escapeHtml(entry.time || "--");
+        const safeNote = entry.note ? escapeHtml(entry.note) : "None";
+
+        weightDetailContent.innerHTML =
+            '<div class="weight-detail-row"><span class="weight-detail-label">Weight</span><span>' + safeWeight + "</span></div>" +
+            '<div class="weight-detail-row"><span class="weight-detail-label">Date</span><span>' + safeDate + "</span></div>" +
+            '<div class="weight-detail-row"><span class="weight-detail-label">Time</span><span>' + safeTime + "</span></div>" +
+            '<div class="weight-detail-row"><span class="weight-detail-label">Notes</span><span>' + safeNote + "</span></div>";
+
+        weightDetailModal.style.display = "flex";
+    }
+
+    function openWeightEditModal(index) {
+        const entry = weightHistory[index];
+        if (!entry || !weightModal) return;
+
+        editingWeightIndex = index;
+        if (weightModalTitle) {
+            weightModalTitle.textContent = "Edit Weight";
+        }
+        if (weightInput) {
+            weightInput.value = entry.weight;
+        }
+        if (weightNoteInput) {
+            weightNoteInput.value = entry.note || "";
+        }
+        if (deleteWeightBtn) {
+            deleteWeightBtn.style.display = "block";
+        }
+        weightModal.style.display = "flex";
+        if (weightInput) {
+            weightInput.focus();
+        }
+    }
+
+    function removeWeightEntryByIndex(index) {
+        if (!confirmHistoryDelete()) return;
+
+        removeHistoryEntry(weightHistory, index);
+        activeDetailIndex = null;
+        closeWeightDetailModal();
+        refreshWeightData();
+    }
 
     function saveWeightData() {
         saveData("weightHistory", weightHistory);
@@ -46,21 +162,55 @@
         if (!weightHistoryDisplay) return;
 
         weightHistoryDisplay.innerHTML = "";
+        weightHistoryDisplay.classList.add("weight-history-list");
 
         if (weightHistory.length === 0) {
             weightHistoryDisplay.textContent = "No weight entries yet.";
             return;
         }
 
-        weightHistory.slice().reverse().forEach(function (entry) {
-            let html = entry.date + " • " + entry.time + " — <strong>" + entry.weight + " lb</strong>";
+        const grouped = {};
+        const orderedMonths = [];
 
-            if (entry.note) {
-                html += " — " + entry.note;
+        weightHistory.slice().reverse().forEach(function (entry, index) {
+            const originalIndex = weightHistory.length - 1 - index;
+            const monthKey = formatMonthHeader(entry);
+
+            if (!grouped[monthKey]) {
+                grouped[monthKey] = [];
+                orderedMonths.push(monthKey);
             }
 
-            html += "<br>";
-            weightHistoryDisplay.innerHTML += html;
+            grouped[monthKey].push({
+                entry: entry,
+                index: originalIndex
+            });
+        });
+
+        orderedMonths.forEach(function (monthKey) {
+            const group = document.createElement("div");
+            group.className = "weight-month-group";
+
+            const header = document.createElement("div");
+            header.className = "weight-month-header";
+            header.textContent = monthKey;
+            group.appendChild(header);
+
+            grouped[monthKey].forEach(function (item) {
+                const row = document.createElement("button");
+                row.type = "button";
+                row.className = "weight-history-row";
+                row.setAttribute("data-index", String(item.index));
+                row.innerHTML =
+                    '<span class="weight-history-main">' +
+                        '<span class="weight-history-date">' + escapeHtml(formatRowDate(item.entry)) + "</span>" +
+                        '<span class="weight-history-value">' + escapeHtml(item.entry.weight + " lb") + "</span>" +
+                    "</span>" +
+                    '<span class="weight-history-chevron" aria-hidden="true">&gt;</span>';
+                group.appendChild(row);
+            });
+
+            weightHistoryDisplay.appendChild(group);
         });
     }
 
@@ -150,6 +300,9 @@
                 editingWeightIndex = null;
                 if (weightInput) weightInput.value = "";
                 if (weightNoteInput) weightNoteInput.value = "";
+                if (deleteWeightBtn) {
+                    deleteWeightBtn.style.display = "none";
+                }
             });
         }
 
@@ -183,6 +336,40 @@
                 weightInput.value = "";
                 if (weightNoteInput) weightNoteInput.value = "";
                 if (weightModal) weightModal.style.display = "none";
+                if (deleteWeightBtn) {
+                    deleteWeightBtn.style.display = "none";
+                }
+                refreshWeightData();
+
+                if (activeDetailIndex !== null) {
+                    const normalizedIndex = Number(activeDetailIndex);
+                    if (!Number.isNaN(normalizedIndex) && weightHistory[normalizedIndex]) {
+                        openWeightDetailModal(normalizedIndex);
+                    }
+                }
+            });
+        }
+
+        if (deleteWeightBtn) {
+            deleteWeightBtn.addEventListener("click", function () {
+                if (editingWeightIndex === null) return;
+                const index = Number(editingWeightIndex);
+                if (Number.isNaN(index) || !weightHistory[index]) return;
+
+                if (!confirmHistoryDelete()) return;
+                removeHistoryEntry(weightHistory, index);
+
+                editingWeightIndex = null;
+                if (weightInput) weightInput.value = "";
+                if (weightNoteInput) weightNoteInput.value = "";
+                if (deleteWeightBtn) {
+                    deleteWeightBtn.style.display = "none";
+                }
+                if (weightModal) {
+                    weightModal.style.display = "none";
+                }
+                activeDetailIndex = null;
+                closeWeightDetailModal();
                 refreshWeightData();
             });
         }
@@ -193,49 +380,56 @@
                 if (weightModalTitle) {
                     weightModalTitle.textContent = "Log Weight";
                 }
+                if (deleteWeightBtn) {
+                    deleteWeightBtn.style.display = "none";
+                }
                 if (weightModal) {
-                    weightModal.style.display = "block";
+                    weightModal.style.display = "flex";
                     if (weightInput) weightInput.focus();
                 }
             });
         }
 
+        if (weightDetailCloseBtn) {
+            weightDetailCloseBtn.addEventListener("click", function () {
+                closeWeightDetailModal();
+            });
+        }
+
+        if (weightDetailEditBtn) {
+            weightDetailEditBtn.addEventListener("click", function () {
+                if (activeDetailIndex === null) return;
+                const index = Number(activeDetailIndex);
+                if (Number.isNaN(index) || !weightHistory[index]) return;
+
+                closeWeightDetailModal();
+                openWeightEditModal(index);
+            });
+        }
+
+        if (weightDetailDeleteBtn) {
+            weightDetailDeleteBtn.addEventListener("click", function () {
+                if (activeDetailIndex === null) return;
+                const index = Number(activeDetailIndex);
+                if (Number.isNaN(index) || !weightHistory[index]) return;
+
+                removeWeightEntryByIndex(index);
+            });
+        }
+
         if (weightHistoryDisplay) {
             weightHistoryDisplay.addEventListener("click", function (event) {
-                const editButton = event.target.closest(".history-edit-btn");
-                const deleteButton = event.target.closest(".history-delete-btn");
+                const row = event.target.closest(".weight-history-row");
+                if (!row) return;
 
-                if (editButton) {
-                    const index = Number(editButton.getAttribute("data-index"));
-                    const entry = weightHistory[index];
-                    if (!entry) return;
+                const index = Number(row.getAttribute("data-index"));
+                if (Number.isNaN(index) || !weightHistory[index]) return;
 
-                    editingWeightIndex = index;
-                    if (weightModalTitle) {
-                        weightModalTitle.textContent = "Edit Weight";
-                    }
-                    if (weightModal) {
-                        weightModal.style.display = "block";
-                    }
-                    if (weightInput) {
-                        weightInput.value = entry.weight;
-                    }
-                    if (weightNoteInput) {
-                        weightNoteInput.value = entry.note || "";
-                    }
-                    if (weightInput) {
-                        weightInput.focus();
-                    }
-                    return;
-                }
-
-                if (deleteButton) {
-                    const index = Number(deleteButton.getAttribute("data-index"));
-                    if (!confirmHistoryDelete()) return;
-
-                    removeHistoryEntry(weightHistory, index);
-                    refreshWeightData();
-                }
+                row.classList.add("is-tapped");
+                window.setTimeout(function () {
+                    row.classList.remove("is-tapped");
+                    openWeightDetailModal(index);
+                }, 120);
             });
         }
     }
