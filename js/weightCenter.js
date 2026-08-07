@@ -449,6 +449,8 @@
             saveWeightBtn.addEventListener("click", function () {
                 if (!weightInput) return;
 
+                const wasEditing = editingWeightIndex !== null && !!weightHistory[editingWeightIndex];
+
                 const weight = weightInput.value.trim();
 
                 if (!weight) {
@@ -474,6 +476,9 @@
                     }
                     weightLog.current = weight;
                 } else {
+                    // New entry flow: clear stale selection so no old detail screen can reopen.
+                    activeDetailIndex = null;
+                    closeWeightDetailModal();
                     addWeightEntry(weight, note);
                 }
 
@@ -483,7 +488,7 @@
                 setWeightModalMode(false);
                 refreshWeightData();
 
-                if (activeDetailIndex !== null) {
+                if (wasEditing && activeDetailIndex !== null) {
                     const normalizedIndex = Number(activeDetailIndex);
                     if (!Number.isNaN(normalizedIndex) && weightHistory[normalizedIndex]) {
                         openWeightDetailModal(normalizedIndex);
@@ -514,6 +519,7 @@
         if (weightButton) {
             weightButton.addEventListener("click", function () {
                 editingWeightIndex = null;
+                activeDetailIndex = null;
                 if (weightModalTitle) {
                     weightModalTitle.textContent = "Log Weight";
                 }
