@@ -799,6 +799,38 @@ button:active,
     cursor: pointer;
 }
 
+#weightModal .modal-content {
+    max-height: min(82dvh, 620px);
+    padding-bottom: 10px;
+}
+
+#weightDateTimeFields {
+    display: grid;
+    gap: 0;
+}
+
+#weightDateTimeFields label {
+    margin-top: 10px;
+}
+
+.weight-modal-actions {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, #ffffff 78%, rgba(255, 255, 255, 0));
+    padding-top: 8px;
+    margin-top: 6px;
+}
+
+.weight-modal-actions button {
+    margin: 8px 0;
+}
+
+@supports not (height: 100dvh) {
+    #weightModal .modal-content {
+        max-height: min(82vh, 620px);
+    }
+}
+
 #stationaryBikeBtn,
 #ebikeRideBtn {
     background: #f8fafc;

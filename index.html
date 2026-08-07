@@ -312,12 +312,22 @@
         <label for="weightInput">Weight</label>
         <input id="weightInput" type="number" min="0" step="0.1" inputmode="decimal">
 
+        <div id="weightDateTimeFields" style="display: none;">
+            <label for="weightDateInput">Date</label>
+            <input id="weightDateInput" type="date">
+
+            <label for="weightTimeInput">Time</label>
+            <input id="weightTimeInput" type="time">
+        </div>
+
         <label for="weightNoteInput">Note (optional)</label>
         <input id="weightNoteInput" type="text">
 
-        <button id="saveWeightBtn">Save</button>
-        <button id="deleteWeightBtn" style="display: none;">Delete</button>
-        <button id="cancelWeightBtn">Cancel</button>
+        <div class="weight-modal-actions">
+            <button id="saveWeightBtn">Save</button>
+            <button id="deleteWeightBtn" style="display: none;">Delete</button>
+            <button id="cancelWeightBtn">Cancel</button>
+        </div>
     </div>
 </div>
 <div id="weightDetailModal" class="modal" style="display: none;">

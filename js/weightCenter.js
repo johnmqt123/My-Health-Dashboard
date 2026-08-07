@@ -16,6 +16,9 @@
     const weightModal = document.getElementById("weightModal");
     const weightModalTitle = weightModal ? weightModal.querySelector("h2") : null;
     const weightInput = document.getElementById("weightInput");
+    const weightDateTimeFields = document.getElementById("weightDateTimeFields");
+    const weightDateInput = document.getElementById("weightDateInput");
+    const weightTimeInput = document.getElementById("weightTimeInput");
     const weightNoteInput = document.getElementById("weightNoteInput");
     const saveWeightBtn = document.getElementById("saveWeightBtn");
     const deleteWeightBtn = document.getElementById("deleteWeightBtn");
@@ -85,6 +88,81 @@
         }
     }
 
+    function getCurrentDateInputValue() {
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return now.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function getCurrentTimeInputValue() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+
+    function getDateInputValueFromEntry(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "";
+
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        return parsed.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function getTimeInputValueFromEntry(entry) {
+        if (!entry || !entry.time) return "";
+
+        const rawTime = String(entry.time).trim();
+        if (/^\d{2}:\d{2}$/.test(rawTime)) {
+            return rawTime;
+        }
+
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "";
+
+        const hours = String(parsed.getHours()).padStart(2, "0");
+        const minutes = String(parsed.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+
+    function resetWeightEditFields() {
+        if (weightInput) weightInput.value = "";
+        if (weightNoteInput) weightNoteInput.value = "";
+        if (weightDateInput) weightDateInput.value = "";
+        if (weightTimeInput) weightTimeInput.value = "";
+    }
+
+    function setWeightModalMode(isEditMode, entry) {
+        if (weightDateTimeFields) {
+            weightDateTimeFields.style.display = isEditMode ? "block" : "none";
+        }
+
+        if (!isEditMode) {
+            if (weightDateInput) {
+                weightDateInput.value = "";
+            }
+            if (weightTimeInput) {
+                weightTimeInput.value = "";
+            }
+            if (deleteWeightBtn) {
+                deleteWeightBtn.style.display = "none";
+            }
+            return;
+        }
+
+        if (weightDateInput) {
+            weightDateInput.value = getDateInputValueFromEntry(entry) || getCurrentDateInputValue();
+        }
+        if (weightTimeInput) {
+            weightTimeInput.value = getTimeInputValueFromEntry(entry) || getCurrentTimeInputValue();
+        }
+        if (deleteWeightBtn) {
+            deleteWeightBtn.style.display = "block";
+        }
+    }
+
     function openWeightDetailModal(index) {
         const entry = weightHistory[index];
         if (!entry || !weightDetailModal || !weightDetailContent) return;
@@ -119,9 +197,7 @@
         if (weightNoteInput) {
             weightNoteInput.value = entry.note || "";
         }
-        if (deleteWeightBtn) {
-            deleteWeightBtn.style.display = "block";
-        }
+        setWeightModalMode(true, entry);
         weightModal.style.display = "flex";
         if (weightInput) {
             weightInput.focus();
@@ -260,10 +336,11 @@
     }
 
     function addWeightEntry(weightValue, note) {
+        const now = new Date();
         const entry = {
             weight: weightValue,
-            date: new Date().toLocaleDateString(),
-            time: new Date().toLocaleTimeString([], {
+            date: now.toLocaleDateString(),
+            time: now.toLocaleTimeString([], {
                 hour: "numeric",
                 minute: "2-digit"
             })
@@ -298,11 +375,8 @@
                     weightModal.style.display = "none";
                 }
                 editingWeightIndex = null;
-                if (weightInput) weightInput.value = "";
-                if (weightNoteInput) weightNoteInput.value = "";
-                if (deleteWeightBtn) {
-                    deleteWeightBtn.style.display = "none";
-                }
+                resetWeightEditFields();
+                setWeightModalMode(false);
             });
         }
 
@@ -322,6 +396,12 @@
                 if (editingWeightIndex !== null && weightHistory[editingWeightIndex]) {
                     const entry = weightHistory[editingWeightIndex];
                     entry.weight = weight;
+                    if (weightDateInput && weightDateInput.value) {
+                        entry.date = weightDateInput.value;
+                    }
+                    if (weightTimeInput && weightTimeInput.value) {
+                        entry.time = weightTimeInput.value;
+                    }
                     if (note) {
                         entry.note = note;
                     } else {
@@ -333,12 +413,9 @@
                 }
 
                 editingWeightIndex = null;
-                weightInput.value = "";
-                if (weightNoteInput) weightNoteInput.value = "";
+                resetWeightEditFields();
                 if (weightModal) weightModal.style.display = "none";
-                if (deleteWeightBtn) {
-                    deleteWeightBtn.style.display = "none";
-                }
+                setWeightModalMode(false);
                 refreshWeightData();
 
                 if (activeDetailIndex !== null) {
@@ -360,11 +437,8 @@
                 removeHistoryEntry(weightHistory, index);
 
                 editingWeightIndex = null;
-                if (weightInput) weightInput.value = "";
-                if (weightNoteInput) weightNoteInput.value = "";
-                if (deleteWeightBtn) {
-                    deleteWeightBtn.style.display = "none";
-                }
+                resetWeightEditFields();
+                setWeightModalMode(false);
                 if (weightModal) {
                     weightModal.style.display = "none";
                 }
@@ -380,9 +454,7 @@
                 if (weightModalTitle) {
                     weightModalTitle.textContent = "Log Weight";
                 }
-                if (deleteWeightBtn) {
-                    deleteWeightBtn.style.display = "none";
-                }
+                setWeightModalMode(false);
                 if (weightModal) {
                     weightModal.style.display = "flex";
                     if (weightInput) weightInput.focus();
