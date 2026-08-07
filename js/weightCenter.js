@@ -14,6 +14,7 @@
     const weightHistorySection = document.getElementById("weightHistorySection");
     const weightHistoryDisplay = document.getElementById("weightHistoryDisplay");
     const weightModal = document.getElementById("weightModal");
+    const weightModalContent = weightModal ? weightModal.querySelector(".modal-content") : null;
     const weightModalTitle = weightModal ? weightModal.querySelector("h2") : null;
     const weightInput = document.getElementById("weightInput");
     const weightDateTimeFields = document.getElementById("weightDateTimeFields");
@@ -23,6 +24,7 @@
     const saveWeightBtn = document.getElementById("saveWeightBtn");
     const deleteWeightBtn = document.getElementById("deleteWeightBtn");
     const cancelWeightBtn = document.getElementById("cancelWeightBtn");
+    const weightModalActions = weightModal ? weightModal.querySelector(".weight-modal-actions") : null;
     const weightDetailModal = document.getElementById("weightDetailModal");
     const weightDetailContent = document.getElementById("weightDetailContent");
     const weightDetailEditBtn = document.getElementById("weightDetailEditBtn");
@@ -30,29 +32,122 @@
     const weightDetailCloseBtn = document.getElementById("weightDetailCloseBtn");
     let editingWeightIndex = null;
     let activeDetailIndex = null;
+    let lockedScrollTop = 0;
 
     function parseHistoryDate(entry) {
         if (!entry || !entry.date) return null;
 
-        const withTime = entry.time ? new Date(entry.date + " " + entry.time) : new Date(entry.date);
-        if (!Number.isNaN(withTime.getTime())) {
-            return withTime;
-        }
+        const dateText = String(entry.date).trim();
+        const timeText = entry.time ? String(entry.time).trim() : "";
 
-        const parts = String(entry.date).split("/");
-        if (parts.length === 3) {
-            const month = Number(parts[0]);
-            const day = Number(parts[1]);
-            const year = Number(parts[2]);
+        const usParts = dateText.split("/");
+        if (usParts.length === 3) {
+            const month = Number(usParts[0]);
+            const day = Number(usParts[1]);
+            const year = Number(usParts[2]);
             if (!Number.isNaN(month) && !Number.isNaN(day) && !Number.isNaN(year)) {
-                const parsed = new Date(year, month - 1, day);
-                if (!Number.isNaN(parsed.getTime())) {
-                    return parsed;
+                const usDate = new Date(year, month - 1, day);
+                if (timeText) {
+                    const timeParts = timeText.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+                    if (timeParts) {
+                        let hours = Number(timeParts[1]);
+                        const minutes = Number(timeParts[2]);
+                        const meridian = timeParts[3] ? timeParts[3].toUpperCase() : "";
+                        if (meridian === "PM" && hours < 12) hours += 12;
+                        if (meridian === "AM" && hours === 12) hours = 0;
+                        if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
+                            usDate.setHours(hours, minutes, 0, 0);
+                        }
+                    }
+                }
+                if (!Number.isNaN(usDate.getTime())) {
+                    return usDate;
                 }
             }
         }
 
+        const isoParts = dateText.split("-");
+        if (isoParts.length === 3) {
+            const year = Number(isoParts[0]);
+            const month = Number(isoParts[1]);
+            const day = Number(isoParts[2]);
+            if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+                const isoDate = new Date(year, month - 1, day);
+                if (timeText) {
+                    const hmMatch = timeText.match(/^(\d{2}):(\d{2})$/);
+                    if (hmMatch) {
+                        const hours = Number(hmMatch[1]);
+                        const minutes = Number(hmMatch[2]);
+                        if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
+                            isoDate.setHours(hours, minutes, 0, 0);
+                        }
+                    }
+                }
+                if (!Number.isNaN(isoDate.getTime())) {
+                    return isoDate;
+                }
+            }
+        }
+
+        const fallback = timeText ? new Date(dateText + " " + timeText) : new Date(dateText);
+        if (!Number.isNaN(fallback.getTime())) {
+            return fallback;
+        }
+
         return null;
+    }
+
+    function lockWeightModalBackgroundScroll() {
+        lockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        document.documentElement.classList.add("weight-modal-open");
+        document.body.classList.add("weight-modal-open");
+        document.body.style.top = "-" + lockedScrollTop + "px";
+    }
+
+    function unlockWeightModalBackgroundScroll() {
+        document.documentElement.classList.remove("weight-modal-open");
+        document.body.classList.remove("weight-modal-open");
+        document.body.style.top = "";
+        window.scrollTo(0, lockedScrollTop);
+    }
+
+    function syncWeightKeyboardOffset() {
+        if (!weightModal || weightModal.style.display === "none") return;
+
+        const viewport = window.visualViewport;
+        if (!viewport) {
+            document.documentElement.style.setProperty("--weight-keyboard-offset", "0px");
+            return;
+        }
+
+        const keyboardOffset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+        document.documentElement.style.setProperty("--weight-keyboard-offset", keyboardOffset + "px");
+    }
+
+    function showWeightModal() {
+        if (!weightModal) return;
+        weightModal.style.display = "flex";
+        lockWeightModalBackgroundScroll();
+        syncWeightKeyboardOffset();
+    }
+
+    function hideWeightModal() {
+        if (!weightModal) return;
+        weightModal.style.display = "none";
+        document.documentElement.style.setProperty("--weight-keyboard-offset", "0px");
+        unlockWeightModalBackgroundScroll();
+    }
+
+    function ensureWeightFieldVisible(field) {
+        if (!field || !weightModalContent) return;
+
+        window.setTimeout(function () {
+            field.scrollIntoView({
+                block: "center",
+                inline: "nearest",
+                behavior: "smooth"
+            });
+        }, 90);
     }
 
     function formatMonthHeader(entry) {
@@ -198,7 +293,7 @@
             weightNoteInput.value = entry.note || "";
         }
         setWeightModalMode(true, entry);
-        weightModal.style.display = "flex";
+        showWeightModal();
         if (weightInput) {
             weightInput.focus();
         }
@@ -371,9 +466,7 @@
 
         if (cancelWeightBtn) {
             cancelWeightBtn.addEventListener("click", function () {
-                if (weightModal) {
-                    weightModal.style.display = "none";
-                }
+                hideWeightModal();
                 editingWeightIndex = null;
                 resetWeightEditFields();
                 setWeightModalMode(false);
@@ -414,7 +507,7 @@
 
                 editingWeightIndex = null;
                 resetWeightEditFields();
-                if (weightModal) weightModal.style.display = "none";
+                hideWeightModal();
                 setWeightModalMode(false);
                 refreshWeightData();
 
@@ -439,9 +532,7 @@
                 editingWeightIndex = null;
                 resetWeightEditFields();
                 setWeightModalMode(false);
-                if (weightModal) {
-                    weightModal.style.display = "none";
-                }
+                hideWeightModal();
                 activeDetailIndex = null;
                 closeWeightDetailModal();
                 refreshWeightData();
@@ -456,10 +547,36 @@
                 }
                 setWeightModalMode(false);
                 if (weightModal) {
-                    weightModal.style.display = "flex";
+                    showWeightModal();
                     if (weightInput) weightInput.focus();
                 }
             });
+        }
+
+        if (weightModal) {
+            weightModal.addEventListener("touchmove", function (event) {
+                if (!weightModalContent) return;
+                if (!weightModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+        }
+
+        if (weightModalContent) {
+            weightModalContent.addEventListener("focusin", function (event) {
+                const target = event.target;
+                if (!(target instanceof HTMLElement)) return;
+                if (target.matches("input, textarea, select")) {
+                    ensureWeightFieldVisible(target);
+                }
+            });
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", syncWeightKeyboardOffset);
+            window.visualViewport.addEventListener("scroll", syncWeightKeyboardOffset);
         }
 
         if (weightDetailCloseBtn) {

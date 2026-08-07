@@ -802,6 +802,10 @@ button:active,
 #weightModal .modal-content {
     max-height: min(82dvh, 620px);
     padding-bottom: 10px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
 }
 
 #weightDateTimeFields {
@@ -815,10 +819,12 @@ button:active,
 
 .weight-modal-actions {
     position: sticky;
-    bottom: 0;
+    bottom: max(0px, var(--weight-keyboard-offset, 0px));
     background: linear-gradient(to top, #ffffff 78%, rgba(255, 255, 255, 0));
     padding-top: 8px;
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
     margin-top: 6px;
+    z-index: 1;
 }
 
 .weight-modal-actions button {
@@ -829,6 +835,18 @@ button:active,
     #weightModal .modal-content {
         max-height: min(82vh, 620px);
     }
+}
+
+html.weight-modal-open,
+body.weight-modal-open {
+    overflow: hidden;
+}
+
+body.weight-modal-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
 }
 
 #stationaryBikeBtn,
