@@ -343,25 +343,40 @@
     <div class="modal-content">
         <h2>Log Blood Pressure</h2>
 
-        <label for="systolicInput">Systolic:</label><br>
-        <input id="systolicInput" type="number" min="50" max="300" step="1" inputmode="numeric"><br><br>
+        <label for="systolicInput">Systolic</label>
+        <input id="systolicInput" type="number" min="50" max="300" step="1" inputmode="numeric">
 
-        <label for="diastolicInput">Diastolic:</label><br>
-        <input id="diastolicInput" type="number" min="30" max="200" step="1" inputmode="numeric"><br><br>
+        <label for="diastolicInput">Diastolic</label>
+        <input id="diastolicInput" type="number" min="30" max="200" step="1" inputmode="numeric">
 
-        <label for="pulseInput">Pulse:</label><br>
-        <input id="pulseInput" type="number" min="30" max="220" step="1" inputmode="numeric"><br><br>
+        <label for="pulseInput">Pulse</label>
+        <input id="pulseInput" type="number" min="30" max="220" step="1" inputmode="numeric">
 
-        <label for="bpNoteInput">Note (optional):</label><br>
-        <input id="bpNoteInput" type="text"><br><br>
+        <div id="bpDateTimeFields" style="display: none;">
+            <label for="bpDateInput">Date</label>
+            <input id="bpDateInput" type="date">
 
-        <button id="saveBpBtn">
-            Save
-        </button>
+            <label for="bpTimeInput">Time</label>
+            <input id="bpTimeInput" type="time">
+        </div>
 
-        <button id="cancelBpBtn">
-            Cancel
-        </button>
+        <label for="bpNoteInput">Note (optional)</label>
+        <input id="bpNoteInput" type="text">
+
+        <button id="saveBpBtn">Save</button>
+        <button id="cancelBpBtn">Cancel</button>
+        <button id="deleteBpBtn" style="display: none;">Delete</button>
+    </div>
+</div>
+<div id="bpDetailModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Blood Pressure Detail</h2>
+
+        <div id="bpDetailContent" class="bp-detail-content"></div>
+
+        <button id="bpDetailEditBtn">Edit</button>
+        <button id="bpDetailDeleteBtn">Delete</button>
+        <button id="bpDetailCloseBtn">Close</button>
     </div>
 </div>
 <div id="exerciseModal" class="modal">

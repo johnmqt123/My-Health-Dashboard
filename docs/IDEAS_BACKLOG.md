@@ -780,3 +780,29 @@ Benefits:
 - One destination for all medication management.
 - Supports future user-profile architecture by keeping personal medication information together.
 - Simplifies future navigation and dashboard integration.
+## Ideas Backlog
+
+### Export History Feature
+
+Add the ability to export history data from selected modules, beginning with Blood Pressure.
+
+Potential export formats:
+- PDF (formatted report for healthcare providers)
+- Plain text (easy to paste into MyChart messages)
+- CSV (for Excel or other spreadsheet applications)
+
+Initial target module:
+- Blood Pressure History
+
+Future candidates:
+- Weight History
+- Medication History
+- Nutrition History
+- Exercise History
+- Sleep History
+
+Design goals:
+- Simple one-tap export.
+- Professional, easy-to-read format.
+- Date-range selection (optional for a future version).
+- No redesign of the history screens required.

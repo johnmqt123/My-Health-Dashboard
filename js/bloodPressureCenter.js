@@ -13,18 +13,278 @@
     const summaryBP = document.getElementById("summaryBP");
 
     const bpModal = document.getElementById("bpModal");
+    const bpModalContent = bpModal ? bpModal.querySelector(".modal-content") : null;
     const bpModalTitle = bpModal ? bpModal.querySelector("h2") : null;
     const cancelBpBtn = document.getElementById("cancelBpBtn");
     const saveBpBtn = document.getElementById("saveBpBtn");
+    const deleteBpBtn = document.getElementById("deleteBpBtn");
     const systolicInput = document.getElementById("systolicInput");
     const diastolicInput = document.getElementById("diastolicInput");
     const pulseInput = document.getElementById("pulseInput");
+    const bpDateTimeFields = document.getElementById("bpDateTimeFields");
+    const bpDateInput = document.getElementById("bpDateInput");
+    const bpTimeInput = document.getElementById("bpTimeInput");
     const bpNoteInput = document.getElementById("bpNoteInput");
 
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
+    const bpDetailModal = document.getElementById("bpDetailModal");
+    const bpDetailContent = document.getElementById("bpDetailContent");
+    const bpDetailEditBtn = document.getElementById("bpDetailEditBtn");
+    const bpDetailDeleteBtn = document.getElementById("bpDetailDeleteBtn");
+    const bpDetailCloseBtn = document.getElementById("bpDetailCloseBtn");
     let editingBpIndex = null;
+    let activeDetailIndex = null;
+    let lockedScrollTop = 0;
+
+    function parseHistoryDate(entry) {
+        if (!entry || !entry.date) return null;
+
+        const dateText = String(entry.date).trim();
+        const timeText = entry.time ? String(entry.time).trim() : "";
+
+        const usParts = dateText.split("/");
+        if (usParts.length === 3) {
+            const month = Number(usParts[0]);
+            const day = Number(usParts[1]);
+            const year = Number(usParts[2]);
+            if (!Number.isNaN(month) && !Number.isNaN(day) && !Number.isNaN(year)) {
+                const usDate = new Date(year, month - 1, day);
+                if (timeText) {
+                    const timeParts = timeText.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+                    if (timeParts) {
+                        let hours = Number(timeParts[1]);
+                        const minutes = Number(timeParts[2]);
+                        const meridian = timeParts[3] ? timeParts[3].toUpperCase() : "";
+                        if (meridian === "PM" && hours < 12) hours += 12;
+                        if (meridian === "AM" && hours === 12) hours = 0;
+                        if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
+                            usDate.setHours(hours, minutes, 0, 0);
+                        }
+                    }
+                }
+                if (!Number.isNaN(usDate.getTime())) {
+                    return usDate;
+                }
+            }
+        }
+
+        const isoParts = dateText.split("-");
+        if (isoParts.length === 3) {
+            const year = Number(isoParts[0]);
+            const month = Number(isoParts[1]);
+            const day = Number(isoParts[2]);
+            if (!Number.isNaN(year) && !Number.isNaN(month) && !Number.isNaN(day)) {
+                const isoDate = new Date(year, month - 1, day);
+                if (timeText) {
+                    const hmMatch = timeText.match(/^(\d{2}):(\d{2})$/);
+                    if (hmMatch) {
+                        const hours = Number(hmMatch[1]);
+                        const minutes = Number(hmMatch[2]);
+                        if (!Number.isNaN(hours) && !Number.isNaN(minutes)) {
+                            isoDate.setHours(hours, minutes, 0, 0);
+                        }
+                    }
+                }
+                if (!Number.isNaN(isoDate.getTime())) {
+                    return isoDate;
+                }
+            }
+        }
+
+        const fallback = timeText ? new Date(dateText + " " + timeText) : new Date(dateText);
+        if (!Number.isNaN(fallback.getTime())) {
+            return fallback;
+        }
+
+        return null;
+    }
+
+    function formatMonthHeader(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "Unknown Month";
+        return parsed.toLocaleDateString([], {
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+    function formatRowDate(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return entry.date || "Unknown Date";
+        return parsed.toLocaleDateString([], {
+            month: "short",
+            day: "numeric"
+        });
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/\"/g, "&quot;")
+            .replace(/'/g, "&#39;");
+    }
+
+    function getCurrentDateInputValue() {
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return now.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function getCurrentTimeInputValue() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+
+    function getDateInputValueFromEntry(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "";
+
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        return parsed.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function getTimeInputValueFromEntry(entry) {
+        if (!entry || !entry.time) return "";
+
+        const rawTime = String(entry.time).trim();
+        if (/^\d{2}:\d{2}$/.test(rawTime)) {
+            return rawTime;
+        }
+
+        const parsed = parseHistoryDate(entry);
+        if (!parsed) return "";
+
+        const hours = String(parsed.getHours()).padStart(2, "0");
+        const minutes = String(parsed.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+
+    function setBpModalMode(isEditMode, entry) {
+        if (bpDateTimeFields) {
+            bpDateTimeFields.style.display = isEditMode ? "block" : "none";
+        }
+
+        if (!isEditMode) {
+            if (bpDateInput) bpDateInput.value = "";
+            if (bpTimeInput) bpTimeInput.value = "";
+            if (deleteBpBtn) {
+                deleteBpBtn.style.display = "none";
+            }
+            return;
+        }
+
+        if (bpDateInput) {
+            bpDateInput.value = getDateInputValueFromEntry(entry) || getCurrentDateInputValue();
+        }
+        if (bpTimeInput) {
+            bpTimeInput.value = getTimeInputValueFromEntry(entry) || getCurrentTimeInputValue();
+        }
+        if (deleteBpBtn) {
+            deleteBpBtn.style.display = "block";
+        }
+    }
+
+    function clearBpInputs() {
+        if (systolicInput) systolicInput.value = "";
+        if (diastolicInput) diastolicInput.value = "";
+        if (pulseInput) pulseInput.value = "";
+        if (bpDateInput) bpDateInput.value = "";
+        if (bpTimeInput) bpTimeInput.value = "";
+        if (bpNoteInput) bpNoteInput.value = "";
+    }
+
+    function lockBpModalBackgroundScroll() {
+        lockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        document.documentElement.classList.add("bp-modal-open");
+        document.body.classList.add("bp-modal-open");
+        document.body.style.top = "-" + lockedScrollTop + "px";
+    }
+
+    function unlockBpModalBackgroundScroll() {
+        document.documentElement.classList.remove("bp-modal-open");
+        document.body.classList.remove("bp-modal-open");
+        document.body.style.top = "";
+        window.scrollTo(0, lockedScrollTop);
+    }
+
+    function openBpModal() {
+        if (!bpModal) return;
+        bpModal.classList.add("is-open");
+        lockBpModalBackgroundScroll();
+        if (systolicInput) {
+            requestAnimationFrame(function () {
+                systolicInput.focus();
+            });
+        }
+    }
+
+    function closeBpModal() {
+        if (!bpModal) return;
+        bpModal.classList.remove("is-open");
+        unlockBpModalBackgroundScroll();
+    }
+
+    function closeBpDetailModal() {
+        if (!bpDetailModal) return;
+        bpDetailModal.style.display = "none";
+    }
+
+    function openBpDetailModal(index) {
+        const entry = bpHistory[index];
+        if (!entry || !bpDetailModal || !bpDetailContent) return;
+
+        activeDetailIndex = index;
+
+        const safeSystolic = escapeHtml(entry.systolic || "--");
+        const safeDiastolic = escapeHtml(entry.diastolic || "--");
+        const safePulse = escapeHtml(entry.pulse || "--");
+        const safeDate = escapeHtml(entry.date || "--");
+        const safeTime = escapeHtml(entry.time || "--");
+        const safeNote = entry.note ? escapeHtml(entry.note) : "None";
+
+        bpDetailContent.innerHTML =
+            '<div class="bp-detail-row"><span class="bp-detail-label">Systolic</span><span>' + safeSystolic + "</span></div>" +
+            '<div class="bp-detail-row"><span class="bp-detail-label">Diastolic</span><span>' + safeDiastolic + "</span></div>" +
+            '<div class="bp-detail-row"><span class="bp-detail-label">Pulse</span><span>' + safePulse + "</span></div>" +
+            '<div class="bp-detail-row"><span class="bp-detail-label">Date</span><span>' + safeDate + "</span></div>" +
+            '<div class="bp-detail-row"><span class="bp-detail-label">Time</span><span>' + safeTime + "</span></div>" +
+            '<div class="bp-detail-row"><span class="bp-detail-label">Notes</span><span>' + safeNote + "</span></div>';
+
+        bpDetailModal.style.display = "flex";
+    }
+
+    function openBpEditModal(index) {
+        const entry = bpHistory[index];
+        if (!entry) return;
+
+        editingBpIndex = index;
+        if (bpModalTitle) {
+            bpModalTitle.textContent = "Edit Blood Pressure";
+        }
+        if (systolicInput) {
+            systolicInput.value = entry.systolic;
+        }
+        if (diastolicInput) {
+            diastolicInput.value = entry.diastolic;
+        }
+        if (pulseInput) {
+            pulseInput.value = entry.pulse;
+        }
+        if (bpNoteInput) {
+            bpNoteInput.value = entry.note || "";
+        }
+
+        setBpModalMode(true, entry);
+        openBpModal();
+    }
 
     function saveBloodPressureData() {
         saveData("bpLog", bpLog);
@@ -55,30 +315,59 @@
         if (!bpHistoryDisplay) return;
 
         bpHistoryDisplay.innerHTML = "";
+        bpHistoryDisplay.classList.add("bp-history-list");
 
         if (bpHistory.length === 0) {
             bpHistoryDisplay.textContent = "No blood pressure entries yet.";
             return;
         }
 
+        const grouped = {};
+        const orderedMonths = [];
+
         bpHistory.slice().reverse().forEach(function (entry, index) {
             const originalIndex = bpHistory.length - 1 - index;
-            let html = entry.date + " • " + entry.time + " — <strong>" + entry.systolic + " / " + entry.diastolic + "</strong>";
+            const monthKey = formatMonthHeader(entry);
 
-            if (entry.pulse) {
-                html += " — Pulse: " + entry.pulse;
+            if (!grouped[monthKey]) {
+                grouped[monthKey] = [];
+                orderedMonths.push(monthKey);
             }
 
-            if (entry.note) {
-                html += " — " + entry.note;
-            }
+            grouped[monthKey].push({
+                entry: entry,
+                index: originalIndex
+            });
+        });
 
-            html += `
-                <div class="history-action-row">
-                    <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
-                    <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
-                </div><br>`;
-            bpHistoryDisplay.innerHTML += html;
+        orderedMonths.forEach(function (monthKey) {
+            const group = document.createElement("div");
+            group.className = "bp-month-group";
+
+            const header = document.createElement("div");
+            header.className = "bp-month-header";
+            header.textContent = monthKey;
+            group.appendChild(header);
+
+            grouped[monthKey].forEach(function (item) {
+                const row = document.createElement("button");
+                row.type = "button";
+                row.className = "bp-history-row";
+                row.setAttribute("data-index", String(item.index));
+                row.innerHTML =
+                    '<span class="bp-history-main">' +
+                        '<span class="bp-history-reading">' +
+                            escapeHtml(item.entry.systolic + " / " + item.entry.diastolic) +
+                            ' · Pulse ' +
+                            escapeHtml(item.entry.pulse || "--") +
+                        '</span>' +
+                        '<span class="bp-history-meta">' + escapeHtml(formatRowDate(item.entry)) + "</span>" +
+                    "</span>" +
+                    '<span class="bp-history-chevron" aria-hidden="true">&gt;</span>';
+                group.appendChild(row);
+            });
+
+            bpHistoryDisplay.appendChild(group);
         });
     }
 
@@ -128,21 +417,12 @@
     }
 
     function openModal() {
-        if (bpModal) {
-            bpModal.classList.add("is-open");
-            if (systolicInput) {
-                requestAnimationFrame(function () {
-                    systolicInput.focus();
-                });
-            }
-        }
+        openBpModal();
     }
 
     function closeModal() {
         editingBpIndex = null;
-        if (bpModal) {
-            bpModal.classList.remove("is-open");
-        }
+        closeBpModal();
     }
 
     function addReading(entry) {
@@ -172,19 +452,19 @@
         if (bpButton) {
             bpButton.addEventListener("click", function () {
                 editingBpIndex = null;
+                activeDetailIndex = null;
                 if (bpModalTitle) {
                     bpModalTitle.textContent = "Log Blood Pressure";
                 }
+                setBpModalMode(false);
                 openModal();
             });
         }
 
         if (cancelBpBtn) {
             cancelBpBtn.addEventListener("click", function () {
-                if (systolicInput) systolicInput.value = "";
-                if (diastolicInput) diastolicInput.value = "";
-                if (pulseInput) pulseInput.value = "";
-                if (bpNoteInput) bpNoteInput.value = "";
+                clearBpInputs();
+                setBpModalMode(false);
                 closeModal();
             });
         }
@@ -195,6 +475,7 @@
                 const diastolic = diastolicInput ? diastolicInput.value.trim() : "";
                 const pulse = pulseInput ? pulseInput.value.trim() : "";
                 const note = bpNoteInput ? bpNoteInput.value.trim() : "";
+                const wasEditing = editingBpIndex !== null && !!bpHistory[editingBpIndex];
 
                 if (!systolic || !diastolic || !pulse) {
                     alert("Please enter systolic, diastolic, and pulse values.");
@@ -206,12 +487,25 @@
                     existing.systolic = systolic;
                     existing.diastolic = diastolic;
                     existing.pulse = pulse;
+                    if (bpDateInput && bpDateInput.value) {
+                        existing.date = bpDateInput.value;
+                    }
+                    if (bpTimeInput && bpTimeInput.value) {
+                        existing.time = bpTimeInput.value;
+                    }
                     if (note) {
                         existing.note = note;
                     } else {
                         delete existing.note;
                     }
+                    bpLog = {
+                        systolic: existing.systolic,
+                        diastolic: existing.diastolic,
+                        pulse: existing.pulse
+                    };
                 } else {
+                    activeDetailIndex = null;
+                    closeBpDetailModal();
                     const entry = {
                         date: new Date().toLocaleDateString(),
                         time: new Date().toLocaleTimeString([], {
@@ -231,52 +525,93 @@
                 }
 
                 closeModal();
-
-                if (systolicInput) systolicInput.value = "";
-                if (diastolicInput) diastolicInput.value = "";
-                if (pulseInput) pulseInput.value = "";
-                if (bpNoteInput) bpNoteInput.value = "";
+                clearBpInputs();
+                setBpModalMode(false);
                 refreshBpData();
+
+                if (wasEditing && activeDetailIndex !== null) {
+                    const normalizedIndex = Number(activeDetailIndex);
+                    if (!Number.isNaN(normalizedIndex) && bpHistory[normalizedIndex]) {
+                        openBpDetailModal(normalizedIndex);
+                    }
+                }
+            });
+        }
+
+        if (deleteBpBtn) {
+            deleteBpBtn.addEventListener("click", function () {
+                if (editingBpIndex === null) return;
+                const index = Number(editingBpIndex);
+                if (Number.isNaN(index) || !bpHistory[index]) return;
+
+                if (!confirmHistoryDelete()) return;
+                removeHistoryEntry(bpHistory, index);
+
+                editingBpIndex = null;
+                clearBpInputs();
+                setBpModalMode(false);
+                closeModal();
+                activeDetailIndex = null;
+                closeBpDetailModal();
+                refreshBpData();
+            });
+        }
+
+        if (bpDetailCloseBtn) {
+            bpDetailCloseBtn.addEventListener("click", function () {
+                closeBpDetailModal();
+            });
+        }
+
+        if (bpDetailEditBtn) {
+            bpDetailEditBtn.addEventListener("click", function () {
+                if (activeDetailIndex === null) return;
+                const index = Number(activeDetailIndex);
+                if (Number.isNaN(index) || !bpHistory[index]) return;
+
+                closeBpDetailModal();
+                openBpEditModal(index);
+            });
+        }
+
+        if (bpDetailDeleteBtn) {
+            bpDetailDeleteBtn.addEventListener("click", function () {
+                if (activeDetailIndex === null) return;
+                const index = Number(activeDetailIndex);
+                if (Number.isNaN(index) || !bpHistory[index]) return;
+
+                if (!confirmHistoryDelete()) return;
+                removeHistoryEntry(bpHistory, index);
+                activeDetailIndex = null;
+                closeBpDetailModal();
+                refreshBpData();
+            });
+        }
+
+        if (bpModal) {
+            bpModal.addEventListener("touchmove", function (event) {
+                if (!bpModalContent) return;
+                if (!bpModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
             });
         }
 
         if (bpHistoryDisplay) {
             bpHistoryDisplay.addEventListener("click", function (event) {
-                const editButton = event.target.closest(".history-edit-btn");
-                const deleteButton = event.target.closest(".history-delete-btn");
+                const row = event.target.closest(".bp-history-row");
+                if (!row) return;
 
-                if (editButton) {
-                    const index = Number(editButton.getAttribute("data-index"));
-                    const entry = bpHistory[index];
-                    if (!entry) return;
+                const index = Number(row.getAttribute("data-index"));
+                if (Number.isNaN(index) || !bpHistory[index]) return;
 
-                    editingBpIndex = index;
-                    if (systolicInput) {
-                        systolicInput.value = entry.systolic;
-                    }
-                    if (diastolicInput) {
-                        diastolicInput.value = entry.diastolic;
-                    }
-                    if (pulseInput) {
-                        pulseInput.value = entry.pulse;
-                    }
-                    if (bpNoteInput) {
-                        bpNoteInput.value = entry.note || "";
-                    }
-                    if (bpModalTitle) {
-                        bpModalTitle.textContent = "Edit Blood Pressure";
-                    }
-                    openModal();
-                    return;
-                }
-
-                if (!deleteButton) return;
-
-                const index = Number(deleteButton.getAttribute("data-index"));
-                if (!confirmHistoryDelete()) return;
-
-                removeHistoryEntry(bpHistory, index);
-                refreshBpData();
+                row.classList.add("is-tapped");
+                window.setTimeout(function () {
+                    row.classList.remove("is-tapped");
+                    openBpDetailModal(index);
+                }, 120);
             });
         }
     }
