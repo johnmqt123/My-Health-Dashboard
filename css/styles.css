@@ -751,16 +751,10 @@ button:active,
 .nutrition-today-summary {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-    padding: 12px;
+    padding: 10px 12px;
     background: #f8fafc;
     display: grid;
     gap: 4px;
-}
-
-.nutrition-today-summary h3 {
-    margin: 0 0 4px;
-    color: var(--primary);
-    font-size: 1.02rem;
 }
 
 .nutrition-today-summary p {

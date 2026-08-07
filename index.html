@@ -61,7 +61,6 @@
         <div class="card quick-access-card">
     <h2>⚡ Quick Links</h2>
     <div class="quick-access-grid">
-        <button type="button" class="quick-access-button" data-feature="Nutrition" data-url="https://docs.google.com/spreadsheets/d/1mYoz9EWW6P3mkAvfHJ89uHUASNJL-WzbMltccG4y3ws/edit?gid=1876887081#gid=1876887081">Nutrition</button>
         <button type="button" class="quick-access-button" data-feature="Weather">Weather</button>
         <button type="button" class="quick-access-button" data-feature="Calendar">Calendar</button>
         <button type="button" class="quick-access-button" data-feature="Reminders">Reminders</button>
@@ -70,43 +69,27 @@
     </div>
 </div>
 
-        <div class="card nutrition-center-card">
-    <h2 id="nutritionCenterCardHeading" style="cursor: pointer;">
-    🍽️ Nutrition Center ▼
-</h2>
+                <div class="card nutrition-center-card" id="nutritionCard">
+            <h2>🍽️ Today's Nutrition</h2>
 
-    <p id="nutritionSummaryPreview">
-        Today's nutrition summary at a glance.
-    </p>
-</div>
+            <div class="nutrition-today-summary" id="nutritionTodaySummary">
+                <p><strong>Calories:</strong> <span id="nutritionCaloriesValue">0</span></p>
+                <p><strong>Protein:</strong> <span id="nutritionProteinValue">0 g</span></p>
+                <p><strong>Carbohydrates:</strong> <span id="nutritionCarbsValue">0 g</span></p>
+                <p><strong>Fat:</strong> <span id="nutritionFatValue">0 g</span></p>
+            </div>
 
-<div class="summary-card history-section" id="nutritionCenterSection" style="display: none;">
+            <button id="nutritionLogFoodButton" type="button">Log Food</button>
+            <button id="nutritionHistoryButton" type="button">📊 History</button>
+        </div>
 
-    <h2 class="history-section-header">🍽️ Nutrition Center</h2>
+        <div class="summary-card history-section" id="nutritionHistorySection" style="display: none;">
 
-    <button id="closeNutritionCenterButton" type="button">
-        ← Back to Dashboard
-    </button>
+            <h2 class="history-section-header">🍽️ Nutrition History</h2>
 
-    <div class="nutrition-today-summary" id="nutritionTodaySummary">
-        <h3>Today's Nutrition</h3>
-        <p><strong>Calories:</strong> <span id="nutritionCaloriesValue">0</span></p>
-        <p><strong>Protein:</strong> <span id="nutritionProteinValue">0 g</span></p>
-        <p><strong>Carbohydrates:</strong> <span id="nutritionCarbsValue">0 g</span></p>
-        <p><strong>Fat:</strong> <span id="nutritionFatValue">0 g</span></p>
-    </div>
+            <div id="nutritionHistoryDisplay" class="history-display history-stack"></div>
 
-    <div class="feature-actions action-pair-row">
-        <button id="nutritionLogMealButton" type="button">Log Meal</button>
-        <button id="nutritionHistoryButton" type="button">📊 History</button>
-    </div>
-
-    <div id="nutritionHistorySection" class="history-section" style="display: none;">
-        <h3 class="history-section-header">Nutrition History</h3>
-        <div id="nutritionHistoryDisplay" class="history-display history-stack"></div>
-    </div>
-
-</div>
+        </div>
 
         <div class="card">
             <h2>⚖️ Weight</h2>

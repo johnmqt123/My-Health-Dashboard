@@ -6,17 +6,13 @@
 (function () {
     const NUTRITION_LOG_URL = "https://docs.google.com/spreadsheets/d/1mYoz9EWW6P3mkAvfHJ89uHUASNJL-WzbMltccG4y3ws/edit?gid=1876887081#gid=1876887081";
 
-    const nutritionCenterCardHeading = document.getElementById("nutritionCenterCardHeading");
-    const nutritionCenterSection = document.getElementById("nutritionCenterSection");
-    const closeNutritionCenterButton = document.getElementById("closeNutritionCenterButton");
-    const nutritionSummaryPreview = document.getElementById("nutritionSummaryPreview");
-
+    const nutritionCard = document.getElementById("nutritionCard");
     const nutritionCaloriesValue = document.getElementById("nutritionCaloriesValue");
     const nutritionProteinValue = document.getElementById("nutritionProteinValue");
     const nutritionCarbsValue = document.getElementById("nutritionCarbsValue");
     const nutritionFatValue = document.getElementById("nutritionFatValue");
 
-    const nutritionLogMealButton = document.getElementById("nutritionLogMealButton");
+    const nutritionLogFoodButton = document.getElementById("nutritionLogFoodButton");
     const nutritionHistoryButton = document.getElementById("nutritionHistoryButton");
     const nutritionHistorySection = document.getElementById("nutritionHistorySection");
     const nutritionHistoryDisplay = document.getElementById("nutritionHistoryDisplay");
@@ -66,11 +62,6 @@
         if (nutritionFatValue) {
             nutritionFatValue.textContent = fat + " g";
         }
-
-        if (nutritionSummaryPreview) {
-            nutritionSummaryPreview.textContent =
-                calories + " kcal · " + protein + "g P · " + carbs + "g C · " + fat + "g F";
-        }
     }
 
     function renderHistoryFramework() {
@@ -104,67 +95,20 @@
             .join("");
     }
 
-    function showNutritionCenter() {
-        if (!nutritionCenterSection) {
-            return;
-        }
-
-        nutritionCenterSection.style.display = "block";
-
-        if (nutritionCenterCardHeading) {
-            nutritionCenterCardHeading.textContent = "🍽️ Nutrition Center ▲";
-        }
-
-        if (typeof window.scrollMedicationCenterTo === "function") {
-            window.scrollMedicationCenterTo(nutritionCenterSection);
-            return;
-        }
-
-        nutritionCenterSection.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
-        });
-    }
-
-    function hideNutritionCenter() {
-        if (!nutritionCenterSection) {
-            return;
-        }
-
-        nutritionCenterSection.style.display = "none";
-
-        if (nutritionCenterCardHeading) {
-            nutritionCenterCardHeading.textContent = "🍽️ Nutrition Center ▼";
-        }
-
-        if (nutritionHistorySection) {
-            nutritionHistorySection.style.display = "none";
-        }
-        if (nutritionHistoryButton) {
-            nutritionHistoryButton.textContent = "📊 History";
-        }
-    }
-
     function initNutritionCenter() {
-        if (!nutritionCenterSection) {
+        if (!nutritionCard) {
             return;
         }
 
         renderTodaySummary();
         renderHistoryFramework();
 
-        nutritionCenterSection.style.display = "none";
-
-        if (nutritionCenterCardHeading) {
-            nutritionCenterCardHeading.addEventListener("click", showNutritionCenter);
+        if (nutritionHistorySection) {
+            nutritionHistorySection.style.display = "none";
         }
 
-        if (closeNutritionCenterButton) {
-            closeNutritionCenterButton.addEventListener("click", hideNutritionCenter);
-        }
-
-        if (nutritionLogMealButton) {
-            nutritionLogMealButton.addEventListener("click", openNutritionLog);
+        if (nutritionLogFoodButton) {
+            nutritionLogFoodButton.addEventListener("click", openNutritionLog);
         }
 
         if (nutritionHistoryButton) {
@@ -183,6 +127,10 @@
                 renderHistoryFramework();
                 nutritionHistorySection.style.display = "block";
                 nutritionHistoryButton.textContent = "📊 Hide History";
+
+                if (typeof window.scrollMedicationCenterTo === "function") {
+                    window.scrollMedicationCenterTo(nutritionHistorySection);
+                }
             });
         }
     }
