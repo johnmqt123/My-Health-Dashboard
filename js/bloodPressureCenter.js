@@ -256,7 +256,7 @@
             '<div class="bp-detail-row"><span class="bp-detail-label">Pulse</span><span>' + safePulse + "</span></div>" +
             '<div class="bp-detail-row"><span class="bp-detail-label">Date</span><span>' + safeDate + "</span></div>" +
             '<div class="bp-detail-row"><span class="bp-detail-label">Time</span><span>' + safeTime + "</span></div>" +
-            '<div class="bp-detail-row"><span class="bp-detail-label">Notes</span><span>' + safeNote + "</span></div>';
+            '<div class="bp-detail-row"><span class="bp-detail-label">Notes</span><span>' + safeNote + "</span></div>";
 
         bpDetailModal.style.display = "flex";
     }
