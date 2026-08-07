@@ -24,7 +24,6 @@
     const saveWeightBtn = document.getElementById("saveWeightBtn");
     const deleteWeightBtn = document.getElementById("deleteWeightBtn");
     const cancelWeightBtn = document.getElementById("cancelWeightBtn");
-    const weightModalActions = weightModal ? weightModal.querySelector(".weight-modal-actions") : null;
     const weightDetailModal = document.getElementById("weightDetailModal");
     const weightDetailContent = document.getElementById("weightDetailContent");
     const weightDetailEditBtn = document.getElementById("weightDetailEditBtn");
@@ -111,43 +110,16 @@
         window.scrollTo(0, lockedScrollTop);
     }
 
-    function syncWeightKeyboardOffset() {
-        if (!weightModal || weightModal.style.display === "none") return;
-
-        const viewport = window.visualViewport;
-        if (!viewport) {
-            document.documentElement.style.setProperty("--weight-keyboard-offset", "0px");
-            return;
-        }
-
-        const keyboardOffset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-        document.documentElement.style.setProperty("--weight-keyboard-offset", keyboardOffset + "px");
-    }
-
     function showWeightModal() {
         if (!weightModal) return;
         weightModal.style.display = "flex";
         lockWeightModalBackgroundScroll();
-        syncWeightKeyboardOffset();
     }
 
     function hideWeightModal() {
         if (!weightModal) return;
         weightModal.style.display = "none";
-        document.documentElement.style.setProperty("--weight-keyboard-offset", "0px");
         unlockWeightModalBackgroundScroll();
-    }
-
-    function ensureWeightFieldVisible(field) {
-        if (!field || !weightModalContent) return;
-
-        window.setTimeout(function () {
-            field.scrollIntoView({
-                block: "center",
-                inline: "nearest",
-                behavior: "smooth"
-            });
-        }, 90);
     }
 
     function formatMonthHeader(entry) {
@@ -562,21 +534,6 @@
             }, {
                 passive: false
             });
-        }
-
-        if (weightModalContent) {
-            weightModalContent.addEventListener("focusin", function (event) {
-                const target = event.target;
-                if (!(target instanceof HTMLElement)) return;
-                if (target.matches("input, textarea, select")) {
-                    ensureWeightFieldVisible(target);
-                }
-            });
-        }
-
-        if (window.visualViewport) {
-            window.visualViewport.addEventListener("resize", syncWeightKeyboardOffset);
-            window.visualViewport.addEventListener("scroll", syncWeightKeyboardOffset);
         }
 
         if (weightDetailCloseBtn) {
