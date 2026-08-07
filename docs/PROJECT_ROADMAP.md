@@ -99,3 +99,20 @@ Areas to standardize include:
 
 Goal:
 Create a consistent visual language so future UI improvements can be made centrally instead of independently in each feature.
+
+### Shared History Framework – Phase 2
+
+Convert one History module (Weight) into the new disclosure-style layout using the shared History Framework.
+
+Objectives:
+- Validate the new reusable architecture.
+- Ensure the interaction works well on desktop and iPhone.
+- Refine the shared framework before migrating additional History modules.
+
+Migration order:
+1. Weight
+2. Blood Pressure
+3. Exercise
+4. Medication
+5. Zepbound
+1

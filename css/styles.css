@@ -108,6 +108,33 @@ header p {
     overflow: visible;
 }
 
+/*
+ * Shared History Framework
+ * Future history modules should compose these classes instead of inventing
+ * module-specific history structure. Existing modules already use the shared
+ * action-row/action-button styles, and the current Weight, Exercise, Blood
+ * Pressure, and Zepbound history surfaces now expose shared history container
+ * and display classes without changing behavior.
+ *
+ * Adoption guidance for future modules:
+ * - Use .history-section on the outer history surface.
+ * - Use .history-section-header for the section title.
+ * - Use .history-display on the scrollable history content area.
+ * - Use .history-entry, .history-entry-header, and .history-entry-meta for
+ *   per-entry structure.
+ * - Use .history-entry-actions with .history-entry-action for expandable or
+ *   disclosure-style entries where actions are only shown for the active item.
+ * - Keep .history-action-row and .history-action-btn for current modules until
+ *   they migrate to the entry-based structure.
+ */
+
+.history-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-section-scroll,
 #historyInjectionSection {
     max-height: 60vh;
     overflow-y: auto;
@@ -116,6 +143,7 @@ header p {
     padding-right: 4px;
 }
 
+.history-display,
 .summary-card > [id$="HistoryDisplay"],
 .summary-card > #historyInjectionDisplay {
     overflow-y: auto;
@@ -125,6 +153,48 @@ header p {
     padding-right: 4px;
 }
 
+.history-section-header {
+    text-align: center;
+}
+
+.history-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-entry {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.history-entry-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.history-entry-meta {
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
+}
+
+.history-entry-body {
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.history-empty {
+    color: var(--muted);
+    font-size: 0.98rem;
+    line-height: 1.45;
+}
+
+.history-entry-actions,
 .history-action-row {
     display: flex;
     flex-wrap: wrap;
@@ -132,6 +202,7 @@ header p {
     margin-top: 8px;
 }
 
+.history-entry-action,
 .history-action-btn {
     min-height: 34px;
     padding: 6px 12px;
@@ -146,16 +217,27 @@ header p {
     box-shadow: none;
 }
 
+.history-entry-action.edit,
 .history-action-btn.edit {
     background: #e0f2fe;
     border-color: #7dd3fc;
     color: #075985;
 }
 
+.history-entry-action.delete,
 .history-action-btn.delete {
     background: #fff1f2;
     border-color: #fecdd3;
     color: #9f1239;
+}
+
+.history-text-strong {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.history-text-muted {
+    color: var(--muted);
 }
 
 #asNeededMedicationContent #tylenolLastTakenDisplay,
