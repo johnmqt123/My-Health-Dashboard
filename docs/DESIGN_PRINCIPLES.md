@@ -230,3 +230,37 @@ Examples:
 Keep the interface consistent where customization provides little practical benefit.
 
 The goal is flexibility without unnecessary complexity.
+
+## History Screen Standards
+
+### Layout
+
+- Group entries by month.
+- Show the year only in the month header.
+- Unlimited scrolling.
+
+### History Rows
+
+- Entire row is tappable.
+- Display only the primary value and date.
+- Do not display time on the history row.
+- No Edit or Delete buttons.
+- Small chevron on the right.
+- Brief highlight animation when tapped.
+
+### Detail Screen
+
+- Opens when a history row is tapped.
+- Displays the complete record.
+- Includes Edit and Delete actions.
+
+### Edit Screen
+
+- Dedicated screen for modifying an entry.
+- Save button at the top.
+- Delete available on the edit/detail workflow.
+
+### Navigation
+
+- Back returns one level.
+- Dashboard always returns to the Dashboard.

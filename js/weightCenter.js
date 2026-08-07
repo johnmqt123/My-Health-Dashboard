@@ -52,19 +52,14 @@
             return;
         }
 
-        weightHistory.slice().reverse().forEach(function (entry, index) {
-            const originalIndex = weightHistory.length - 1 - index;
+        weightHistory.slice().reverse().forEach(function (entry) {
             let html = entry.date + " • " + entry.time + " — <strong>" + entry.weight + " lb</strong>";
 
             if (entry.note) {
                 html += " — " + entry.note;
             }
 
-            html += `
-                <div class="history-action-row">
-                    <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
-                    <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
-                </div><br>`;
+            html += "<br>";
             weightHistoryDisplay.innerHTML += html;
         });
     }
