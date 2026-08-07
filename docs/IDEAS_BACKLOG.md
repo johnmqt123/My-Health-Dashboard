@@ -842,3 +842,19 @@ Design goals:
   - Sleep
 
 This provides protection against accidental deletions while keeping the normal Delete workflow simple.
+
+## Ideas Backlog
+
+### Application Navigation Review
+
+As John's Assistant grows, review the overall application architecture and navigation.
+
+Topics to evaluate:
+- Create a dedicated Nutrition Center.
+- Determine whether Quick Links should evolve into a more structured navigation system.
+- Organize modules into logical categories (Health, Lifestyle, Tools).
+- Integrate Zepbound into the Medication Center.
+- Reevaluate the Dashboard once all major modules have been implemented.
+
+Goal:
+Design a navigation system that scales naturally as new modules are added while keeping the app simple and easy to use.

@@ -433,3 +433,86 @@ This creates a more professional appearance while improving usability and consis
 - [ ] Create Edit Weight screen
 - [ ] Save changes
 - [ ] Delete entry
+
+## John's Assistant Development Roadmap
+### (Updated August 2026)
+
+Development priorities are based primarily on real-world usage frequency and user value rather than implementation complexity.
+
+### Completed
+
+✅ Weight Center
+- History redesign
+- Detail/Edit workflow
+- Mobile usability refinements
+
+✅ Blood Pressure Center
+- History redesign
+- Detail/Edit workflow
+- Mobile usability refinements
+
+✅ Exercise Center
+- History redesign
+- Detail/Edit workflow
+- Mobile usability refinements
+
+---
+
+### Current Development Priorities
+
+#### Priority 1 — Nutrition Center
+Highest priority because it is used multiple times every day.
+
+Planned capabilities:
+- Log meals
+- Daily nutrition summary
+- Nutrition history
+- Recipes (future)
+- Favorites (future)
+- Grocery integration (future)
+
+#### Priority 2 — Medication Center Enhancements
+Medication logging is used multiple times every day.
+
+Focus on improving:
+- Medication logging workflow
+- Medication reminders (future)
+- Zepbound integration
+- Overall usability
+
+#### Priority 3 — Sleep / CPAP Center
+A daily health module that will benefit from the same design philosophy.
+
+---
+
+### Lower Priority
+
+#### Medication History
+Now relatively straightforward to implement using the established History framework.
+
+Although useful for reference, it is expected to be accessed infrequently and therefore is a lower development priority.
+
+---
+
+### Established Design Standard
+
+All major health modules should follow the same interaction model whenever practical:
+
+- Current view
+- Log/Add entry
+- History
+- Detail
+- Edit
+- Delete
+- Standard scrolling edit form
+- Consistent month-grouped history
+- Consistent Detail/Edit workflow
+- Common navigation and visual language
+
+---
+
+### Guiding Principle
+
+Design effort should focus first on the parts of the application that are used most often.
+
+Frequent daily tasks should be optimized before infrequently used reference features.

@@ -70,6 +70,44 @@
     </div>
 </div>
 
+        <div class="card nutrition-center-card">
+    <h2 id="nutritionCenterCardHeading" style="cursor: pointer;">
+    🍽️ Nutrition Center ▼
+</h2>
+
+    <p id="nutritionSummaryPreview">
+        Today's nutrition summary at a glance.
+    </p>
+</div>
+
+<div class="summary-card history-section" id="nutritionCenterSection" style="display: none;">
+
+    <h2 class="history-section-header">🍽️ Nutrition Center</h2>
+
+    <button id="closeNutritionCenterButton" type="button">
+        ← Back to Dashboard
+    </button>
+
+    <div class="nutrition-today-summary" id="nutritionTodaySummary">
+        <h3>Today's Nutrition</h3>
+        <p><strong>Calories:</strong> <span id="nutritionCaloriesValue">0</span></p>
+        <p><strong>Protein:</strong> <span id="nutritionProteinValue">0 g</span></p>
+        <p><strong>Carbohydrates:</strong> <span id="nutritionCarbsValue">0 g</span></p>
+        <p><strong>Fat:</strong> <span id="nutritionFatValue">0 g</span></p>
+    </div>
+
+    <div class="feature-actions action-pair-row">
+        <button id="nutritionLogMealButton" type="button">Log Meal</button>
+        <button id="nutritionHistoryButton" type="button">📊 History</button>
+    </div>
+
+    <div id="nutritionHistorySection" class="history-section" style="display: none;">
+        <h3 class="history-section-header">Nutrition History</h3>
+        <div id="nutritionHistoryDisplay" class="history-display history-stack"></div>
+    </div>
+
+</div>
+
         <div class="card">
             <h2>⚖️ Weight</h2>
            <p id="weightDisplay">Last Weight: --</p>
@@ -462,6 +500,7 @@
 <script src="js/userProfile.js"></script>
 <script src="js/medications.js"></script>
 <script src="js/exercise.js"></script>
+<script src="js/nutritionCenter.js"></script>
 <script src="js/weightCenter.js"></script>
 <script src="js/bloodPressureCenter.js"></script>
 <script src="js/zepboundCenter.js"></script>

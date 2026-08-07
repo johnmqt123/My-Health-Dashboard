@@ -47,6 +47,7 @@ if (document.getElementById("dailyRoutineList")) {
 }
 
 initExerciseCenter();
+initNutritionCenter();
 initWeightCenter();
 initBloodPressureCenter();
 initZepboundCenter();
