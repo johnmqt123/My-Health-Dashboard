@@ -394,11 +394,31 @@
         <label id="exerciseAmountLabel" for="exerciseAmountInput">Minutes</label>
         <input id="exerciseAmountInput" type="number" min="0" step="1" inputmode="numeric">
 
-        <button id="saveExerciseBtn">Save</button>
+        <div id="exerciseDateTimeFields" style="display: none;">
+            <label for="exerciseDateInput">Date</label>
+            <input id="exerciseDateInput" type="date">
 
-        <button id="cancelExerciseBtn">
-            Cancel
-        </button>
+            <label for="exerciseTimeInput">Time</label>
+            <input id="exerciseTimeInput" type="time">
+        </div>
+
+        <label for="exerciseNoteInput">Note (optional)</label>
+        <input id="exerciseNoteInput" type="text">
+
+        <button id="saveExerciseBtn">Save</button>
+        <button id="cancelExerciseBtn">Cancel</button>
+        <button id="deleteExerciseBtn" style="display: none;">Delete</button>
+    </div>
+</div>
+<div id="exerciseDetailModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Exercise Detail</h2>
+
+        <div id="exerciseDetailContent" class="exercise-detail-content"></div>
+
+        <button id="exerciseDetailEditBtn">Edit</button>
+        <button id="exerciseDetailDeleteBtn">Delete</button>
+        <button id="exerciseDetailCloseBtn">Close</button>
     </div>
 </div>
 <div id="injectionModal" class="modal" style="display: none;">

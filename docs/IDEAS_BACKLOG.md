@@ -806,3 +806,39 @@ Design goals:
 - Professional, easy-to-read format.
 - Date-range selection (optional for a future version).
 - No redesign of the history screens required.
+
+## Ideas Backlog
+
+### Weight Edit Keyboard Behavior
+
+Refine the Weight Edit screen to match the Blood Pressure Edit experience.
+
+Design goal:
+- Do not automatically focus the Weight field when opening the Edit screen.
+- Do not automatically display the numeric keyboard.
+- Open the Edit screen with the full form visible.
+- Let the user tap the field they wish to edit before showing the keyboard.
+
+This should make the Weight Edit experience consistent with Blood Pressure Edit and provide a more natural iPhone workflow.
+
+## Ideas Backlog
+
+### Recently Deleted
+
+Add a Recently Deleted feature for history modules.
+
+Design goals:
+- Deleted entries are moved to Recently Deleted instead of being permanently removed.
+- Entries are retained for a configurable period (e.g., 30 days).
+- Users can:
+  - Restore an entry.
+  - Permanently delete an entry.
+- Initially support:
+  - Weight
+  - Blood Pressure
+  - Exercise
+  - Nutrition
+  - Medications
+  - Sleep
+
+This provides protection against accidental deletions while keeping the normal Delete workflow simple.
