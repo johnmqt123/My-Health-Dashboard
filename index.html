@@ -441,6 +441,35 @@
         <button id="exerciseDetailCloseBtn">Close</button>
     </div>
 </div>
+<div id="nutritionLogModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Log Food</h2>
+
+        <label for="nutritionDescriptionInput">Description</label>
+        <input id="nutritionDescriptionInput" type="text">
+
+        <label for="nutritionCaloriesInput">Calories</label>
+        <input id="nutritionCaloriesInput" type="number" min="0" step="1" inputmode="numeric">
+
+        <label for="nutritionProteinInput">Protein</label>
+        <input id="nutritionProteinInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <label for="nutritionCarbsInput">Carbohydrates</label>
+        <input id="nutritionCarbsInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <label for="nutritionFatInput">Fat</label>
+        <input id="nutritionFatInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <label for="nutritionDateInput">Date</label>
+        <input id="nutritionDateInput" type="date">
+
+        <label for="nutritionNoteInput">Notes (optional)</label>
+        <textarea id="nutritionNoteInput"></textarea>
+
+        <button id="saveNutritionBtn">Save</button>
+        <button id="cancelNutritionBtn">Cancel</button>
+    </div>
+</div>
 <div id="nutritionDayDetailModal" class="modal" style="display: none;">
     <div class="modal-content">
         <h2>Nutrition Day Detail</h2>

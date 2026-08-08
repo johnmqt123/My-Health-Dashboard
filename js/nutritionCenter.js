@@ -4,8 +4,6 @@
 // =====================================
 
 (function () {
-    const NUTRITION_LOG_URL = "https://docs.google.com/spreadsheets/d/1mYoz9EWW6P3mkAvfHJ89uHUASNJL-WzbMltccG4y3ws/edit?gid=1876887081#gid=1876887081";
-
     const nutritionCard = document.getElementById("nutritionCard");
     const nutritionCaloriesValue = document.getElementById("nutritionCaloriesValue");
     const nutritionProteinValue = document.getElementById("nutritionProteinValue");
@@ -16,6 +14,17 @@
     const nutritionHistoryButton = document.getElementById("nutritionHistoryButton");
     const nutritionHistorySection = document.getElementById("nutritionHistorySection");
     const nutritionHistoryDisplay = document.getElementById("nutritionHistoryDisplay");
+    const nutritionLogModal = document.getElementById("nutritionLogModal");
+    const nutritionLogModalContent = nutritionLogModal ? nutritionLogModal.querySelector(".modal-content") : null;
+    const nutritionDescriptionInput = document.getElementById("nutritionDescriptionInput");
+    const nutritionCaloriesInput = document.getElementById("nutritionCaloriesInput");
+    const nutritionProteinInput = document.getElementById("nutritionProteinInput");
+    const nutritionCarbsInput = document.getElementById("nutritionCarbsInput");
+    const nutritionFatInput = document.getElementById("nutritionFatInput");
+    const nutritionDateInput = document.getElementById("nutritionDateInput");
+    const nutritionNoteInput = document.getElementById("nutritionNoteInput");
+    const saveNutritionBtn = document.getElementById("saveNutritionBtn");
+    const cancelNutritionBtn = document.getElementById("cancelNutritionBtn");
     const nutritionDayDetailModal = document.getElementById("nutritionDayDetailModal");
     const nutritionDayDetailContent = document.getElementById("nutritionDayDetailContent");
     const nutritionDayDetailCloseBtn = document.getElementById("nutritionDayDetailCloseBtn");
@@ -30,10 +39,29 @@
     let nutritionHistory = loadData("nutritionHistory", []);
     let nutritionDays = [];
     let activeNutritionDayKey = null;
+    let lockedScrollTop = 0;
 
     function getNumber(value) {
         const num = Number(value);
         return Number.isFinite(num) ? num : 0;
+    }
+
+    function getCurrentDateInputValue() {
+        const now = new Date();
+        const month = String(now.getMonth() + 1).padStart(2, "0");
+        const day = String(now.getDate()).padStart(2, "0");
+        return now.getFullYear() + "-" + month + "-" + day;
+    }
+
+    function getCurrentTimeValue() {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+        return hours + ":" + minutes;
+    }
+
+    function getTodayDayKey() {
+        return toDayKey(new Date());
     }
 
     function getNumberFromKeys(source, keys) {
@@ -194,6 +222,44 @@
         return String(note).trim();
     }
 
+    function roundNutritionValue(value) {
+        const rounded = Math.round(value * 10) / 10;
+        return Number.isInteger(rounded) ? rounded : rounded;
+    }
+
+    function normalizeSavedNutritionHistory(rawHistory) {
+        if (!Array.isArray(rawHistory)) {
+            return [];
+        }
+
+        return rawHistory
+            .map(function (entry) {
+                const normalizedEntry = normalizeFoodEntry(entry, null);
+                if (!normalizedEntry.description || !normalizedEntry.dayKey) {
+                    return null;
+                }
+
+                const savedEntry = {
+                    description: normalizedEntry.description,
+                    calories: roundNutritionValue(normalizedEntry.calories),
+                    protein: roundNutritionValue(normalizedEntry.protein),
+                    carbs: roundNutritionValue(normalizedEntry.carbs),
+                    fat: roundNutritionValue(normalizedEntry.fat),
+                    date: normalizedEntry.dayKey,
+                    time: entry && entry.time ? String(entry.time) : ""
+                };
+
+                if (normalizedEntry.notes) {
+                    savedEntry.note = normalizedEntry.notes;
+                }
+
+                return savedEntry;
+            })
+            .filter(function (entry) {
+                return !!entry;
+            });
+    }
+
     function normalizeFoodEntry(entry, parentEntry) {
         const source = entry && typeof entry === "object" ? entry : {};
         const parent = parentEntry && typeof parentEntry === "object" ? parentEntry : {};
@@ -297,6 +363,51 @@
             });
     }
 
+    function rebuildNutritionTodayFromHistory() {
+        const todayKey = getTodayDayKey();
+        const totals = {
+            calories: 0,
+            protein: 0,
+            carbs: 0,
+            fat: 0
+        };
+
+        nutritionHistory.forEach(function (entry) {
+            const normalizedEntry = normalizeFoodEntry(entry, null);
+            if (normalizedEntry.dayKey !== todayKey) {
+                return;
+            }
+
+            totals.calories += getNumber(normalizedEntry.calories);
+            totals.protein += getNumber(normalizedEntry.protein);
+            totals.carbs += getNumber(normalizedEntry.carbs);
+            totals.fat += getNumber(normalizedEntry.fat);
+        });
+
+        nutritionToday = {
+            calories: roundNutritionValue(totals.calories),
+            protein: roundNutritionValue(totals.protein),
+            carbs: roundNutritionValue(totals.carbs),
+            fat: roundNutritionValue(totals.fat)
+        };
+    }
+
+    function saveNutritionData() {
+        saveData("nutritionHistory", nutritionHistory);
+        saveData("nutritionToday", nutritionToday);
+    }
+
+    function refreshNutritionData() {
+        nutritionHistory = normalizeSavedNutritionHistory(loadData("nutritionHistory", nutritionHistory));
+        rebuildNutritionTodayFromHistory();
+        saveNutritionData();
+        renderTodaySummary();
+
+        if (nutritionHistorySection && nutritionHistorySection.style.display === "block") {
+            renderHistoryFramework();
+        }
+    }
+
     function findNutritionDayByKey(dayKey) {
         return nutritionDays.find(function (day) {
             return day.dayKey === dayKey;
@@ -359,15 +470,101 @@
         nutritionDayDetailModal.style.display = "flex";
     }
 
-    function openNutritionLog() {
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    function lockNutritionModalBackgroundScroll() {
+        lockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        document.documentElement.classList.add("nutrition-modal-open");
+        document.body.classList.add("nutrition-modal-open");
+        document.body.style.top = "-" + lockedScrollTop + "px";
+    }
 
-        if (isIOS) {
-            window.location.href = NUTRITION_LOG_URL;
+    function unlockNutritionModalBackgroundScroll() {
+        document.documentElement.classList.remove("nutrition-modal-open");
+        document.body.classList.remove("nutrition-modal-open");
+        document.body.style.top = "";
+        window.scrollTo(0, lockedScrollTop);
+    }
+
+    function resetNutritionForm() {
+        if (nutritionDescriptionInput) nutritionDescriptionInput.value = "";
+        if (nutritionCaloriesInput) nutritionCaloriesInput.value = "";
+        if (nutritionProteinInput) nutritionProteinInput.value = "";
+        if (nutritionCarbsInput) nutritionCarbsInput.value = "";
+        if (nutritionFatInput) nutritionFatInput.value = "";
+        if (nutritionDateInput) nutritionDateInput.value = getCurrentDateInputValue();
+        if (nutritionNoteInput) nutritionNoteInput.value = "";
+    }
+
+    function openNutritionLog() {
+        if (!nutritionLogModal) {
             return;
         }
 
-        window.open(NUTRITION_LOG_URL, "_blank", "noopener,noreferrer");
+        resetNutritionForm();
+        nutritionLogModal.style.display = "flex";
+        lockNutritionModalBackgroundScroll();
+
+        if (nutritionDescriptionInput) {
+            requestAnimationFrame(function () {
+                nutritionDescriptionInput.focus();
+            });
+        }
+    }
+
+    function closeNutritionLogModal() {
+        if (!nutritionLogModal) {
+            return;
+        }
+
+        nutritionLogModal.style.display = "none";
+        unlockNutritionModalBackgroundScroll();
+    }
+
+    function createNutritionEntryFromForm() {
+        const description = nutritionDescriptionInput ? nutritionDescriptionInput.value.trim() : "";
+        const calories = nutritionCaloriesInput ? nutritionCaloriesInput.value.trim() : "";
+        const protein = nutritionProteinInput ? nutritionProteinInput.value.trim() : "";
+        const carbs = nutritionCarbsInput ? nutritionCarbsInput.value.trim() : "";
+        const fat = nutritionFatInput ? nutritionFatInput.value.trim() : "";
+        const date = nutritionDateInput && nutritionDateInput.value ? nutritionDateInput.value : getCurrentDateInputValue();
+        const note = nutritionNoteInput ? nutritionNoteInput.value.trim() : "";
+
+        if (!description) {
+            alert("Please enter a food description.");
+            return null;
+        }
+
+        if (!calories) {
+            alert("Please enter calories.");
+            return null;
+        }
+
+        if (!protein || !carbs || !fat) {
+            alert("Please enter protein, carbohydrates, and fat.");
+            return null;
+        }
+
+        const entry = {
+            description: description,
+            calories: roundNutritionValue(getNumber(calories)),
+            protein: roundNutritionValue(getNumber(protein)),
+            carbs: roundNutritionValue(getNumber(carbs)),
+            fat: roundNutritionValue(getNumber(fat)),
+            date: date,
+            time: getCurrentTimeValue()
+        };
+
+        if (note) {
+            entry.note = note;
+        }
+
+        return entry;
+    }
+
+    function addNutritionEntry(entry) {
+        nutritionHistory.push(entry);
+        nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
+        rebuildNutritionTodayFromHistory();
+        saveNutritionData();
     }
 
     function renderTodaySummary() {
@@ -456,6 +653,9 @@
             return;
         }
 
+        nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
+        rebuildNutritionTodayFromHistory();
+        saveNutritionData();
         renderTodaySummary();
         renderHistoryFramework();
 
@@ -465,6 +665,27 @@
 
         if (nutritionLogFoodButton) {
             nutritionLogFoodButton.addEventListener("click", openNutritionLog);
+        }
+
+        if (cancelNutritionBtn) {
+            cancelNutritionBtn.addEventListener("click", function () {
+                closeNutritionLogModal();
+                resetNutritionForm();
+            });
+        }
+
+        if (saveNutritionBtn) {
+            saveNutritionBtn.addEventListener("click", function () {
+                const entry = createNutritionEntryFromForm();
+                if (!entry) {
+                    return;
+                }
+
+                addNutritionEntry(entry);
+                closeNutritionLogModal();
+                resetNutritionForm();
+                refreshNutritionData();
+            });
         }
 
         if (nutritionHistoryButton) {
@@ -513,6 +734,17 @@
         if (nutritionDayDetailCloseBtn) {
             nutritionDayDetailCloseBtn.addEventListener("click", function () {
                 closeNutritionDayDetailModal();
+            });
+        }
+
+        if (nutritionLogModal) {
+            nutritionLogModal.addEventListener("touchmove", function (event) {
+                if (!nutritionLogModalContent) return;
+                if (!nutritionLogModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
             });
         }
     }

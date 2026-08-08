@@ -1210,6 +1210,18 @@ button:active,
     margin-top: 10px;
 }
 
+html.nutrition-modal-open,
+body.nutrition-modal-open {
+    overflow: hidden;
+}
+
+body.nutrition-modal-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
 @supports not (height: 100dvh) {
     #weightModal .modal-content {
         max-height: min(82vh, 620px);
