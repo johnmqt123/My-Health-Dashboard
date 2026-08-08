@@ -538,8 +538,8 @@
             return null;
         }
 
-        if (!protein || !carbs || !fat) {
-            alert("Please enter protein, carbohydrates, and fat.");
+        if (!protein || !carbs) {
+            alert("Please enter protein and carbohydrates.");
             return null;
         }
 
@@ -548,7 +548,7 @@
             calories: roundNutritionValue(getNumber(calories)),
             protein: roundNutritionValue(getNumber(protein)),
             carbs: roundNutritionValue(getNumber(carbs)),
-            fat: roundNutritionValue(getNumber(fat)),
+            fat: roundNutritionValue(getNumber(fat || 0)),
             date: date,
             time: getCurrentTimeValue()
         };
