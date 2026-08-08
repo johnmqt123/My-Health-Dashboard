@@ -704,8 +704,7 @@ header p {
     color: var(--muted);
 }
 
-#asNeededMedicationContent #tylenolLastTakenDisplay,
-#asNeededMedicationContent #alaLastTakenDisplay {
+#asNeededMedicationContent #asNeededLastTakenDisplay {
     padding: 8px 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;

@@ -284,9 +284,8 @@
 <div class="card" id="asNeededMedicationCard">
     <h2 id="asNeededHeading" style="cursor: pointer;">🩹 As-Needed Medications</h2>
     <div id="asNeededMedicationContent" style="display: none;">
-        <p id="tylenolLastTakenDisplay"><strong>Tylenol</strong><br>Last Taken: Not logged yet.</p>
-        <p id="alaLastTakenDisplay"><strong>Alpha-Lipoic Acid (ALA)</strong><br>Last Taken: Not logged yet.</p>
-        <button id="logTylenolButton">Log As-Needed Medication</button>
+        <div id="asNeededLastTakenDisplay">No as-needed medications logged yet.</div>
+        <button id="logAsNeededMedicationButton">Log As-Needed Medication</button>
     </div>
 </div>
     </section>
@@ -296,19 +295,16 @@
 <button id="pageBackToTop" type="button" style="display: block; margin: 18px auto 8px;">
     ↑ Back to Top
 </button>
-<div id="tylenolModal" class="modal" style="display: none;">
+<div id="asNeededMedicationModal" class="modal" style="display: none;">
     <div class="modal-content">
         <h2>Log As-Needed Medication</h2>
 
-        <label for="asNeededMedicationSelect">Medication</label>
-        <select id="asNeededMedicationSelect">
-            <option value="Tylenol">Tylenol</option>
-            <option value="ALA">Alpha-Lipoic Acid (ALA)</option>
-        </select>
+        <label for="asNeededMedicationNameInput">Medication Name</label>
+        <input id="asNeededMedicationNameInput" type="text">
 
-        <label for="tylenolTabletCount">Quantity</label>
+        <label for="asNeededMedicationCount">Quantity</label>
         <input
-            id="tylenolTabletCount"
+            id="asNeededMedicationCount"
             type="number"
             min="1"
             step="1"
@@ -318,11 +314,11 @@
 
         
 
-        <label for="tylenolNote">Note (optional)</label>
-        <textarea id="tylenolNote"></textarea>
+        <label for="asNeededMedicationNote">Note (optional)</label>
+        <textarea id="asNeededMedicationNote"></textarea>
 
-        <button id="saveTylenolBtn">Save</button>
-        <button id="cancelTylenolBtn">Cancel</button>
+        <button id="saveAsNeededMedicationBtn">Save</button>
+        <button id="cancelAsNeededMedicationBtn">Cancel</button>
     </div>
 </div>
 <div id="weightModal" class="modal" style="display: none;">

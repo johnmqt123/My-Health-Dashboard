@@ -1,14 +1,14 @@
 function initAsNeededMedicationCenter() {
-    const logTylenolButton = document.getElementById("logTylenolButton");
-    const tylenolModal = document.getElementById("tylenolModal");
-    const saveTylenolBtn = document.getElementById("saveTylenolBtn");
-    const cancelTylenolBtn = document.getElementById("cancelTylenolBtn");
-    const tylenolTabletCount = document.getElementById("tylenolTabletCount");
-    const tylenolTakenAt = document.getElementById("tylenolTakenAt");
-    const tylenolNote = document.getElementById("tylenolNote");
-    const tylenolLastTakenDisplay = document.getElementById("tylenolLastTakenDisplay");
+    const logAsNeededMedicationButton = document.getElementById("logAsNeededMedicationButton");
+    const asNeededMedicationModal = document.getElementById("asNeededMedicationModal");
+    const saveAsNeededMedicationBtn = document.getElementById("saveAsNeededMedicationBtn");
+    const cancelAsNeededMedicationBtn = document.getElementById("cancelAsNeededMedicationBtn");
+    const asNeededMedicationNameInput = document.getElementById("asNeededMedicationNameInput");
+    const asNeededMedicationCount = document.getElementById("asNeededMedicationCount");
+    const asNeededMedicationNote = document.getElementById("asNeededMedicationNote");
+    const asNeededLastTakenDisplay = document.getElementById("asNeededLastTakenDisplay");
 
-    let tylenolLog = loadData("tylenolLog", []);
+    let asNeededMedicationHistory = loadData("asNeededMedicationHistory", []);
 
     function getCurrentDateTimeValue() {
         const now = new Date();
@@ -35,84 +35,86 @@ function initAsNeededMedicationCenter() {
     }
 
     function renderLastTaken() {
-        if (!tylenolLastTakenDisplay) {
+        if (!asNeededLastTakenDisplay) {
             return;
         }
 
-        if (!tylenolLog.length) {
-            tylenolLastTakenDisplay.textContent = "No Tylenol logged yet.";
+        if (!asNeededMedicationHistory.length) {
+            asNeededLastTakenDisplay.textContent = "No as-needed medications logged yet.";
             return;
         }
 
-        const latest = tylenolLog[tylenolLog.length - 1];
-        const tabletsText = latest.tablets === 2 ? "2 tablets" : "1 tablet";
+        const latest = asNeededMedicationHistory[asNeededMedicationHistory.length - 1];
+        const medicationName = latest.medication || "Medication";
+        const tablets = Number(latest.tablets) || 1;
+        const tabletsText = tablets === 2 ? "2 tablets" : "1 tablet";
         const noteText = latest.note ? ` — ${latest.note}` : "";
-        tylenolLastTakenDisplay.textContent =
-            `Last taken: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
+        asNeededLastTakenDisplay.textContent =
+            `${medicationName}: ${formatDateTime(latest.dateTime)} · ${tabletsText}${noteText}`;
     }
 
     function resetForm() {
-        if (tylenolTabletCount) {
-            tylenolTabletCount.value = "1";
+        if (asNeededMedicationNameInput) {
+            asNeededMedicationNameInput.value = "";
         }
 
-        if (tylenolTakenAt) {
-            tylenolTakenAt.value = getCurrentDateTimeValue();
+        if (asNeededMedicationCount) {
+            asNeededMedicationCount.value = "1";
         }
 
-        if (tylenolNote) {
-            tylenolNote.value = "";
+        if (asNeededMedicationNote) {
+            asNeededMedicationNote.value = "";
         }
     }
 
     function openModal() {
-        if (tylenolModal) {
+        if (asNeededMedicationModal) {
             resetForm();
-            tylenolModal.style.display = "block";
+            asNeededMedicationModal.style.display = "block";
         }
 
-        const medicationSelect = document.getElementById("asNeededMedicationSelect");
-        if (medicationSelect) {
-            medicationSelect.focus();
+        if (asNeededMedicationNameInput) {
+            asNeededMedicationNameInput.focus();
         }
     }
 
     function closeModal() {
-        if (tylenolModal) {
-            tylenolModal.style.display = "none";
+        if (asNeededMedicationModal) {
+            asNeededMedicationModal.style.display = "none";
         }
     }
 
-    if (logTylenolButton) {
-        logTylenolButton.addEventListener("click", openModal);
+    if (logAsNeededMedicationButton) {
+        logAsNeededMedicationButton.addEventListener("click", openModal);
     }
 
-    const medicationSelect = document.getElementById("asNeededMedicationSelect");
-    if (medicationSelect) {
-        medicationSelect.addEventListener("change", function () {
-            if (tylenolTabletCount) {
-                tylenolTabletCount.focus();
+    if (saveAsNeededMedicationBtn) {
+        saveAsNeededMedicationBtn.addEventListener("click", function () {
+            const medicationName = asNeededMedicationNameInput
+                ? asNeededMedicationNameInput.value.trim()
+                : "";
+
+            if (!medicationName) {
+                alert("Please enter a medication name.");
+                return;
             }
-        });
-    }
 
-    if (saveTylenolBtn) {
-        saveTylenolBtn.addEventListener("click", function () {
             const entry = {
-                dateTime: tylenolTakenAt ? tylenolTakenAt.value : getCurrentDateTimeValue(),
-                tablets: tylenolTabletCount ? Number(tylenolTabletCount.value) : 1,
-                note: tylenolNote ? tylenolNote.value.trim() : ""
+                medication: medicationName,
+                dateTime: getCurrentDateTimeValue(),
+                tablets: asNeededMedicationCount ? Number(asNeededMedicationCount.value) : 1,
+                note: asNeededMedicationNote ? asNeededMedicationNote.value.trim() : ""
             };
 
-            tylenolLog.push(entry);
-            saveData("tylenolLog", tylenolLog);
+            asNeededMedicationHistory.push(entry);
+            saveData("asNeededMedicationHistory", asNeededMedicationHistory);
             closeModal();
             renderLastTaken();
         });
     }
 
-    if (cancelTylenolBtn) {
-        cancelTylenolBtn.addEventListener("click", closeModal);
+    if (cancelAsNeededMedicationBtn) {
+        cancelAsNeededMedicationBtn.addEventListener("click", closeModal);
     }
 
     renderLastTaken();

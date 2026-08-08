@@ -2,12 +2,13 @@
 let medicationLog = loadData("medicationLog", {});
 let medicationHistory =
     loadData("medicationHistory", []);
-// Load John's personal medication schedule
 let personalMedicationSchedule =
     JSON.parse(localStorage.getItem("personalMedicationSchedule"));
 
-if (!personalMedicationSchedule) {
-    personalMedicationSchedule = medicationSchedule;
+if (!Array.isArray(personalMedicationSchedule)) {
+    personalMedicationSchedule = Array.isArray(medicationSchedule)
+        ? medicationSchedule.slice()
+        : [];
 
     localStorage.setItem(
         "personalMedicationSchedule",
@@ -65,7 +66,10 @@ const eveningMedicationList = document.getElementById("eveningMedicationList");
         group => group.time === time
     );
 
-    if (!group) return;
+    if (!group) {
+        element.innerHTML = "<em>No medications configured.</em>";
+        return;
+    }
 
     element.innerHTML =
         "<ul><li>" +
