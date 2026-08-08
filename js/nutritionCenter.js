@@ -17,6 +17,7 @@
     const nutritionLogModal = document.getElementById("nutritionLogModal");
     const nutritionLogModalContent = nutritionLogModal ? nutritionLogModal.querySelector(".modal-content") : null;
     const nutritionDescriptionInput = document.getElementById("nutritionDescriptionInput");
+    const nutritionMealInput = document.getElementById("nutritionMealInput");
     const nutritionCaloriesInput = document.getElementById("nutritionCaloriesInput");
     const nutritionProteinInput = document.getElementById("nutritionProteinInput");
     const nutritionCarbsInput = document.getElementById("nutritionCarbsInput");
@@ -222,6 +223,20 @@
         return String(note).trim();
     }
 
+    function normalizeFoodMeal(entry) {
+        const meal = entry.meal !== undefined ? entry.meal : entry.mealCategory;
+        if (meal === undefined || meal === null) {
+            return "";
+        }
+
+        const trimmed = String(meal).trim();
+        if (!trimmed || trimmed.toLowerCase() === "none") {
+            return "";
+        }
+
+        return trimmed;
+    }
+
     function roundNutritionValue(value) {
         const rounded = Math.round(value * 10) / 10;
         return Number.isInteger(rounded) ? rounded : rounded;
@@ -253,6 +268,10 @@
                     savedEntry.note = normalizedEntry.notes;
                 }
 
+                if (normalizedEntry.meal) {
+                    savedEntry.meal = normalizedEntry.meal;
+                }
+
                 return savedEntry;
             })
             .filter(function (entry) {
@@ -272,6 +291,7 @@
             dayKey: toDayKey(parsedDate),
             fallbackDateLabel: source.date || parent.date || "",
             description: normalizeFoodDescription(source),
+            meal: normalizeFoodMeal(source),
             calories: getNumberFromKeys(source, ["calories", "kcal"]),
             protein: getNumberFromKeys(source, ["protein", "proteinG", "protein_g"]),
             carbs: getNumberFromKeys(source, ["carbs", "carbohydrates", "carbohydrate", "carbsG", "carbohydratesG"]),
@@ -428,6 +448,9 @@
 
         const entryHtml = dayData.entries
             .map(function (entry) {
+                const mealHtml = entry.meal
+                    ? '<div class="nutrition-day-detail-notes"><span class="nutrition-day-detail-label">Meal</span><span>' + escapeHtml(entry.meal) + "</span></div>"
+                    : "";
                 const notesHtml = entry.notes
                     ? '<div class="nutrition-day-detail-notes"><span class="nutrition-day-detail-label">Notes</span><span>' + escapeHtml(entry.notes) + "</span></div>"
                     : "";
@@ -440,6 +463,7 @@
                         '<span>' + escapeHtml(String(entry.carbs)) + " g C</span>" +
                         '<span>' + escapeHtml(String(entry.fat)) + " g F</span>" +
                     "</div>" +
+                    mealHtml +
                     notesHtml +
                 "</div>";
             })
@@ -486,6 +510,7 @@
 
     function resetNutritionForm() {
         if (nutritionDescriptionInput) nutritionDescriptionInput.value = "";
+        if (nutritionMealInput) nutritionMealInput.value = "";
         if (nutritionCaloriesInput) nutritionCaloriesInput.value = "";
         if (nutritionProteinInput) nutritionProteinInput.value = "";
         if (nutritionCarbsInput) nutritionCarbsInput.value = "";
@@ -521,6 +546,7 @@
 
     function createNutritionEntryFromForm() {
         const description = nutritionDescriptionInput ? nutritionDescriptionInput.value.trim() : "";
+        const meal = nutritionMealInput ? nutritionMealInput.value.trim() : "";
         const calories = nutritionCaloriesInput ? nutritionCaloriesInput.value.trim() : "";
         const protein = nutritionProteinInput ? nutritionProteinInput.value.trim() : "";
         const carbs = nutritionCarbsInput ? nutritionCarbsInput.value.trim() : "";
@@ -552,6 +578,10 @@
             date: date,
             time: getCurrentTimeValue()
         };
+
+        if (meal) {
+            entry.meal = meal;
+        }
 
         if (note) {
             entry.note = note;
