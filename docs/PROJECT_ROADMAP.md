@@ -290,7 +290,7 @@ Examples:
 
 - Blood Pressure: Example reading • Pulse example
 - Weight: Example weight value
-- Exercise: Stationary Bike • 63 minutes
+- Exercise: Example activity • Example duration
 - Medication: Wake Up medications logged
 
 No Edit or Delete buttons should be visible by default.
