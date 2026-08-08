@@ -15,7 +15,7 @@ Ideas are grouped by category and prioritized later.
 
 - Medication logging
 - Medication reminders
-- Psyllium fiber timing
+- Supplement timing
 - Weight tracking
 - Blood pressure
 - CPAP
@@ -210,18 +210,18 @@ Allow users to record the quantity taken for each medication during its schedule
 Examples:
 
 Morning
-- Pantoprazole (1)
-- Hydrochlorothiazide (1)
-- Metoprolol XR (1)
+- Example medication A
+- Example medication B
+- Example medication C
 
 Midday
-- Gabapentin (1 or 2)
+- User-selected medication with optional quantity
 
 Bedtime
-- Gabapentin (1 or 2)
-- Rosuvastatin (1)
-- Nifedipine (1)
-- Aspirin 81 mg (1)
+- User-selected medication with optional quantity
+- Example medication D
+- Example medication E
+- Example medication F
 
 The quantity control should be easy to read and easy to tap.
 
@@ -292,10 +292,10 @@ Global items like Weather should remain independently accessible and not belong 
 
 ### Future UI Modernization
 - Reevaluate input controls based on the type of information being entered rather than using a single control style everywhere.
-- For small fixed choices (e.g., Tylenol 1–3 tablets), consider direct selection buttons.
+- For small fixed choices (e.g., user-selected medication quantity), consider direct selection buttons.
 - For variable quantities, use larger +/- controls or other appropriate input methods.
 
-Future Enhancement – Improve Tylenol Logging UI
+Future Enhancement - Improve As-Needed Medication Logging UI
 
 Priority: Medium
 
@@ -303,10 +303,10 @@ Status: Backlog
 
 Goal
 
-Redesign the Tylenol logging dialog to be faster and easier to use on an iPhone while preserving the existing logging functionality.
+Redesign the as-needed medication logging dialog to be faster and easier to use on an iPhone while preserving the existing logging functionality.
 
 Current Status
-Supports 1–3 tablets.
+Supports a user-entered quantity.
 Automatically records the date and time.
 Optional note field.
 History displays the correct timestamp and tablet count.
@@ -446,9 +446,9 @@ Move Zepbound into the Medication Center instead of maintaining a separate Zepbo
 
 ### As-Needed Medications
 
-Add Alpha-Lipoic Acid (ALA) to the "As Needed" medication section.
+Support user-managed as-needed medications in the "As Needed" medication section.
 
-Allow ALA to be logged the same way as other as-needed medications.
+Allow any user-selected as-needed medication to be logged the same way.
 
 ### Medication Quantity Logging
 
@@ -456,10 +456,10 @@ Enhance medication logging to support recording quantities when needed.
 
 Example:
 
-- Gabapentin
-  - Morning: 1 capsule
-  - Midday: 2 capsules
-  - Evening: 1 capsule
+- Example medication
+  - Morning: user-selected quantity
+  - Midday: user-selected quantity
+  - Evening: user-selected quantity
 
 Rather than only recording that a medication was taken, optionally record the quantity taken for medications where dosage may vary.
 

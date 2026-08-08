@@ -187,9 +187,9 @@ The note belongs to that log event.
 
 Wake Up
 
-- Pantoprazole
-- Metoprolol
-- Hydrochlorothiazide
+- Example medication A
+- Example medication B
+- Example medication C
 
 [Log Medication]
 
@@ -288,8 +288,8 @@ Each entry shows only summary information such as:
 
 Examples:
 
-- Blood Pressure: 126/78 • Pulse 64
-- Weight: 228.4 lbs
+- Blood Pressure: Example reading • Pulse example
+- Weight: Example weight value
 - Exercise: Stationary Bike • 63 minutes
 - Medication: Wake Up medications logged
 

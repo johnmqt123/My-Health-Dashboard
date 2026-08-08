@@ -299,8 +299,15 @@
     <div class="modal-content">
         <h2>Log As-Needed Medication</h2>
 
+        <label for="asNeededMedicationChoice">Medication</label>
+        <select id="asNeededMedicationChoice">
+            <option value="Tylenol">Tylenol</option>
+            <option value="ALA">ALA (Alpha-Lipoic Acid)</option>
+            <option value="custom">Other / custom medication</option>
+        </select>
+
         <label for="asNeededMedicationNameInput">Medication Name</label>
-        <input id="asNeededMedicationNameInput" type="text">
+        <input id="asNeededMedicationNameInput" type="text" style="display: none;" placeholder="Enter custom medication name">
 
         <label for="asNeededMedicationCount">Quantity</label>
         <input

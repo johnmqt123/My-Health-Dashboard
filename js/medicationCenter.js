@@ -27,6 +27,9 @@ const saveAsNeededMedicationBtn =
 const cancelAsNeededMedicationBtn =
     document.getElementById("cancelAsNeededMedicationBtn");
 
+const asNeededMedicationChoice =
+    document.getElementById("asNeededMedicationChoice");
+
 const asNeededMedicationNameInput =
     document.getElementById("asNeededMedicationNameInput");
 
@@ -122,8 +125,13 @@ function renderAsNeededMedicationHistory() {
 }
 
 function resetAsNeededMedicationForm() {
+    if (asNeededMedicationChoice) {
+        asNeededMedicationChoice.value = "Tylenol";
+    }
+
     if (asNeededMedicationNameInput) {
         asNeededMedicationNameInput.value = "";
+        asNeededMedicationNameInput.style.display = "none";
     }
 
     if (asNeededMedicationCount) {
@@ -150,6 +158,20 @@ function openAsNeededMedicationModal() {
 function closeAsNeededMedicationModal() {
     if (asNeededMedicationModal) {
         asNeededMedicationModal.style.display = "none";
+    }
+}
+
+function updateAsNeededMedicationNameInputVisibility() {
+    if (!asNeededMedicationChoice || !asNeededMedicationNameInput) {
+        return;
+    }
+
+    const isCustom = asNeededMedicationChoice.value === "custom";
+    asNeededMedicationNameInput.style.display = isCustom ? "block" : "none";
+    asNeededMedicationNameInput.required = isCustom;
+
+    if (!isCustom) {
+        asNeededMedicationNameInput.value = "";
     }
 }
 
@@ -414,11 +436,25 @@ if (logAsNeededMedicationButton) {
     logAsNeededMedicationButton.addEventListener("click", openAsNeededMedicationModal);
 }
 
+if (asNeededMedicationChoice) {
+    asNeededMedicationChoice.addEventListener("change", function () {
+        updateAsNeededMedicationNameInputVisibility();
+
+        if (asNeededMedicationChoice.value === "custom" && asNeededMedicationNameInput) {
+            asNeededMedicationNameInput.focus();
+        }
+    });
+}
+
 if (saveAsNeededMedicationBtn) {
     saveAsNeededMedicationBtn.addEventListener("click", function () {
-        const medicationName = asNeededMedicationNameInput
-            ? asNeededMedicationNameInput.value.trim()
-            : "";
+        const selectedChoice = asNeededMedicationChoice
+            ? asNeededMedicationChoice.value
+            : "custom";
+
+        const medicationName = selectedChoice === "custom"
+            ? (asNeededMedicationNameInput ? asNeededMedicationNameInput.value.trim() : "")
+            : selectedChoice;
 
         if (!medicationName) {
             alert("Please enter a medication name.");
@@ -463,4 +499,5 @@ if (cancelAsNeededMedicationBtn) {
     cancelAsNeededMedicationBtn.addEventListener("click", closeAsNeededMedicationModal);
 }
 
+updateAsNeededMedicationNameInputVisibility();
 renderAsNeededMedicationHistory();
