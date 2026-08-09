@@ -103,6 +103,32 @@ header p {
     overflow: visible;
 }
 
+#medicationCenterSection .briefing .card {
+    scroll-margin-top: 104px;
+}
+
+#medicationCenterSection {
+    position: relative;
+}
+
+#medicationCenterSection .medication-center-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--surface);
+    padding-bottom: 10px;
+    margin-bottom: 2px;
+    box-shadow: 0 1px 0 rgba(148, 163, 184, 0.35);
+}
+
+#medicationCenterSection .medication-center-sticky-header > h2 {
+    margin-bottom: 10px;
+}
+
+#medicationCenterSection .medication-center-sticky-header .feature-actions {
+    margin-bottom: 0;
+}
+
 #zepboundCenterSection {
     max-height: none;
     overflow: visible;
@@ -1073,6 +1099,15 @@ button:active,
     .action-pair-row > #manageMedicationsBtn {
         min-height: 40px;
         font-size: 0.9rem;
+    }
+
+    #medicationCenterSection .medication-center-sticky-header {
+        padding-bottom: 8px;
+    }
+
+    #medicationCenterSection .medication-center-sticky-header > h2 {
+        margin-bottom: 8px;
+        font-size: 1.2rem;
     }
 
     .medication-schedule-section {
