@@ -132,6 +132,10 @@
     };
 
     function getNumberOrNull(value) {
+        if (value === undefined || value === null || value === "") {
+            return null;
+        }
+
         const num = Number(value);
         return Number.isFinite(num) ? num : null;
     }
@@ -612,19 +616,41 @@
     }
 
     function getLiveWeightCenterMetrics() {
-        if (window.weightCenterMetrics && typeof window.weightCenterMetrics.getCurrentWeightAndBmi === "function") {
-            const metrics = window.weightCenterMetrics.getCurrentWeightAndBmi() || {};
+        const weightApi = window.weightCenterMetrics;
+        const profileApi = window.personalProfileData;
+
+        if (
+            weightApi &&
+            typeof weightApi.getCurrentWeightLb === "function" &&
+            typeof weightApi.calculateBmiFromWeight === "function" &&
+            typeof weightApi.getBmiCategory === "function" &&
+            profileApi &&
+            typeof profileApi.getHeightInches === "function"
+        ) {
+            const currentWeightLb = getNumberOrNull(weightApi.getCurrentWeightLb());
+            const heightInches = getNumberOrNull(profileApi.getHeightInches());
+            const currentBmi = getNumberOrNull(weightApi.calculateBmiFromWeight(currentWeightLb, heightInches));
+
+            let bmiMissingReason = "";
+            if (currentWeightLb === null) {
+                bmiMissingReason = "Weight not available";
+            } else if (heightInches === null) {
+                bmiMissingReason = "Height not set";
+            }
+
             return {
-                currentWeightLb: getNumberOrNull(metrics.currentWeightLb),
-                currentBmi: getNumberOrNull(metrics.currentBmi),
-                category: getTrimmedTextOrEmpty(metrics.category)
+                currentWeightLb: currentWeightLb,
+                currentBmi: currentBmi,
+                category: getTrimmedTextOrEmpty(weightApi.getBmiCategory(currentBmi)),
+                bmiMissingReason: bmiMissingReason
             };
         }
 
         return {
             currentWeightLb: null,
             currentBmi: null,
-            category: ""
+            category: "",
+            bmiMissingReason: "Weight not available"
         };
     }
 
@@ -660,12 +686,12 @@
 
         const currentWeightLine = liveMetrics.currentWeightLb !== null
             ? "Current Weight: " + escapeHtml(formatWeightValue(liveMetrics.currentWeightLb))
-            : "Current Weight: --";
+            : "Current Weight: Weight not available";
 
         const currentBmiLine = liveMetrics.currentBmi !== null
             ? "Current BMI: " + escapeHtml(String(liveMetrics.currentBmi)) +
                 (liveMetrics.category ? " • " + escapeHtml(liveMetrics.category) : "")
-            : "Current BMI: --";
+            : "Current BMI: " + escapeHtml(liveMetrics.bmiMissingReason || "Not available");
 
         const expectedRateLine = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.expectedRate)
             ? "Expected rate: " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.expectedRate)

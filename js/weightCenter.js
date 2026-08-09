@@ -5,6 +5,10 @@
 
 (function () {
     function getNumberOrNull(value) {
+        if (value === undefined || value === null || value === "") {
+            return null;
+        }
+
         const num = Number(value);
         return Number.isFinite(num) ? num : null;
     }
