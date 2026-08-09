@@ -271,7 +271,7 @@ function buildMedicationList() {
 
     const addTimeLabel = document.createElement("label");
     addTimeLabel.setAttribute("for", "newMedicationTimeInput");
-    addTimeLabel.textContent = "New Schedule Time";
+    addTimeLabel.textContent = "Add Another Medication Schedule";
     addTimeContainer.appendChild(addTimeLabel);
 
     const addTimeInput = document.createElement("input");
@@ -283,7 +283,7 @@ function buildMedicationList() {
     const addTimeButton = document.createElement("button");
     addTimeButton.type = "button";
     addTimeButton.id = "addMedicationTimeBtn";
-    addTimeButton.textContent = "Add Schedule Time";
+    addTimeButton.textContent = "Add Schedule";
     addTimeContainer.appendChild(addTimeButton);
 
     medicationEditor.appendChild(addTimeContainer);
