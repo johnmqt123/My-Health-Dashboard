@@ -225,7 +225,7 @@ function buildMedicationList() {
 
     const scheduleHint = document.createElement("p");
     scheduleHint.className = "medication-editor-hint";
-    scheduleHint.textContent = "Create schedule times, then add medications under each time.";
+    scheduleHint.innerHTML = "<strong>Manage your Medication Schedule</strong><br>Set up your medication schedule and add medications to each schedule event.";
     medicationEditor.appendChild(scheduleHint);
 
     if (!Array.isArray(personalMedicationSchedule)) {
