@@ -438,9 +438,32 @@ function showNotesEditor(group) {
 function showMedicationEditor(group) {
 
     const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
+    const groupTime = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.parseClockTimeTo24Hour === "function"
+        ? window.medicationScheduleCompat.parseClockTimeTo24Hour(group && group.time ? group.time : "")
+        : (group && group.time ? group.time : "");
 
     medicationEditArea.innerHTML = `
 <h4>Editing ${groupName}</h4>
+
+<label>Schedule Event Name:</label><br>
+
+<input
+type="text"
+id="editScheduleEventNameInput"
+style="width:100%;"
+>
+
+<br><br>
+
+<label>Scheduled Time:</label><br>
+
+<input
+type="time"
+id="editScheduleEventTimeInput"
+style="width:100%;"
+>
+
+<br><br>
 
 <label>Medications:</label><br>
 
@@ -485,6 +508,17 @@ Cancel
 
     medicationEditArea.style.display = "block";
 
+    const editScheduleEventNameInput = document.getElementById("editScheduleEventNameInput");
+    const editScheduleEventTimeInput = document.getElementById("editScheduleEventTimeInput");
+
+    if (editScheduleEventNameInput) {
+        editScheduleEventNameInput.value = groupName;
+    }
+
+    if (editScheduleEventTimeInput) {
+        editScheduleEventTimeInput.value = groupTime;
+    }
+
     document.getElementById("addMedicationBtn")
         .addEventListener("click", function () {
 
@@ -524,6 +558,33 @@ Cancel
 
     document.getElementById("saveMedicationBtn")
         .addEventListener("click", function () {
+
+            const updatedName =
+                document.getElementById("editScheduleEventNameInput")
+                    .value
+                    .trim();
+
+            if (!updatedName) {
+                alert("Please enter a schedule event name.");
+                return;
+            }
+
+            const editedTimeRaw =
+                document.getElementById("editScheduleEventTimeInput")
+                    .value
+                    .trim();
+
+            const normalizedTime = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.parseClockTimeTo24Hour === "function"
+                ? window.medicationScheduleCompat.parseClockTimeTo24Hour(editedTimeRaw)
+                : editedTimeRaw;
+
+            if (!normalizedTime) {
+                alert("Please enter a scheduled time.");
+                return;
+            }
+
+            group.name = updatedName;
+            group.time = normalizedTime;
 
             group.medications =
                 document.getElementById("editMedicationInput")
