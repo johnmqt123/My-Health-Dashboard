@@ -5,6 +5,304 @@ let medicationHistory =
 let personalMedicationSchedule =
     JSON.parse(localStorage.getItem("personalMedicationSchedule"));
 
+const medicationEventCompatibility = {
+    wakeUp: {
+        id: "wakeUp",
+        defaultName: "Wake Up",
+        defaultTime: "07:00",
+        defaultOrder: 1,
+        historyPeriod: "Wake Up",
+        summaryLabel: "Wake-Up",
+        buttonLabel: "Wake-Up"
+    },
+    breakfast: {
+        id: "breakfast",
+        defaultName: "Breakfast",
+        defaultTime: "09:30",
+        defaultOrder: 2,
+        historyPeriod: "Breakfast",
+        summaryLabel: "Breakfast",
+        buttonLabel: "Breakfast"
+    },
+    midday: {
+        id: "midday",
+        defaultName: "Midday",
+        defaultTime: "14:00",
+        defaultOrder: 3,
+        historyPeriod: "Midday",
+        summaryLabel: "Midday",
+        buttonLabel: "Midday"
+    },
+    dinner: {
+        id: "dinner",
+        defaultName: "Dinner",
+        defaultTime: "17:00",
+        defaultOrder: 4,
+        historyPeriod: "Dinner",
+        summaryLabel: "Dinner",
+        buttonLabel: "Dinner"
+    },
+    evening: {
+        id: "evening",
+        defaultName: "Evening",
+        defaultTime: "21:00",
+        defaultOrder: 5,
+        historyPeriod: "Evening",
+        summaryLabel: "Evening",
+        buttonLabel: "Evening"
+    }
+};
+
+const medicationEventCompatibilityList = [
+    medicationEventCompatibility.wakeUp,
+    medicationEventCompatibility.breakfast,
+    medicationEventCompatibility.midday,
+    medicationEventCompatibility.dinner,
+    medicationEventCompatibility.evening
+];
+
+function getTrimmedString(value) {
+    if (value === undefined || value === null) {
+        return "";
+    }
+
+    return String(value).trim();
+}
+
+function parseClockTimeTo24Hour(value) {
+    const timeText = getTrimmedString(value);
+    if (!timeText) {
+        return "";
+    }
+
+    const twentyFourHourMatch = timeText.match(/^(\d{1,2}):(\d{2})$/);
+    if (twentyFourHourMatch) {
+        const hours = Number(twentyFourHourMatch[1]);
+        const minutes = Number(twentyFourHourMatch[2]);
+        if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+            return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0");
+        }
+    }
+
+    const twelveHourMatch = timeText.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (twelveHourMatch) {
+        let hours = Number(twelveHourMatch[1]);
+        const minutes = Number(twelveHourMatch[2]);
+        const meridian = twelveHourMatch[3].toUpperCase();
+
+        if (hours >= 1 && hours <= 12 && minutes >= 0 && minutes <= 59) {
+            if (meridian === "PM" && hours < 12) {
+                hours += 12;
+            }
+            if (meridian === "AM" && hours === 12) {
+                hours = 0;
+            }
+
+            return String(hours).padStart(2, "0") + ":" + String(minutes).padStart(2, "0");
+        }
+    }
+
+    return "";
+}
+
+function formatClockTimeLabel(value) {
+    const normalized = parseClockTimeTo24Hour(value);
+    if (!normalized) {
+        return "";
+    }
+
+    const parts = normalized.split(":");
+    const date = new Date();
+    date.setHours(Number(parts[0]), Number(parts[1]), 0, 0);
+    return date.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+}
+
+function normalizeMedicationEventId(text) {
+    const lowered = getTrimmedString(text).toLowerCase();
+    if (!lowered) {
+        return "event";
+    }
+
+    const compact = lowered.replace(/[^a-z0-9]+/g, " ").trim();
+    if (!compact) {
+        return "event";
+    }
+
+    const parts = compact.split(/\s+/);
+    const first = parts.shift() || "event";
+    return first + parts.map(function (part) {
+        return part.charAt(0).toUpperCase() + part.slice(1);
+    }).join("");
+}
+
+function inferLegacyEventId(value) {
+    const normalized = normalizeMedicationEventId(value);
+
+    if (normalized === "wakeUp" || normalized === "wakeup") {
+        return "wakeUp";
+    }
+
+    if (normalized === "breakfast") {
+        return "breakfast";
+    }
+
+    if (normalized === "midday") {
+        return "midday";
+    }
+
+    if (normalized === "dinner") {
+        return "dinner";
+    }
+
+    if (normalized === "evening") {
+        return "evening";
+    }
+
+    return "";
+}
+
+function createUniqueMedicationEventId(baseId, usedIds) {
+    const inferredLegacyId = inferLegacyEventId(baseId);
+    let candidate = inferredLegacyId || normalizeMedicationEventId(baseId) || "event";
+    let suffix = 2;
+
+    while (usedIds.has(candidate)) {
+        const baseCandidate = inferredLegacyId || normalizeMedicationEventId(baseId) || "event";
+        candidate = baseCandidate + suffix;
+        suffix += 1;
+    }
+
+    usedIds.add(candidate);
+    return candidate;
+}
+
+function normalizeMedicationScheduleEvents(rawSchedule) {
+    const source = Array.isArray(rawSchedule) ? rawSchedule : [];
+    const usedIds = new Set();
+
+    const normalized = source.map(function (entry, index) {
+        const raw = entry && typeof entry === "object" ? entry : {};
+        const legacyLabel = getTrimmedString(raw.time);
+        const legacyId = inferLegacyEventId(raw.id || raw.name || legacyLabel);
+        const defaults = legacyId ? medicationEventCompatibility[legacyId] : null;
+
+        const name =
+            getTrimmedString(raw.name) ||
+            legacyLabel ||
+            (defaults ? defaults.defaultName : "Medication Schedule " + (index + 1));
+
+        const clockTime =
+            parseClockTimeTo24Hour(raw.time) ||
+            parseClockTimeTo24Hour(raw.clockTime) ||
+            parseClockTimeTo24Hour(raw.scheduledTime) ||
+            (defaults ? defaults.defaultTime : "");
+
+        const orderValue = Number(raw.order);
+        const order = Number.isFinite(orderValue) ? orderValue : (defaults ? defaults.defaultOrder : index + 1);
+
+        const medications = Array.isArray(raw.medications)
+            ? raw.medications.map(function (item) {
+                return getTrimmedString(item);
+            }).filter(function (item) {
+                return !!item;
+            })
+            : [];
+
+        const notes = getTrimmedString(raw.notes);
+        const idSource = getTrimmedString(raw.id) || legacyId || name || "event";
+        const id = createUniqueMedicationEventId(idSource, usedIds);
+
+        const normalizedEntry = {
+            id: id,
+            name: name,
+            time: clockTime,
+            order: order,
+            medications: medications
+        };
+
+        if (notes) {
+            normalizedEntry.notes = notes;
+        }
+
+        return normalizedEntry;
+    });
+
+    normalized.sort(function (a, b) {
+        const orderDiff = Number(a.order) - Number(b.order);
+        if (orderDiff !== 0) {
+            return orderDiff;
+        }
+        return a.name.localeCompare(b.name);
+    });
+
+    return normalized.map(function (entry, index) {
+        return {
+            id: entry.id,
+            name: entry.name,
+            time: entry.time,
+            order: index + 1,
+            medications: entry.medications,
+            notes: entry.notes
+        };
+    });
+}
+
+function migrateMedicationScheduleEvents(rawSchedule) {
+    const source = Array.isArray(rawSchedule) ? rawSchedule : [];
+    const migrated = normalizeMedicationScheduleEvents(source);
+
+    if (JSON.stringify(source) !== JSON.stringify(migrated)) {
+        localStorage.setItem("personalMedicationSchedule", JSON.stringify(migrated));
+    }
+
+    return migrated;
+}
+
+function getMedicationEventForLegacyKey(legacyKey) {
+    const defaults = medicationEventCompatibility[legacyKey];
+    if (!defaults || !Array.isArray(personalMedicationSchedule)) {
+        return null;
+    }
+
+    const byId = personalMedicationSchedule.find(function (entry) {
+        return getTrimmedString(entry.id) === defaults.id;
+    });
+    if (byId) {
+        return byId;
+    }
+
+    return personalMedicationSchedule.find(function (entry) {
+        return inferLegacyEventId(entry.name) === legacyKey;
+    }) || null;
+}
+
+function getMedicationButtonLabel(legacyKey) {
+    const defaults = medicationEventCompatibility[legacyKey];
+    const event = getMedicationEventForLegacyKey(legacyKey);
+    const base = event && event.name ? event.name : (defaults ? defaults.buttonLabel : "Medication");
+    return base + " Medications";
+}
+
+function getMedicationHistoryPeriod(legacyKey) {
+    const defaults = medicationEventCompatibility[legacyKey];
+    return defaults ? defaults.historyPeriod : legacyKey;
+}
+
+personalMedicationSchedule = migrateMedicationScheduleEvents(personalMedicationSchedule);
+
+window.medicationScheduleCompat = {
+    normalizeMedicationScheduleEvents: normalizeMedicationScheduleEvents,
+    migrateMedicationScheduleEvents: migrateMedicationScheduleEvents,
+    getMedicationEventForLegacyKey: getMedicationEventForLegacyKey,
+    getMedicationButtonLabel: getMedicationButtonLabel,
+    getMedicationHistoryPeriod: getMedicationHistoryPeriod,
+    parseClockTimeTo24Hour: parseClockTimeTo24Hour,
+    formatClockTimeLabel: formatClockTimeLabel
+};
+
 if (!Array.isArray(personalMedicationSchedule)) {
     personalMedicationSchedule = Array.isArray(medicationSchedule)
         ? medicationSchedule.slice()
@@ -60,28 +358,123 @@ const breakfastMedicationList = document.getElementById("breakfastMedicationList
 const middayMedicationList = document.getElementById("middayMedicationList");
 const dinnerMedicationList = document.getElementById("dinnerMedicationList");
 const eveningMedicationList = document.getElementById("eveningMedicationList");
+const wakeUpHeading = document.getElementById("wakeUpHeading");
+const breakfastHeading = document.getElementById("breakfastHeading");
+const middayHeading = document.getElementById("middayHeading");
+const dinnerHeading = document.getElementById("dinnerHeading");
+const eveningHeading = document.getElementById("eveningHeading");
 
-    function displayMedicationList(time, element) {
-    const group = personalMedicationSchedule.find(
-        group => group.time === time
-    );
+const medicationCardSlots = {
+    wakeUp: {
+        key: "wakeUp",
+        headingElement: wakeUpHeading,
+        listElement: wakeUpMedicationList,
+        buttonId: "logButton",
+        icon: "💊",
+        defaultName: "Wake Up",
+        defaultTime: "07:00"
+    },
+    breakfast: {
+        key: "breakfast",
+        headingElement: breakfastHeading,
+        listElement: breakfastMedicationList,
+        buttonId: "breakfastButton",
+        icon: "🍳",
+        defaultName: "Breakfast",
+        defaultTime: "09:30"
+    },
+    midday: {
+        key: "midday",
+        headingElement: middayHeading,
+        listElement: middayMedicationList,
+        buttonId: "middayButton",
+        icon: "☀️",
+        defaultName: "Midday",
+        defaultTime: "14:00"
+    },
+    dinner: {
+        key: "dinner",
+        headingElement: dinnerHeading,
+        listElement: dinnerMedicationList,
+        buttonId: "dinnerButton",
+        icon: "🍽️",
+        defaultName: "Dinner",
+        defaultTime: "17:00"
+    },
+    evening: {
+        key: "evening",
+        headingElement: eveningHeading,
+        listElement: eveningMedicationList,
+        buttonId: "eveningButton",
+        icon: "🌙",
+        defaultName: "Evening",
+        defaultTime: "21:00"
+    }
+};
 
-    if (!group) {
-        element.innerHTML = "<em>No medications configured.</em>";
+function getScheduleEventTimeForDisplay(eventData, fallbackTime) {
+    const normalized = parseClockTimeTo24Hour(eventData && eventData.time);
+    if (normalized) {
+        return normalized;
+    }
+    return parseClockTimeTo24Hour(fallbackTime);
+}
+
+function renderMedicationCardHeading(slotConfig, eventData) {
+    if (!slotConfig || !slotConfig.headingElement) {
         return;
     }
 
-    element.innerHTML =
-        "<ul><li>" +
-        group.medications.join("</li><li>") +
-        "</li></ul>";
-        
+    const name = eventData && eventData.name
+        ? eventData.name
+        : slotConfig.defaultName;
+    const eventTime = getScheduleEventTimeForDisplay(eventData, slotConfig.defaultTime);
+    const timeLabel = formatClockTimeLabel(eventTime);
+
+    slotConfig.headingElement.innerHTML =
+        slotConfig.icon + " " +
+        name +
+        ' <span class="approx-time">~' + (timeLabel || "--") + "</span>";
 }
-displayMedicationList("Wake Up", wakeUpMedicationList);
-displayMedicationList("Breakfast", breakfastMedicationList);
-displayMedicationList("Midday", middayMedicationList);
-displayMedicationList("Dinner", dinnerMedicationList);
-displayMedicationList("Evening", eveningMedicationList);
+
+function renderMedicationListForSlot(slotConfig, eventData) {
+    if (!slotConfig || !slotConfig.listElement) {
+        return;
+    }
+
+    const medications = eventData && Array.isArray(eventData.medications)
+        ? eventData.medications
+        : [];
+
+    if (!medications.length) {
+        slotConfig.listElement.innerHTML = "<em>No medications configured.</em>";
+        return;
+    }
+
+    slotConfig.listElement.innerHTML =
+        "<ul><li>" +
+        medications.join("</li><li>") +
+        "</li></ul>";
+}
+
+function renderMedicationScheduleCards() {
+    Object.keys(medicationCardSlots).forEach(function (legacyKey) {
+        const slotConfig = medicationCardSlots[legacyKey];
+        const eventData = getMedicationEventForLegacyKey(legacyKey);
+        renderMedicationCardHeading(slotConfig, eventData);
+        renderMedicationListForSlot(slotConfig, eventData);
+
+        const button = slotConfig.buttonId
+            ? document.getElementById(slotConfig.buttonId)
+            : null;
+        if (button) {
+            button.textContent = getMedicationButtonLabel(legacyKey);
+        }
+    });
+}
+
+window.renderMedicationScheduleCards = renderMedicationScheduleCards;
+renderMedicationScheduleCards();
 function setupMedicationToggle(headingId, listId) {
     const heading = document.getElementById(headingId);
     const list = document.getElementById(listId);
@@ -296,13 +689,30 @@ if (todayTasks.length > 0 && todayList) {
 function updateAtAGlanceStatus() {
     if (summaryMedicationStatus) {
         const todayDate = new Date().toDateString();
-        const medicationPeriods = [
-            { key: "wakeUp", label: "Wake-Up" },
-            { key: "breakfast", label: "Breakfast" },
-            { key: "midday", label: "Midday" },
-            { key: "dinner", label: "Dinner" },
-            { key: "evening", label: "Evening" }
-        ];
+        const medicationPeriods = medicationEventCompatibilityList
+            .map(function (defaults, index) {
+                const eventData = getMedicationEventForLegacyKey(defaults.id);
+                const normalizedTime = parseClockTimeTo24Hour(eventData && eventData.time) || defaults.defaultTime;
+                const parts = normalizedTime.split(":");
+                const minutes = Number(parts[0]) * 60 + Number(parts[1]);
+                const orderValue = eventData && Number.isFinite(Number(eventData.order))
+                    ? Number(eventData.order)
+                    : defaults.defaultOrder;
+
+                return {
+                    key: defaults.id,
+                    label: eventData && eventData.name ? eventData.name : defaults.summaryLabel,
+                    minutes: Number.isFinite(minutes) ? minutes : 9999,
+                    order: Number.isFinite(orderValue) ? orderValue : index + 1
+                };
+            })
+            .sort(function (a, b) {
+                const timeDiff = a.minutes - b.minutes;
+                if (timeDiff !== 0) {
+                    return timeDiff;
+                }
+                return a.order - b.order;
+            });
 
         const nextPeriod = medicationPeriods.find(function (period) {
             const logEntry = medicationLog[period.key];
@@ -409,13 +819,14 @@ if (
 }
 wakeUpButton.addEventListener("click", function () {
     console.log("Wake-Up button clicked");
+const historyPeriod = getMedicationHistoryPeriod("wakeUp");
 if (
     wakeUpButton.textContent === "✅ Logged Today"
 ) {
     medicationLog.wakeUp = {};
     medicationHistory = medicationHistory.filter(function (entry) {
     return !(
-        entry.period === "Wake Up" &&
+        entry.period === historyPeriod &&
         entry.date === new Date().toDateString()
     );
 });
@@ -429,7 +840,7 @@ localStorage.setItem(
 
     
 
-    wakeUpButton.textContent = "Wake-Up Medications";
+        wakeUpButton.textContent = getMedicationButtonLabel("wakeUp");
 
     updateAtAGlanceStatus();
 
@@ -450,7 +861,7 @@ localStorage.setItem(
     saveMedicationLog();
     medicationHistory.push({
     date: now.toDateString(),
-    period: "Wake Up",
+    period: historyPeriod,
     time: medicationLog.wakeUp.time
 });
 
@@ -473,10 +884,11 @@ localStorage.setItem(
 });
 
 breakfastButton.addEventListener("click", function () {
+    const historyPeriod = getMedicationHistoryPeriod("breakfast");
     if (
     breakfastButton.textContent === "✅ Logged Today"
 ) {
-    breakfastButton.textContent = "Breakfast Medications";
+    breakfastButton.textContent = getMedicationButtonLabel("breakfast");
 
     breakfastStatus.textContent = "Not Logged";
 
@@ -485,7 +897,7 @@ breakfastButton.addEventListener("click", function () {
 // Remove today's Breakfast entry from history
 medicationHistory = medicationHistory.filter(entry => {
     return !(
-        entry.period === "Breakfast" &&
+        entry.period === historyPeriod &&
         entry.date === new Date().toDateString()
     );
 });
@@ -514,7 +926,7 @@ saveMedicationLog();
     saveMedicationLog();
     medicationHistory.push({
     date: now.toDateString(),
-    period: "Breakfast",
+    period: historyPeriod,
     time: medicationLog.breakfast.time
 });
 
@@ -536,10 +948,11 @@ localStorage.setItem(
 });
 
 middayButton.addEventListener("click", function () {
+    const historyPeriod = getMedicationHistoryPeriod("midday");
     if (
     middayButton.textContent === "✅ Logged Today"
 ) {
-    middayButton.textContent = "Midday Medications";
+    middayButton.textContent = getMedicationButtonLabel("midday");
 
     middayStatus.textContent = "Not Logged";
 
@@ -548,7 +961,7 @@ middayButton.addEventListener("click", function () {
 // Remove today's Midday entry from history
 medicationHistory = medicationHistory.filter(entry => {
     return !(
-        entry.period === "Midday" &&
+        entry.period === historyPeriod &&
         entry.date === new Date().toDateString()
     );
 });
@@ -576,7 +989,7 @@ saveMedicationLog();
     saveMedicationLog();
 medicationHistory.push({
     date: now.toDateString(),
-    period: "Midday",
+    period: historyPeriod,
     time: medicationLog.midday.time
 });
 
@@ -596,10 +1009,11 @@ localStorage.setItem(
 
 });
 dinnerButton.addEventListener("click", function () {
+    const historyPeriod = getMedicationHistoryPeriod("dinner");
     if (
     dinnerButton.textContent === "✅ Logged Today"
 ) {
-    dinnerButton.textContent = "Dinner Medications";
+    dinnerButton.textContent = getMedicationButtonLabel("dinner");
 
     dinnerStatus.textContent = "Not Logged";
 
@@ -608,7 +1022,7 @@ dinnerButton.addEventListener("click", function () {
 // Remove today's Dinner entry from history
 medicationHistory = medicationHistory.filter(entry => {
     return !(
-        entry.period === "Dinner" &&
+        entry.period === historyPeriod &&
         entry.date === new Date().toDateString()
     );
 });
@@ -636,7 +1050,7 @@ return;
     saveMedicationLog();
     medicationHistory.push({
     date: now.toDateString(),
-    period: "Dinner",
+    period: historyPeriod,
     time: medicationLog.dinner.time
 });
 
@@ -658,10 +1072,11 @@ updateAtAGlanceStatus();
 
 });
 eveningButton.addEventListener("click", function () {
+    const historyPeriod = getMedicationHistoryPeriod("evening");
     if (
     eveningButton.textContent === "✅ Logged Today"
 ) {
-    eveningButton.textContent = "Evening Medications";
+    eveningButton.textContent = getMedicationButtonLabel("evening");
 
     eveningStatus.textContent = "Not Logged";
 
@@ -670,7 +1085,7 @@ eveningButton.addEventListener("click", function () {
 // Remove today's Evening entry from history
 medicationHistory = medicationHistory.filter(entry => {
     return !(
-        entry.period === "Evening" &&
+        entry.period === historyPeriod &&
         entry.date === new Date().toDateString()
     );
 });
@@ -699,7 +1114,7 @@ return;
     
     medicationHistory.push({
     date: now.toDateString(),
-    period: "Evening",
+    period: historyPeriod,
     time: medicationLog.evening.time
 });
 

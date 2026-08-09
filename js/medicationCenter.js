@@ -70,10 +70,22 @@ function formatDateTime(value) {
 }
 
 function saveMedicationSchedule() {
+    if (window.medicationScheduleCompat && typeof window.medicationScheduleCompat.normalizeMedicationScheduleEvents === "function") {
+        personalMedicationSchedule = window.medicationScheduleCompat.normalizeMedicationScheduleEvents(personalMedicationSchedule);
+    }
+
     localStorage.setItem(
         "personalMedicationSchedule",
         JSON.stringify(personalMedicationSchedule)
     );
+
+    if (typeof window.renderMedicationScheduleCards === "function") {
+        window.renderMedicationScheduleCards();
+    }
+
+    if (typeof window.updateAtAGlanceStatus === "function") {
+        window.updateAtAGlanceStatus();
+    }
 }
 
 function getMedicationHistoryFor(medicationName) {
@@ -220,6 +232,10 @@ function buildMedicationList() {
         personalMedicationSchedule = [];
     }
 
+    if (window.medicationScheduleCompat && typeof window.medicationScheduleCompat.normalizeMedicationScheduleEvents === "function") {
+        personalMedicationSchedule = window.medicationScheduleCompat.normalizeMedicationScheduleEvents(personalMedicationSchedule);
+    }
+
     if (!personalMedicationSchedule.length) {
         const empty = document.createElement("p");
         empty.textContent = "No medication schedule configured yet.";
@@ -228,12 +244,14 @@ function buildMedicationList() {
 
     personalMedicationSchedule.forEach(function (group) {
 
+        const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
+
         const section = document.createElement("section");
         section.className = "medication-schedule-section";
 
         const title = document.createElement("h4");
         title.className = "medication-schedule-title";
-        title.textContent = group.time;
+        title.textContent = groupName;
         section.appendChild(title);
 
         const list = document.createElement("ul");
@@ -257,8 +275,8 @@ function buildMedicationList() {
         const editButton = document.createElement("button");
         editButton.type = "button";
         editButton.className = "editMedicationBtn";
-        editButton.dataset.time = group.time;
-        editButton.textContent = "Edit " + group.time;
+        editButton.dataset.eventId = group.id;
+        editButton.textContent = "Edit " + groupName;
         section.appendChild(editButton);
 
         medicationEditor.appendChild(section);
@@ -296,7 +314,8 @@ function buildMedicationList() {
         }
 
         const exists = personalMedicationSchedule.some(function (group) {
-            return String(group.time || "").toLowerCase() === normalized.toLowerCase();
+            const groupName = group && group.name ? group.name : group.time;
+            return String(groupName || "").toLowerCase() === normalized.toLowerCase();
         });
 
         if (exists) {
@@ -304,8 +323,15 @@ function buildMedicationList() {
             return;
         }
 
+        const normalizedClockTime = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.parseClockTimeTo24Hour === "function"
+            ? window.medicationScheduleCompat.parseClockTimeTo24Hour(normalized)
+            : "";
+
         personalMedicationSchedule.push({
-            time: normalized,
+            id: "event" + Date.now(),
+            name: normalized,
+            time: normalizedClockTime,
+            order: personalMedicationSchedule.length + 1,
             medications: []
         });
 
@@ -321,8 +347,12 @@ function buildMedicationList() {
 
                 const group =
                     personalMedicationSchedule.find(
-                        item => item.time === this.dataset.time
+                        item => item.id === this.dataset.eventId
                     );
+
+                if (!group) {
+                    return;
+                }
 
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
@@ -371,8 +401,10 @@ function scrollMedicationListToTop() {
 
 function showNotesEditor(group) {
 
+    const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
+
     medicationEditArea.innerHTML = `
-<h4>${group.time} Notes</h4>
+<h4>${groupName} Notes</h4>
 
 <textarea
     id="groupNotesInput"
@@ -405,8 +437,10 @@ function showNotesEditor(group) {
 
 function showMedicationEditor(group) {
 
+    const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
+
     medicationEditArea.innerHTML = `
-<h4>Editing ${group.time}</h4>
+<h4>Editing ${groupName}</h4>
 
 <label>Medications:</label><br>
 
@@ -435,7 +469,7 @@ Add Medication
 <br><br>
 
 <button id="openNotesEditorBtn">
-Edit ${group.time} Notes
+Edit ${groupName} Notes
 </button>
 
 <br><br>
