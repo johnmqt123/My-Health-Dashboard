@@ -254,6 +254,7 @@ function buildMedicationList() {
 
     const addTimeContainer = document.createElement("div");
     addTimeContainer.className = "add-medication-time-block";
+    addTimeContainer.id = "addMedicationTimeControls";
 
     const addTimeLabel = document.createElement("label");
     addTimeLabel.setAttribute("for", "newMedicationTimeInput");
@@ -310,6 +311,7 @@ function buildMedicationList() {
                         item => item.time === this.dataset.time
                     );
 
+                setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
 
                 medicationEditArea.scrollIntoView({
@@ -321,6 +323,21 @@ function buildMedicationList() {
 
         });
 
+}
+
+function setAddScheduleControlsVisibility(isVisible) {
+    const addTimeContainer = document.getElementById("addMedicationTimeControls");
+    if (!addTimeContainer) {
+        return;
+    }
+
+    addTimeContainer.style.display = isVisible ? "grid" : "none";
+}
+
+function closeMedicationEditor() {
+    medicationEditArea.innerHTML = "";
+    medicationEditArea.style.display = "none";
+    setAddScheduleControlsVisibility(true);
 }
 
 function showNotesEditor(group) {
@@ -397,6 +414,10 @@ Edit ${group.time} Notes
 <button id="saveMedicationBtn">
 Save
 </button>
+
+<button id="cancelMedicationEditBtn">
+Cancel
+</button>
 `;
 
     medicationEditArea.style.display = "block";
@@ -416,10 +437,18 @@ Save
 
             }
 
-            group.medications.push(newMedication);
+            const editMedicationInput = document.getElementById("editMedicationInput");
+            const medications = editMedicationInput
+                .value
+                .split(",")
+                .map(item => item.trim())
+                .filter(function (item) {
+                    return item;
+                });
 
-            document.getElementById("editMedicationInput").value =
-                group.medications.join(", ");
+            medications.push(newMedication);
+
+            editMedicationInput.value = medications.join(", ");
 
             document.getElementById("newMedicationInput").value = "";
 
@@ -448,6 +477,11 @@ Save
 
             alert("Medication list updated.");
 
+        });
+
+    document.getElementById("cancelMedicationEditBtn")
+        .addEventListener("click", function () {
+            closeMedicationEditor();
         });
 
 }
