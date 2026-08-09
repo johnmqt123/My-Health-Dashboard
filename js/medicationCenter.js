@@ -175,6 +175,17 @@ function updateAsNeededMedicationNameInputVisibility() {
     }
 }
 
+function updateManageMedicationsButtonLabel(isExpanded) {
+    if (!manageMedicationsBtn) {
+        return;
+    }
+
+    manageMedicationsBtn.textContent =
+        "Edit Medications " + (isExpanded ? "▼" : "▶");
+}
+
+updateManageMedicationsButtonLabel(false);
+
 manageMedicationsBtn.addEventListener("click", function () {
 
     if (manageMedicationsPanel.style.display === "block") {
@@ -182,11 +193,13 @@ manageMedicationsBtn.addEventListener("click", function () {
         manageMedicationsPanel.style.display = "none";
         medicationEditArea.innerHTML = "";
         medicationEditArea.style.display = "none";
+        updateManageMedicationsButtonLabel(false);
         return;
 
     }
 
     manageMedicationsPanel.style.display = "block";
+    updateManageMedicationsButtonLabel(true);
 
     buildMedicationList();
 
