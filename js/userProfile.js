@@ -111,6 +111,7 @@ const userProfile = {
 
         const profile = loadPersonalProfile();
         const savedHeight = getHeightInchesFromProfile(profile);
+        renderProfileHeight();
 
         if (savedHeight === null) {
             if (profileHeightFeetInput) profileHeightFeetInput.value = "";
@@ -179,6 +180,15 @@ const userProfile = {
             saveProfileHeightBtn.addEventListener("click", saveProfileHeight);
         }
     }
+
+    window.personalProfileData = {
+        loadProfile: loadPersonalProfile,
+        saveProfile: savePersonalProfile,
+        getHeightInches: function () {
+            return getHeightInchesFromProfile(loadPersonalProfile());
+        },
+        formatHeightForDisplay: formatHeightForDisplay
+    };
 
     window.initPersonalProfile = initPersonalProfile;
     initPersonalProfile();

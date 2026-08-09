@@ -67,14 +67,8 @@
         <button type="button" class="quick-access-button" data-feature="Gmail">Gmail</button>
         <button type="button" class="quick-access-button" data-feature="News">News</button>
     </div>
+    <button id="editProfileHeightButton" type="button" style="margin-top: 10px;">👤 Personal Profile</button>
 </div>
-
-        <div class="card" id="personalProfileCard">
-            <h2>👤 Personal Profile</h2>
-            <p><strong>Height</strong></p>
-            <p id="profileHeightDisplay">Height not set</p>
-            <button id="editProfileHeightButton" type="button">Edit Height</button>
-        </div>
 
                 <div class="card nutrition-center-card" id="nutritionCard">
             <h2>🍽️ Today's Nutrition</h2>
@@ -365,6 +359,8 @@
 <div id="profileHeightModal" class="modal" style="display: none;">
     <div class="modal-content">
         <h2>Edit Height</h2>
+
+        <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
 
         <label for="profileHeightFeetInput">Feet</label>
         <input id="profileHeightFeetInput" type="number" min="0" step="1" inputmode="numeric">
