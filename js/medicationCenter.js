@@ -181,6 +181,7 @@ manageMedicationsBtn.addEventListener("click", function () {
 
         manageMedicationsPanel.style.display = "none";
         medicationEditArea.innerHTML = "";
+        medicationEditArea.style.display = "none";
         return;
 
     }
@@ -194,6 +195,8 @@ manageMedicationsBtn.addEventListener("click", function () {
 function buildMedicationList() {
 
     medicationEditor.innerHTML = "";
+    medicationEditArea.innerHTML = "";
+    medicationEditArea.style.display = "none";
 
     const scheduleHint = document.createElement("p");
     scheduleHint.className = "medication-editor-hint";
@@ -442,8 +445,6 @@ Save
             saveMedicationSchedule();
 
             buildMedicationList();
-
-            medicationEditArea.innerHTML = "";
 
             alert("Medication list updated.");
 
