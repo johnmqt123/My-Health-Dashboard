@@ -204,9 +204,51 @@
     saveData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig);
     window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
 
+    function refreshNutritionGoalsReferenceConfig() {
+        nutritionGoalsReferenceConfig = normalizeNutritionGoalsReference(
+            loadData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig)
+        );
+        window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
+    }
+
     function getNumber(value) {
         const num = Number(value);
         return Number.isFinite(num) ? num : 0;
+    }
+
+    function getDailyGoalByKey(goalKey) {
+        if (!nutritionGoalsReferenceConfig || !Array.isArray(nutritionGoalsReferenceConfig.dailyGoals)) {
+            return null;
+        }
+
+        return nutritionGoalsReferenceConfig.dailyGoals.find(function (goal) {
+            return goal && goal.key === goalKey;
+        }) || null;
+    }
+
+    function formatNutritionValue(value) {
+        return String(roundNutritionValue(getNumber(value)));
+    }
+
+    function getGoalDisplayUnit(goal, fallbackUnit) {
+        const raw = getTrimmedTextOrEmpty(goal && goal.unit);
+        if (raw) {
+            return raw.replace(/\s*\/\s*day\s*$/i, "");
+        }
+
+        return fallbackUnit;
+    }
+
+    function formatActualGoalOrUnset(actualValue, goalKey, fallbackUnit) {
+        const goal = getDailyGoalByKey(goalKey);
+        const actualText = formatNutritionValue(actualValue);
+
+        if (goal && goal.established && goal.target !== null) {
+            const goalUnit = getGoalDisplayUnit(goal, fallbackUnit);
+            return actualText + " / " + goal.target.toLocaleString() + " " + goalUnit;
+        }
+
+        return actualText + " " + fallbackUnit + " (Goal not set)";
     }
 
     function getCurrentDateInputValue() {
@@ -917,6 +959,7 @@
 
     function renderTodaySummary() {
         nutritionToday = nutritionToday || {};
+        refreshNutritionGoalsReferenceConfig();
 
         const calories = getNumber(nutritionToday.calories);
         const protein = getNumber(nutritionToday.protein);
@@ -924,16 +967,16 @@
         const fat = getNumber(nutritionToday.fat);
 
         if (nutritionCaloriesValue) {
-            nutritionCaloriesValue.textContent = String(calories);
+            nutritionCaloriesValue.textContent = formatActualGoalOrUnset(calories, "calories", "Kcal");
         }
         if (nutritionProteinValue) {
-            nutritionProteinValue.textContent = protein + " g";
+            nutritionProteinValue.textContent = formatActualGoalOrUnset(protein, "protein", "g");
         }
         if (nutritionCarbsValue) {
-            nutritionCarbsValue.textContent = carbs + " g";
+            nutritionCarbsValue.textContent = formatActualGoalOrUnset(carbs, "carbohydrates", "g");
         }
         if (nutritionFatValue) {
-            nutritionFatValue.textContent = fat + " g";
+            nutritionFatValue.textContent = formatActualGoalOrUnset(fat, "fat", "g");
         }
     }
 
