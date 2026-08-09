@@ -736,8 +736,14 @@
                 nutritionHistoryButton.textContent = "📊 Hide History";
 
                 if (typeof window.scrollMedicationCenterTo === "function") {
-                    window.scrollMedicationCenterTo(nutritionHistorySection);
+                    window.scrollMedicationCenterTo(nutritionHistoryButton);
+                    return;
                 }
+
+                nutritionHistoryButton.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
             });
         }
 

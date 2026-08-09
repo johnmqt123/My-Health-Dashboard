@@ -185,9 +185,14 @@ function scrollMedicationCenterTo(targetElement) {
     }
 
     requestAnimationFrame(function () {
-        elementToScroll.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
+        // Keep a small top inset so tapped controls are not flush/clipped at the viewport edge on mobile.
+        const elementTop =
+            window.pageYOffset + elementToScroll.getBoundingClientRect().top;
+        const targetTop = Math.max(0, elementTop - 12);
+
+        window.scrollTo({
+            top: targetTop,
+            behavior: "smooth"
         });
     });
 }
