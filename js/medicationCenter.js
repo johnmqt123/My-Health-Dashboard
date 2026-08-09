@@ -341,6 +341,19 @@ function closeMedicationEditor() {
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
     setAddScheduleControlsVisibility(true);
+    scrollMedicationListToTop();
+}
+
+function scrollMedicationListToTop() {
+    if (!medicationEditor) {
+        return;
+    }
+
+    const listTop = medicationEditor.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({
+        top: Math.max(0, listTop - 16),
+        behavior: "auto"
+    });
 }
 
 function showNotesEditor(group) {
@@ -477,6 +490,7 @@ Cancel
             saveMedicationSchedule();
 
             buildMedicationList();
+            scrollMedicationListToTop();
 
             alert("Medication list updated.");
 
