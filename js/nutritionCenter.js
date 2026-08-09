@@ -458,10 +458,10 @@
                 return '<div class="nutrition-day-detail-entry">' +
                     '<div class="nutrition-day-detail-description">' + escapeHtml(entry.description) + "</div>" +
                     '<div class="nutrition-day-detail-macros">' +
-                        '<span>' + escapeHtml(String(entry.calories)) + " kcal</span>" +
-                        '<span>' + escapeHtml(String(entry.protein)) + " g P</span>" +
-                        '<span>' + escapeHtml(String(entry.carbs)) + " g C</span>" +
-                        '<span>' + escapeHtml(String(entry.fat)) + " g F</span>" +
+                        '<span>' + escapeHtml(String(entry.calories)) + " Kcal</span>" +
+                        '<span>' + escapeHtml(String(entry.protein)) + " g Protein</span>" +
+                        '<span>' + escapeHtml(String(entry.carbs)) + " g Carbohydrates</span>" +
+                        '<span>' + escapeHtml(String(entry.fat)) + " g Fat</span>" +
                     "</div>" +
                     mealHtml +
                     notesHtml +
@@ -475,7 +475,7 @@
             '<div class="nutrition-day-detail-totals">' +
                 '<div class="nutrition-day-detail-totals-title">Daily Totals</div>' +
                 '<div class="nutrition-day-detail-totals-grid">' +
-                    '<span>' + escapeHtml(String(dayData.totals.calories)) + " kcal</span>" +
+                    '<span>' + escapeHtml(String(dayData.totals.calories)) + " Kcal</span>" +
                     '<span>' + escapeHtml(String(dayData.totals.protein)) + " g Protein</span>" +
                     '<span>' + escapeHtml(String(dayData.totals.carbs)) + " g Carbohydrates</span>" +
                     '<span>' + escapeHtml(String(dayData.totals.fat)) + " g Fat</span>" +
@@ -560,7 +560,7 @@
         }
 
         if (!calories) {
-            alert("Please enter calories.");
+            alert("Please enter Kcal.");
             return null;
         }
 
@@ -665,9 +665,9 @@
                     '<span class="nutrition-history-main">' +
                         '<span class="nutrition-history-date">' + escapeHtml(getDisplayDayLabel(dayData)) + "</span>" +
                         '<span class="nutrition-history-totals">' +
-                            escapeHtml(String(dayData.totals.calories)) + " kcal · " +
-                            escapeHtml(String(dayData.totals.protein)) + "g P · " +
-                            escapeHtml(String(dayData.totals.carbs)) + "g C" +
+                            escapeHtml(String(dayData.totals.calories)) + " Kcal · " +
+                            escapeHtml(String(dayData.totals.protein)) + "g Protein · " +
+                            escapeHtml(String(dayData.totals.carbs)) + "g Carbohydrates" +
                         "</span>" +
                     "</span>" +
                     '<span class="nutrition-history-chevron" aria-hidden="true">&gt;</span>';
