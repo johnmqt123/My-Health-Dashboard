@@ -1028,6 +1028,11 @@ button:active,
     padding-bottom: 4px;
     border-top: 1px solid #e2e8f0;
     z-index: 1;
+    pointer-events: none;
+}
+
+#medicationEditArea .medication-editor-actions button {
+    pointer-events: auto;
 }
 
 #cancelMedicationEditBtn {
