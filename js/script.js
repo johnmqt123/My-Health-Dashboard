@@ -1296,6 +1296,28 @@ if (summaryMedicationStatus) {
 
 backToTop.addEventListener("click", function () {
 
+    const manageMedicationsPanel = document.getElementById("manageMedicationsPanel");
+    const medicationEditor = document.getElementById("medicationEditor");
+    const medicationEditArea = document.getElementById("medicationEditArea");
+    const manageMedicationsButton = document.getElementById("manageMedicationsBtn");
+
+    if (manageMedicationsPanel) {
+        manageMedicationsPanel.style.display = "none";
+    }
+
+    if (medicationEditor) {
+        medicationEditor.innerHTML = "";
+    }
+
+    if (medicationEditArea) {
+        medicationEditArea.innerHTML = "";
+        medicationEditArea.style.display = "none";
+    }
+
+    if (manageMedicationsButton) {
+        manageMedicationsButton.textContent = "Edit Medications ▶";
+    }
+
     document.getElementById("medicationCenterSection")
         .style.display = "none";
 
