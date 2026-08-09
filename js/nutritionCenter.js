@@ -12,8 +12,11 @@
 
     const nutritionLogFoodButton = document.getElementById("nutritionLogFoodButton");
     const nutritionHistoryButton = document.getElementById("nutritionHistoryButton");
+    const nutritionGoalsReferenceButton = document.getElementById("nutritionGoalsReferenceButton");
     const nutritionHistorySection = document.getElementById("nutritionHistorySection");
     const nutritionHistoryDisplay = document.getElementById("nutritionHistoryDisplay");
+    const nutritionGoalsReferenceSection = document.getElementById("nutritionGoalsReferenceSection");
+    const nutritionGoalsReferenceContent = document.getElementById("nutritionGoalsReferenceContent");
     const nutritionLogModal = document.getElementById("nutritionLogModal");
     const nutritionLogModalContent = nutritionLogModal ? nutritionLogModal.querySelector(".modal-content") : null;
     const nutritionDescriptionInput = document.getElementById("nutritionDescriptionInput");
@@ -44,6 +47,170 @@
     let activeNutritionDayKey = null;
     let lockedScrollTop = 0;
     let nutritionModalLockCount = 0;
+
+    const nutritionGoalsReferenceStorageKey = "nutritionGoalsReference";
+    const nutritionGoalsReferenceSchema = {
+        dailyGoals: [
+            {
+                key: "calories",
+                label: "Calories",
+                target: null,
+                unit: "Kcal/day",
+                established: false
+            },
+            {
+                key: "protein",
+                label: "Protein",
+                target: null,
+                unit: "g/day",
+                established: false
+            },
+            {
+                key: "carbohydrates",
+                label: "Carbohydrates",
+                target: null,
+                unit: "",
+                established: false
+            },
+            {
+                key: "fat",
+                label: "Fat",
+                target: null,
+                unit: "",
+                established: false
+            },
+            {
+                key: "fiber",
+                label: "Fiber",
+                target: null,
+                unit: "",
+                established: false
+            },
+            {
+                key: "sodium",
+                label: "Sodium",
+                target: null,
+                unit: "",
+                established: false
+            }
+        ],
+        weightReference: {
+            currentWeightLb: null,
+            currentBmi: "",
+            category: "",
+            milestones: [
+                {
+                    key: "current",
+                    label: "Current",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
+                    key: "bmiUnder29",
+                    label: "BMI under 29",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
+                    key: "bmiUnder28",
+                    label: "BMI under 28",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
+                    key: "bmiUnder27",
+                    label: "BMI under 27",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
+                    key: "bmiUnder26",
+                    label: "BMI under 26",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
+                    key: "healthyWeight",
+                    label: "Healthy Weight",
+                    weightLb: null,
+                    bmi: ""
+                }
+            ],
+            expectedRate: ""
+        }
+    };
+
+    function getNumberOrNull(value) {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : null;
+    }
+
+    function getTrimmedTextOrEmpty(value) {
+        if (value === undefined || value === null) {
+            return "";
+        }
+
+        return String(value).trim();
+    }
+
+    function normalizeNutritionGoalsReference(rawGoals) {
+        const source = rawGoals && typeof rawGoals === "object" ? rawGoals : {};
+        const sourceDailyGoals = Array.isArray(source.dailyGoals) ? source.dailyGoals : [];
+        const sourceWeightReference = source.weightReference && typeof source.weightReference === "object"
+            ? source.weightReference
+            : {};
+        const sourceMilestones = Array.isArray(sourceWeightReference.milestones)
+            ? sourceWeightReference.milestones
+            : [];
+
+        const normalizedDailyGoals = nutritionGoalsReferenceSchema.dailyGoals.map(function (schemaGoal) {
+            const sourceGoal = sourceDailyGoals.find(function (item) {
+                return item && item.key === schemaGoal.key;
+            }) || {};
+
+            const parsedTarget = getNumberOrNull(sourceGoal.target);
+            const established = Boolean(sourceGoal.established) && parsedTarget !== null;
+
+            return {
+                key: schemaGoal.key,
+                label: schemaGoal.label,
+                target: parsedTarget,
+                unit: schemaGoal.unit,
+                established: established
+            };
+        });
+
+        const normalizedMilestones = nutritionGoalsReferenceSchema.weightReference.milestones.map(function (schemaMilestone) {
+            const sourceMilestone = sourceMilestones.find(function (item) {
+                return item && (item.key === schemaMilestone.key || item.label === schemaMilestone.label);
+            }) || {};
+
+            return {
+                key: schemaMilestone.key,
+                label: schemaMilestone.label,
+                weightLb: getNumberOrNull(sourceMilestone.weightLb),
+                bmi: getTrimmedTextOrEmpty(sourceMilestone.bmi)
+            };
+        });
+
+        return {
+            dailyGoals: normalizedDailyGoals,
+            weightReference: {
+                currentWeightLb: getNumberOrNull(sourceWeightReference.currentWeightLb),
+                currentBmi: getTrimmedTextOrEmpty(sourceWeightReference.currentBmi),
+                category: getTrimmedTextOrEmpty(sourceWeightReference.category),
+                milestones: normalizedMilestones,
+                expectedRate: getTrimmedTextOrEmpty(sourceWeightReference.expectedRate)
+            }
+        };
+    }
+
+    let nutritionGoalsReferenceConfig = normalizeNutritionGoalsReference(
+        loadData(nutritionGoalsReferenceStorageKey, null)
+    );
+
+    saveData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig);
+    window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
 
     function getNumber(value) {
         const num = Number(value);
@@ -429,6 +596,98 @@
         if (nutritionHistorySection && nutritionHistorySection.style.display === "block") {
             renderHistoryFramework();
         }
+
+        if (nutritionGoalsReferenceSection && nutritionGoalsReferenceSection.style.display === "block") {
+            renderNutritionGoalsReference();
+        }
+    }
+
+    function formatGoalValue(goal) {
+        if (!goal.established) {
+            return "Goal to be added later";
+        }
+
+        return goal.target.toLocaleString() + " " + goal.unit;
+    }
+
+    function formatWeightValue(weightLb) {
+        if (weightLb === null || weightLb === undefined) {
+            return "--";
+        }
+
+        return String(weightLb) + " lb";
+    }
+
+    function formatBmiValue(bmiValue) {
+        const text = getTrimmedTextOrEmpty(bmiValue);
+        return text || "--";
+    }
+
+    function renderNutritionGoalsReference() {
+        if (!nutritionGoalsReferenceContent) {
+            return;
+        }
+
+        const dailyGoalsHtml = nutritionGoalsReferenceConfig.dailyGoals
+            .map(function (goal) {
+                const valueClass = goal.established
+                    ? "nutrition-goals-value"
+                    : "nutrition-goals-value nutrition-goals-pending";
+
+                return '<div class="nutrition-goals-row">' +
+                    '<span class="nutrition-goals-label">' + escapeHtml(goal.label) + "</span>" +
+                    '<span class="' + valueClass + '">' + escapeHtml(formatGoalValue(goal)) + "</span>" +
+                "</div>";
+            })
+            .join("");
+
+        const milestonesHtml = nutritionGoalsReferenceConfig.weightReference.milestones
+            .map(function (milestone) {
+                return '<div class="nutrition-goals-milestone-row">' +
+                    '<span class="nutrition-goals-milestone-label">' + escapeHtml(milestone.label) + "</span>" +
+                    '<span class="nutrition-goals-milestone-weight">' + escapeHtml(formatWeightValue(milestone.weightLb)) + "</span>" +
+                    '<span class="nutrition-goals-milestone-bmi">' + escapeHtml(formatBmiValue(milestone.bmi)) + "</span>" +
+                "</div>";
+            })
+            .join("");
+
+        const hasCurrentReference =
+            nutritionGoalsReferenceConfig.weightReference.currentWeightLb !== null &&
+            !!getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.currentBmi);
+
+        const currentReferenceLine = hasCurrentReference
+            ? 'Current reference: ' +
+                escapeHtml(formatWeightValue(nutritionGoalsReferenceConfig.weightReference.currentWeightLb)) +
+                " • BMI " +
+                escapeHtml(formatBmiValue(nutritionGoalsReferenceConfig.weightReference.currentBmi)) +
+                (getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.category)
+                    ? " • " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.category)
+                    : "")
+            : "Current reference to be added later";
+
+        const expectedRateLine = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.expectedRate)
+            ? "Expected rate: " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.expectedRate)
+            : "Expected rate to be added later";
+
+        nutritionGoalsReferenceContent.innerHTML =
+            '<section class="nutrition-goals-block">' +
+                '<h3 class="nutrition-goals-heading">Daily Nutrition Goals</h3>' +
+                '<div class="nutrition-goals-grid">' + dailyGoalsHtml + "</div>" +
+            "</section>" +
+            '<section class="nutrition-goals-block">' +
+                '<h3 class="nutrition-goals-heading">Weight &amp; BMI Goals</h3>' +
+                '<p class="nutrition-goals-reference">' + currentReferenceLine + "</p>" +
+                '<div class="nutrition-goals-milestone-table">' +
+                    '<div class="nutrition-goals-milestone-head">' +
+                        '<span>Milestone</span><span>Weight</span><span>BMI</span>' +
+                    "</div>" +
+                    milestonesHtml +
+                "</div>" +
+            "</section>" +
+            '<section class="nutrition-goals-block">' +
+                '<h3 class="nutrition-goals-heading">Weight-loss Guidance</h3>' +
+                '<p class="nutrition-goals-reference">' + expectedRateLine + "</p>" +
+            "</section>";
     }
 
     function findNutritionDayByKey(dayKey) {
@@ -718,9 +977,14 @@
         saveNutritionData();
         renderTodaySummary();
         renderHistoryFramework();
+        renderNutritionGoalsReference();
 
         if (nutritionHistorySection) {
             nutritionHistorySection.style.display = "none";
+        }
+
+        if (nutritionGoalsReferenceSection) {
+            nutritionGoalsReferenceSection.style.display = "none";
         }
 
         if (nutritionLogFoodButton) {
@@ -771,6 +1035,35 @@
                 }
 
                 nutritionHistoryButton.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            });
+        }
+
+        if (nutritionGoalsReferenceButton) {
+            nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals & Reference";
+            nutritionGoalsReferenceButton.addEventListener("click", function () {
+                if (!nutritionGoalsReferenceSection) {
+                    return;
+                }
+
+                if (nutritionGoalsReferenceSection.style.display === "block") {
+                    nutritionGoalsReferenceSection.style.display = "none";
+                    nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals & Reference";
+                    return;
+                }
+
+                renderNutritionGoalsReference();
+                nutritionGoalsReferenceSection.style.display = "block";
+                nutritionGoalsReferenceButton.textContent = "🎯 Hide Goals & Reference";
+
+                if (typeof window.scrollMedicationCenterTo === "function") {
+                    window.scrollMedicationCenterTo(nutritionGoalsReferenceButton);
+                    return;
+                }
+
+                nutritionGoalsReferenceButton.scrollIntoView({
                     behavior: "smooth",
                     block: "start"
                 });
