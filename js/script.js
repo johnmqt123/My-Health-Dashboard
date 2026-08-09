@@ -283,7 +283,7 @@ function getMedicationButtonLabel(legacyKey) {
     const defaults = medicationEventCompatibility[legacyKey];
     const event = getMedicationEventForLegacyKey(legacyKey);
     const base = event && event.name ? event.name : (defaults ? defaults.buttonLabel : "Medication");
-    return base + " Medications";
+    return "Log " + base + " Medications";
 }
 
 function getMedicationHistoryPeriod(legacyKey) {
