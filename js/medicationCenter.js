@@ -380,7 +380,24 @@ function closeMedicationEditor() {
     scrollMedicationListToTop();
 }
 
+function getMedicationEditorScrollContainer() {
+    if (!manageMedicationsPanel) {
+        return null;
+    }
+
+    return manageMedicationsPanel;
+}
+
 function scrollMedicationListToTop() {
+    const scrollContainer = getMedicationEditorScrollContainer();
+    if (scrollContainer) {
+        scrollContainer.scrollTo({
+            top: 0,
+            behavior: "auto"
+        });
+        return;
+    }
+
     if (!medicationEditor) {
         return;
     }
@@ -409,6 +426,23 @@ function scrollMedicationEditorIntoView(targetElement) {
     }
 
     window.requestAnimationFrame(function () {
+        const scrollContainer = getMedicationEditorScrollContainer();
+        if (scrollContainer && scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+
+            const scrollTop =
+                scrollContainer.scrollTop +
+                (targetRect.top - containerRect.top) -
+                12;
+
+            scrollContainer.scrollTo({
+                top: Math.max(0, scrollTop),
+                behavior: "auto"
+            });
+            return;
+        }
+
         const offset = getMedicationCenterStickyOffset();
         const targetTop = target.getBoundingClientRect().top + window.scrollY;
 

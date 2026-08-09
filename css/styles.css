@@ -919,6 +919,20 @@ button:active,
     background-color: var(--accent-hover);
 }
 
+#manageMedicationsPanel {
+    max-height: calc(100dvh - 112px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 2px;
+}
+
+@supports not (height: 100dvh) {
+    #manageMedicationsPanel {
+        max-height: calc(100vh - 112px);
+    }
+}
+
 #medicationEditArea {
     display: none;
     margin-top: 20px;
@@ -1028,11 +1042,6 @@ button:active,
     padding-bottom: 4px;
     border-top: 1px solid #e2e8f0;
     z-index: 1;
-    pointer-events: none;
-}
-
-#medicationEditArea .medication-editor-actions button {
-    pointer-events: auto;
 }
 
 #cancelMedicationEditBtn {
