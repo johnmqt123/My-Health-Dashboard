@@ -927,6 +927,7 @@ button:active,
     border-radius: 8px;
     background-color: white;
     color: black;
+    padding-bottom: calc(15px + env(safe-area-inset-bottom));
 }
 
 .medication-editor-hint {
@@ -1017,6 +1018,16 @@ button:active,
 #medicationEditArea label {
     display: inline-block;
     margin-bottom: 4px;
+}
+
+#medicationEditArea .medication-editor-actions {
+    position: sticky;
+    bottom: 0;
+    background: #ffffff;
+    padding-top: 10px;
+    padding-bottom: 4px;
+    border-top: 1px solid #e2e8f0;
+    z-index: 1;
 }
 
 #cancelMedicationEditBtn {

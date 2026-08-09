@@ -356,14 +356,7 @@ function buildMedicationList() {
 
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
-
-                const editorTop =
-                    medicationEditArea.getBoundingClientRect().top + window.scrollY;
-
-                window.scrollTo({
-                    top: Math.max(0, editorTop - 20),
-                    behavior: "auto"
-                });
+                scrollMedicationEditorIntoView(medicationEditArea);
 
             });
 
@@ -396,6 +389,33 @@ function scrollMedicationListToTop() {
     window.scrollTo({
         top: Math.max(0, listTop - 16),
         behavior: "auto"
+    });
+}
+
+function getMedicationCenterStickyOffset() {
+    const stickyHeader = document.querySelector("#medicationCenterSection .medication-center-sticky-header");
+    if (!stickyHeader) {
+        return 20;
+    }
+
+    const stickyHeight = Math.ceil(stickyHeader.getBoundingClientRect().height);
+    return Math.max(20, stickyHeight + 12);
+}
+
+function scrollMedicationEditorIntoView(targetElement) {
+    const target = targetElement || medicationEditArea;
+    if (!target) {
+        return;
+    }
+
+    window.requestAnimationFrame(function () {
+        const offset = getMedicationCenterStickyOffset();
+        const targetTop = target.getBoundingClientRect().top + window.scrollY;
+
+        window.scrollTo({
+            top: Math.max(0, targetTop - offset),
+            behavior: "auto"
+        });
     });
 }
 
@@ -497,6 +517,7 @@ Edit ${groupName} Notes
 
 <br><br>
 
+<div class="medication-editor-actions">
 <button id="saveMedicationBtn">
 Save
 </button>
@@ -504,6 +525,7 @@ Save
 <button id="cancelMedicationEditBtn">
 Cancel
 </button>
+</div>
 `;
 
     medicationEditArea.style.display = "block";
@@ -518,6 +540,21 @@ Cancel
     if (editScheduleEventTimeInput) {
         editScheduleEventTimeInput.value = groupTime;
     }
+
+    function registerKeyboardVisibilityFocus(inputElement) {
+        if (!inputElement) {
+            return;
+        }
+
+        inputElement.addEventListener("focus", function () {
+            window.setTimeout(function () {
+                scrollMedicationEditorIntoView(inputElement);
+            }, 120);
+        });
+    }
+
+    registerKeyboardVisibilityFocus(editScheduleEventNameInput);
+    registerKeyboardVisibilityFocus(editScheduleEventTimeInput);
 
     document.getElementById("addMedicationBtn")
         .addEventListener("click", function () {
