@@ -309,6 +309,11 @@ function buildMedicationList() {
 
                 showMedicationEditor(group);
 
+                medicationEditArea.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center"
+                });
+
             });
 
         });
