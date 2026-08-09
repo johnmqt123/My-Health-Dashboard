@@ -164,7 +164,9 @@
             }) || {};
 
             const parsedTarget = getNumberOrNull(sourceGoal.target);
-            const established = Boolean(sourceGoal.established) && parsedTarget !== null;
+            const hasEstablishedFlag = Object.prototype.hasOwnProperty.call(sourceGoal, "established");
+            const isLegacyEstablishedGoal = !hasEstablishedFlag && parsedTarget !== null && parsedTarget > 0;
+            const established = (Boolean(sourceGoal.established) && parsedTarget !== null) || isLegacyEstablishedGoal;
 
             return {
                 key: schemaGoal.key,
@@ -197,11 +199,14 @@
         };
     }
 
+    const loadedNutritionGoalsReference = loadData(nutritionGoalsReferenceStorageKey, null);
     let nutritionGoalsReferenceConfig = normalizeNutritionGoalsReference(
-        loadData(nutritionGoalsReferenceStorageKey, null)
+        loadedNutritionGoalsReference
     );
 
-    saveData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig);
+    if (JSON.stringify(loadedNutritionGoalsReference) !== JSON.stringify(nutritionGoalsReferenceConfig)) {
+        saveData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig);
+    }
     window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
 
     function refreshNutritionGoalsReferenceConfig() {
