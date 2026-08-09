@@ -195,24 +195,8 @@ function buildMedicationList() {
 
     medicationEditor.innerHTML = "";
 
-    const addTimeLabel = document.createElement("label");
-    addTimeLabel.setAttribute("for", "newMedicationTimeInput");
-    addTimeLabel.textContent = "New Schedule Time";
-    medicationEditor.appendChild(addTimeLabel);
-
-    const addTimeInput = document.createElement("input");
-    addTimeInput.type = "text";
-    addTimeInput.id = "newMedicationTimeInput";
-    addTimeInput.style.width = "100%";
-    medicationEditor.appendChild(addTimeInput);
-
-    const addTimeButton = document.createElement("button");
-    addTimeButton.type = "button";
-    addTimeButton.id = "addMedicationTimeBtn";
-    addTimeButton.textContent = "Add Schedule Time";
-    medicationEditor.appendChild(addTimeButton);
-
     const scheduleHint = document.createElement("p");
+    scheduleHint.className = "medication-editor-hint";
     scheduleHint.textContent = "Create schedule times, then add medications under each time.";
     medicationEditor.appendChild(scheduleHint);
 
@@ -228,29 +212,64 @@ function buildMedicationList() {
 
     personalMedicationSchedule.forEach(function (group) {
 
-        const row = document.createElement("p");
+        const section = document.createElement("section");
+        section.className = "medication-schedule-section";
 
-        row.innerHTML = `
-<strong>${group.time}</strong>
+        const title = document.createElement("h4");
+        title.className = "medication-schedule-title";
+        title.textContent = group.time;
+        section.appendChild(title);
 
-<button class="editMedicationBtn"
-        data-time="${group.time}">
-    Edit
-</button>
+        const list = document.createElement("ul");
+        list.className = "medication-schedule-list";
 
-<button class="notesMedicationBtn"
-        data-time="${group.time}">
-    Notes
-</button>
+        if (Array.isArray(group.medications) && group.medications.length) {
+            group.medications.forEach(function (medicationName) {
+                const item = document.createElement("li");
+                item.textContent = medicationName;
+                list.appendChild(item);
+            });
+        } else {
+            const emptyItem = document.createElement("li");
+            emptyItem.className = "medication-schedule-empty";
+            emptyItem.textContent = "No medications yet.";
+            list.appendChild(emptyItem);
+        }
 
-<br>
+        section.appendChild(list);
 
-${group.medications.join(", ")}
-`;
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "editMedicationBtn";
+        editButton.dataset.time = group.time;
+        editButton.textContent = "Edit " + group.time;
+        section.appendChild(editButton);
 
-        medicationEditor.appendChild(row);
+        medicationEditor.appendChild(section);
 
     });
+
+    const addTimeContainer = document.createElement("div");
+    addTimeContainer.className = "add-medication-time-block";
+
+    const addTimeLabel = document.createElement("label");
+    addTimeLabel.setAttribute("for", "newMedicationTimeInput");
+    addTimeLabel.textContent = "New Schedule Time";
+    addTimeContainer.appendChild(addTimeLabel);
+
+    const addTimeInput = document.createElement("input");
+    addTimeInput.type = "text";
+    addTimeInput.id = "newMedicationTimeInput";
+    addTimeInput.style.width = "100%";
+    addTimeContainer.appendChild(addTimeInput);
+
+    const addTimeButton = document.createElement("button");
+    addTimeButton.type = "button";
+    addTimeButton.id = "addMedicationTimeBtn";
+    addTimeButton.textContent = "Add Schedule Time";
+    addTimeContainer.appendChild(addTimeButton);
+
+    medicationEditor.appendChild(addTimeContainer);
 
     addTimeButton.addEventListener("click", function () {
         const normalized = addTimeInput.value.trim();
@@ -289,22 +308,6 @@ ${group.medications.join(", ")}
                     );
 
                 showMedicationEditor(group);
-
-            });
-
-        });
-
-    document.querySelectorAll(".notesMedicationBtn")
-        .forEach(function (button) {
-
-            button.addEventListener("click", function () {
-
-                const group =
-                    personalMedicationSchedule.find(
-                        item => item.time === this.dataset.time
-                    );
-
-                showNotesEditor(group);
 
             });
 
@@ -377,6 +380,12 @@ Add Medication
 
 <br><br>
 
+<button id="openNotesEditorBtn">
+Edit ${group.time} Notes
+</button>
+
+<br><br>
+
 <button id="saveMedicationBtn">
 Save
 </button>
@@ -406,6 +415,11 @@ Save
 
             document.getElementById("newMedicationInput").value = "";
 
+        });
+
+    document.getElementById("openNotesEditorBtn")
+        .addEventListener("click", function () {
+            showNotesEditor(group);
         });
 
     document.getElementById("saveMedicationBtn")

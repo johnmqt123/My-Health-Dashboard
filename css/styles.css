@@ -860,22 +860,94 @@ button:active,
     color: black;
 }
 
+.medication-editor-hint {
+    margin: 0 0 12px;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+.medication-schedule-section {
+    border: 1px solid #dbe5f0;
+    border-radius: 10px;
+    padding: 12px;
+    background: #f8fbff;
+    margin-bottom: 12px;
+}
+
+.medication-schedule-title {
+    margin: 0 0 8px;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.medication-schedule-list {
+    margin: 0 0 10px;
+    padding-left: 18px;
+    display: grid;
+    gap: 4px;
+}
+
+.medication-schedule-list li {
+    font-size: 0.97rem;
+}
+
+.medication-schedule-empty {
+    list-style: none;
+    margin-left: -18px;
+    color: var(--muted);
+    font-style: italic;
+}
+
+.add-medication-time-block {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #e2e8f0;
+    display: grid;
+    gap: 8px;
+}
+
 .editMedicationBtn,
-.notesMedicationBtn {
+#addMedicationTimeBtn,
+#addMedicationBtn,
+#saveMedicationBtn,
+#openNotesEditorBtn,
+#saveNotesBtn {
     background-color: var(--accent);
     color: white;
     border: none;
     border-radius: 8px;
-    padding: 10px 18px;
-    margin: 0 8px 0 0;
-    font-size: 16px;
+    padding: 10px 14px;
+    margin: 0;
+    font-size: 0.95rem;
     font-weight: bold;
     cursor: pointer;
 }
 
+.editMedicationBtn,
+#addMedicationTimeBtn,
+#addMedicationBtn,
+#saveMedicationBtn,
+#openNotesEditorBtn,
+#saveNotesBtn {
+    min-height: 40px;
+}
+
 .editMedicationBtn:hover,
-.notesMedicationBtn:hover {
+#addMedicationTimeBtn:hover,
+#addMedicationBtn:hover,
+#saveMedicationBtn:hover,
+#openNotesEditorBtn:hover,
+#saveNotesBtn:hover {
     background-color: var(--accent-hover);
+}
+
+#medicationEditArea h4 {
+    margin-top: 0;
+}
+
+#medicationEditArea label {
+    display: inline-block;
+    margin-bottom: 4px;
 }
 
 .quick-access-card {
@@ -953,6 +1025,23 @@ button:active,
     .action-pair-row > #manageMedicationsBtn {
         min-height: 40px;
         font-size: 0.9rem;
+    }
+
+    .medication-schedule-section {
+        padding: 10px;
+    }
+
+    .medication-schedule-title {
+        font-size: 0.98rem;
+    }
+
+    .editMedicationBtn,
+    #addMedicationTimeBtn,
+    #addMedicationBtn,
+    #saveMedicationBtn,
+    #openNotesEditorBtn,
+    #saveNotesBtn {
+        width: 100%;
     }
 
     #bpModal {
