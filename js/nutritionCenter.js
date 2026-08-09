@@ -667,7 +667,7 @@
                         '<span class="nutrition-history-totals">' +
                             escapeHtml(String(dayData.totals.calories)) + " Kcal · " +
                             escapeHtml(String(dayData.totals.protein)) + "g Protein · " +
-                            escapeHtml(String(dayData.totals.carbs)) + "g Carbohydrates" +
+                            escapeHtml(String(dayData.totals.carbs)) + "g Carbs" +
                         "</span>" +
                     "</span>" +
                     '<span class="nutrition-history-chevron" aria-hidden="true">&gt;</span>';
