@@ -69,6 +69,13 @@
     </div>
 </div>
 
+        <div class="card" id="personalProfileCard">
+            <h2>👤 Personal Profile</h2>
+            <p><strong>Height</strong></p>
+            <p id="profileHeightDisplay">Height not set</p>
+            <button id="editProfileHeightButton" type="button">Edit Height</button>
+        </div>
+
                 <div class="card nutrition-center-card" id="nutritionCard">
             <h2>🍽️ Today's Nutrition</h2>
 
@@ -353,6 +360,20 @@
         <button id="weightDetailEditBtn">Edit</button>
         <button id="weightDetailDeleteBtn">Delete</button>
         <button id="weightDetailCloseBtn">Close</button>
+    </div>
+</div>
+<div id="profileHeightModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>Edit Height</h2>
+
+        <label for="profileHeightFeetInput">Feet</label>
+        <input id="profileHeightFeetInput" type="number" min="0" step="1" inputmode="numeric">
+
+        <label for="profileHeightInchesInput">Inches</label>
+        <input id="profileHeightInchesInput" type="number" min="0" max="11" step="1" inputmode="numeric">
+
+        <button id="saveProfileHeightBtn">Save</button>
+        <button id="cancelProfileHeightBtn">Cancel</button>
     </div>
 </div>
 <div id="bpModal" class="modal">
