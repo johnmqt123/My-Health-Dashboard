@@ -546,10 +546,29 @@ Cancel
             return;
         }
 
+        let pendingFocusScrollId = null;
+
         inputElement.addEventListener("focus", function () {
-            window.setTimeout(function () {
+            if (pendingFocusScrollId) {
+                window.clearTimeout(pendingFocusScrollId);
+            }
+
+            pendingFocusScrollId = window.setTimeout(function () {
+                pendingFocusScrollId = null;
+
+                if (document.activeElement !== inputElement) {
+                    return;
+                }
+
                 scrollMedicationEditorIntoView(inputElement);
             }, 120);
+        });
+
+        inputElement.addEventListener("blur", function () {
+            if (pendingFocusScrollId) {
+                window.clearTimeout(pendingFocusScrollId);
+                pendingFocusScrollId = null;
+            }
         });
     }
 
