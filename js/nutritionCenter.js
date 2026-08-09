@@ -131,6 +131,12 @@
         }
     };
 
+    const recognizedDailyGoalKeys = new Set(
+        nutritionGoalsReferenceSchema.dailyGoals.map(function (goal) {
+            return goal.key;
+        })
+    );
+
     function getNumberOrNull(value) {
         if (value === undefined || value === null || value === "") {
             return null;
@@ -199,20 +205,73 @@
         };
     }
 
-    const loadedNutritionGoalsReference = loadData(nutritionGoalsReferenceStorageKey, null);
-    let nutritionGoalsReferenceConfig = normalizeNutritionGoalsReference(
-        loadedNutritionGoalsReference
-    );
+    function cloneStorageValue(value) {
+        if (value === undefined) {
+            return undefined;
+        }
 
-    if (JSON.stringify(loadedNutritionGoalsReference) !== JSON.stringify(nutritionGoalsReferenceConfig)) {
-        saveData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig);
+        return JSON.parse(JSON.stringify(value));
     }
+
+    function applyNutritionGoalsSafeMigrations(rawGoals) {
+        if (!rawGoals || typeof rawGoals !== "object") {
+            return {
+                migratedGoals: rawGoals,
+                positiveLegacyUpgradePerformed: false
+            };
+        }
+
+        const migratedGoals = cloneStorageValue(rawGoals);
+        let positiveLegacyUpgradePerformed = false;
+
+        if (Array.isArray(migratedGoals.dailyGoals)) {
+            migratedGoals.dailyGoals.forEach(function (goal) {
+                if (!goal || typeof goal !== "object") {
+                    return;
+                }
+
+                const key = getTrimmedTextOrEmpty(goal.key);
+                if (!recognizedDailyGoalKeys.has(key)) {
+                    return;
+                }
+
+                const parsedTarget = getNumberOrNull(goal.target);
+                const hasEstablishedFlag = Object.prototype.hasOwnProperty.call(goal, "established");
+                const shouldUpgradeLegacyGoal = !hasEstablishedFlag && parsedTarget !== null && parsedTarget > 0;
+
+                if (shouldUpgradeLegacyGoal) {
+                    goal.established = true;
+                    positiveLegacyUpgradePerformed = true;
+                }
+            });
+        }
+
+        return {
+            migratedGoals: migratedGoals,
+            positiveLegacyUpgradePerformed: positiveLegacyUpgradePerformed
+        };
+    }
+
+    function loadNutritionGoalsReferenceForRuntime() {
+        const loadedGoals = loadData(nutritionGoalsReferenceStorageKey, null);
+        const migrationResult = applyNutritionGoalsSafeMigrations(loadedGoals);
+
+        if (migrationResult.positiveLegacyUpgradePerformed) {
+            saveData(nutritionGoalsReferenceStorageKey, migrationResult.migratedGoals);
+        }
+
+        return normalizeNutritionGoalsReference(
+            migrationResult.positiveLegacyUpgradePerformed
+                ? migrationResult.migratedGoals
+                : loadedGoals
+        );
+    }
+
+    let nutritionGoalsReferenceConfig = loadNutritionGoalsReferenceForRuntime();
     window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
 
     function refreshNutritionGoalsReferenceConfig() {
-        nutritionGoalsReferenceConfig = normalizeNutritionGoalsReference(
-            loadData(nutritionGoalsReferenceStorageKey, nutritionGoalsReferenceConfig)
-        );
+        nutritionGoalsReferenceConfig = loadNutritionGoalsReferenceForRuntime();
         window.nutritionGoalsReferenceConfig = nutritionGoalsReferenceConfig;
     }
 
