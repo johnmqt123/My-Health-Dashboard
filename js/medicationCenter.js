@@ -314,9 +314,12 @@ function buildMedicationList() {
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
 
-                medicationEditArea.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
+                const editorTop =
+                    medicationEditArea.getBoundingClientRect().top + window.scrollY;
+
+                window.scrollTo({
+                    top: Math.max(0, editorTop - 20),
+                    behavior: "auto"
                 });
 
             });
