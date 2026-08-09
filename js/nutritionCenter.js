@@ -27,7 +27,9 @@
     const saveNutritionBtn = document.getElementById("saveNutritionBtn");
     const cancelNutritionBtn = document.getElementById("cancelNutritionBtn");
     const nutritionDayDetailModal = document.getElementById("nutritionDayDetailModal");
+    const nutritionDayDetailModalContent = nutritionDayDetailModal ? nutritionDayDetailModal.querySelector(".modal-content") : null;
     const nutritionDayDetailContent = document.getElementById("nutritionDayDetailContent");
+    const nutritionDayDetailTitle = document.getElementById("nutritionDayDetailTitle");
     const nutritionDayDetailCloseBtn = document.getElementById("nutritionDayDetailCloseBtn");
 
     let nutritionToday = loadData("nutritionToday", {
@@ -41,6 +43,7 @@
     let nutritionDays = [];
     let activeNutritionDayKey = null;
     let lockedScrollTop = 0;
+    let nutritionModalLockCount = 0;
 
     function getNumber(value) {
         const num = Number(value);
@@ -435,10 +438,16 @@
     }
 
     function closeNutritionDayDetailModal() {
-        if (nutritionDayDetailModal) {
-            nutritionDayDetailModal.style.display = "none";
+        if (!nutritionDayDetailModal) {
+            return;
+        }
+
+        nutritionDayDetailModal.style.display = "none";
+        if (nutritionDayDetailTitle) {
+            nutritionDayDetailTitle.textContent = "Nutrition Day Detail";
         }
         activeNutritionDayKey = null;
+        unlockNutritionModalBackgroundScroll();
     }
 
     function renderNutritionDayDetail(dayData) {
@@ -470,7 +479,6 @@
             .join("");
 
         nutritionDayDetailContent.innerHTML =
-            '<div class="nutrition-day-detail-date">' + escapeHtml(getDisplayDayLabel(dayData)) + "</div>" +
             '<div class="nutrition-day-detail-list">' + entryHtml + "</div>" +
             '<div class="nutrition-day-detail-totals">' +
                 '<div class="nutrition-day-detail-totals-title">Daily Totals</div>' +
@@ -491,17 +499,39 @@
 
         activeNutritionDayKey = dayKey;
         renderNutritionDayDetail(dayData);
+        if (nutritionDayDetailTitle) {
+            nutritionDayDetailTitle.textContent = getDisplayDayLabel(dayData);
+        }
         nutritionDayDetailModal.style.display = "flex";
+        if (nutritionDayDetailContent) {
+            nutritionDayDetailContent.scrollTop = 0;
+        }
+        lockNutritionModalBackgroundScroll();
     }
 
     function lockNutritionModalBackgroundScroll() {
+        if (nutritionModalLockCount > 0) {
+            nutritionModalLockCount += 1;
+            return;
+        }
+
         lockedScrollTop = window.scrollY || window.pageYOffset || 0;
         document.documentElement.classList.add("nutrition-modal-open");
         document.body.classList.add("nutrition-modal-open");
         document.body.style.top = "-" + lockedScrollTop + "px";
+        nutritionModalLockCount = 1;
     }
 
     function unlockNutritionModalBackgroundScroll() {
+        if (nutritionModalLockCount === 0) {
+            return;
+        }
+
+        nutritionModalLockCount -= 1;
+        if (nutritionModalLockCount > 0) {
+            return;
+        }
+
         document.documentElement.classList.remove("nutrition-modal-open");
         document.body.classList.remove("nutrition-modal-open");
         document.body.style.top = "";
@@ -777,6 +807,17 @@
             nutritionLogModal.addEventListener("touchmove", function (event) {
                 if (!nutritionLogModalContent) return;
                 if (!nutritionLogModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+        }
+
+        if (nutritionDayDetailModal) {
+            nutritionDayDetailModal.addEventListener("touchmove", function (event) {
+                if (!nutritionDayDetailModalContent) return;
+                if (!nutritionDayDetailModalContent.contains(event.target)) {
                     event.preventDefault();
                 }
             }, {

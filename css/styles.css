@@ -475,10 +475,53 @@ header p {
 }
 
 .nutrition-day-detail-content {
-    margin-bottom: 10px;
+    margin-bottom: 0;
     text-align: left;
     display: grid;
     gap: 10px;
+}
+
+.nutrition-day-detail-modal-content {
+    max-width: min(96vw, 460px);
+    max-height: min(90vh, 760px);
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.nutrition-day-detail-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 14px 14px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.nutrition-day-detail-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+#nutritionDayDetailCloseBtn {
+    width: auto;
+    margin: 0;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+}
+
+#nutritionDayDetailContent {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 14px 14px;
 }
 
 .nutrition-day-detail-date {
