@@ -950,6 +950,11 @@ button:active,
     margin-bottom: 4px;
 }
 
+#cancelMedicationEditBtn {
+    display: block;
+    margin-top: 10px;
+}
+
 .quick-access-card {
     min-height: 0;
 }
