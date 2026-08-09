@@ -95,16 +95,7 @@
             }
         ],
         weightReference: {
-            currentWeightLb: null,
-            currentBmi: "",
-            category: "",
             milestones: [
-                {
-                    key: "current",
-                    label: "Current",
-                    weightLb: null,
-                    bmi: ""
-                },
                 {
                     key: "bmiUnder29",
                     label: "BMI under 29",
@@ -196,9 +187,6 @@
         return {
             dailyGoals: normalizedDailyGoals,
             weightReference: {
-                currentWeightLb: getNumberOrNull(sourceWeightReference.currentWeightLb),
-                currentBmi: getTrimmedTextOrEmpty(sourceWeightReference.currentBmi),
-                category: getTrimmedTextOrEmpty(sourceWeightReference.category),
                 milestones: normalizedMilestones,
                 expectedRate: getTrimmedTextOrEmpty(sourceWeightReference.expectedRate)
             }
@@ -623,6 +611,23 @@
         return text || "--";
     }
 
+    function getLiveWeightCenterMetrics() {
+        if (window.weightCenterMetrics && typeof window.weightCenterMetrics.getCurrentWeightAndBmi === "function") {
+            const metrics = window.weightCenterMetrics.getCurrentWeightAndBmi() || {};
+            return {
+                currentWeightLb: getNumberOrNull(metrics.currentWeightLb),
+                currentBmi: getNumberOrNull(metrics.currentBmi),
+                category: getTrimmedTextOrEmpty(metrics.category)
+            };
+        }
+
+        return {
+            currentWeightLb: null,
+            currentBmi: null,
+            category: ""
+        };
+    }
+
     function renderNutritionGoalsReference() {
         if (!nutritionGoalsReferenceContent) {
             return;
@@ -651,19 +656,16 @@
             })
             .join("");
 
-        const hasCurrentReference =
-            nutritionGoalsReferenceConfig.weightReference.currentWeightLb !== null &&
-            !!getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.currentBmi);
+        const liveMetrics = getLiveWeightCenterMetrics();
 
-        const currentReferenceLine = hasCurrentReference
-            ? 'Current reference: ' +
-                escapeHtml(formatWeightValue(nutritionGoalsReferenceConfig.weightReference.currentWeightLb)) +
-                " • BMI " +
-                escapeHtml(formatBmiValue(nutritionGoalsReferenceConfig.weightReference.currentBmi)) +
-                (getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.category)
-                    ? " • " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.category)
-                    : "")
-            : "Current reference to be added later";
+        const currentWeightLine = liveMetrics.currentWeightLb !== null
+            ? "Current Weight: " + escapeHtml(formatWeightValue(liveMetrics.currentWeightLb))
+            : "Current Weight: --";
+
+        const currentBmiLine = liveMetrics.currentBmi !== null
+            ? "Current BMI: " + escapeHtml(String(liveMetrics.currentBmi)) +
+                (liveMetrics.category ? " • " + escapeHtml(liveMetrics.category) : "")
+            : "Current BMI: --";
 
         const expectedRateLine = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.expectedRate)
             ? "Expected rate: " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.expectedRate)
@@ -676,7 +678,8 @@
             "</section>" +
             '<section class="nutrition-goals-block">' +
                 '<h3 class="nutrition-goals-heading">Weight &amp; BMI Goals</h3>' +
-                '<p class="nutrition-goals-reference">' + currentReferenceLine + "</p>" +
+                '<p class="nutrition-goals-reference">' + currentWeightLine + "</p>" +
+                '<p class="nutrition-goals-reference">' + currentBmiLine + "</p>" +
                 '<div class="nutrition-goals-milestone-table">' +
                     '<div class="nutrition-goals-milestone-head">' +
                         '<span>Milestone</span><span>Weight</span><span>BMI</span>' +

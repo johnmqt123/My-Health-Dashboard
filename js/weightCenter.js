@@ -4,6 +4,135 @@
 // =====================================
 
 (function () {
+    function getNumberOrNull(value) {
+        const num = Number(value);
+        return Number.isFinite(num) ? num : null;
+    }
+
+    function getObjectData(key) {
+        const data = loadData(key, null);
+        return data && typeof data === "object" ? data : null;
+    }
+
+    function getHeightInchesFromObject(source) {
+        if (!source || typeof source !== "object") {
+            return null;
+        }
+
+        const directHeight =
+            getNumberOrNull(source.heightInches) ??
+            getNumberOrNull(source.heightIn) ??
+            getNumberOrNull(source.height_inches) ??
+            getNumberOrNull(source.height);
+
+        if (directHeight !== null && directHeight > 0) {
+            return directHeight;
+        }
+
+        const feet =
+            getNumberOrNull(source.heightFeet) ??
+            getNumberOrNull(source.height_ft) ??
+            getNumberOrNull(source.feet);
+        const inches =
+            getNumberOrNull(source.heightOnlyInches) ??
+            getNumberOrNull(source.heightInchesRemainder) ??
+            getNumberOrNull(source.height_in) ??
+            getNumberOrNull(source.inches);
+
+        if (feet !== null && feet >= 0) {
+            return feet * 12 + (inches !== null && inches >= 0 ? inches : 0);
+        }
+
+        return null;
+    }
+
+    function getWeightCenterHeightInches() {
+        const profileKeys = [
+            "weightProfile",
+            "userHealthProfile",
+            "healthProfile",
+            "bodyMetrics",
+            "userProfile",
+            "weightLog"
+        ];
+
+        for (let i = 0; i < profileKeys.length; i += 1) {
+            const profile = getObjectData(profileKeys[i]);
+            const heightInches = getHeightInchesFromObject(profile);
+            if (heightInches !== null && heightInches > 0) {
+                return heightInches;
+            }
+        }
+
+        return null;
+    }
+
+    function calculateWeightCenterBmi(weightLb, heightInches) {
+        const safeWeight = getNumberOrNull(weightLb);
+        const safeHeight = getNumberOrNull(heightInches);
+        if (safeWeight === null || safeHeight === null || safeHeight <= 0) {
+            return null;
+        }
+
+        const bmi = (safeWeight / (safeHeight * safeHeight)) * 703;
+        if (!Number.isFinite(bmi)) {
+            return null;
+        }
+
+        return Math.round(bmi * 10) / 10;
+    }
+
+    function getWeightCenterBmiCategory(bmiValue) {
+        const bmi = getNumberOrNull(bmiValue);
+        if (bmi === null) {
+            return "";
+        }
+
+        if (bmi < 18.5) return "Underweight";
+        if (bmi < 25) return "Healthy Weight";
+        if (bmi < 30) return "Overweight";
+        if (bmi < 35) return "Obesity (Class I)";
+        if (bmi < 40) return "Obesity (Class II)";
+        return "Obesity (Class III)";
+    }
+
+    function getWeightCenterCurrentWeightLb() {
+        const latestWeightLog = getObjectData("weightLog") || {};
+        const fromWeightLog = getNumberOrNull(latestWeightLog.current);
+        if (fromWeightLog !== null) {
+            return fromWeightLog;
+        }
+
+        const latestWeightHistory = loadData("weightHistory", []);
+        if (!Array.isArray(latestWeightHistory) || !latestWeightHistory.length) {
+            return null;
+        }
+
+        const latestEntry = latestWeightHistory[latestWeightHistory.length - 1] || {};
+        return getNumberOrNull(latestEntry.weight);
+    }
+
+    function getWeightCenterCurrentMetrics() {
+        const currentWeightLb = getWeightCenterCurrentWeightLb();
+        const heightInches = getWeightCenterHeightInches();
+        const currentBmi = calculateWeightCenterBmi(currentWeightLb, heightInches);
+
+        return {
+            currentWeightLb: currentWeightLb,
+            currentBmi: currentBmi,
+            category: getWeightCenterBmiCategory(currentBmi),
+            heightInches: heightInches
+        };
+    }
+
+    window.weightCenterMetrics = {
+        getCurrentWeightLb: getWeightCenterCurrentWeightLb,
+        getHeightInches: getWeightCenterHeightInches,
+        calculateBmiFromWeight: calculateWeightCenterBmi,
+        getBmiCategory: getWeightCenterBmiCategory,
+        getCurrentWeightAndBmi: getWeightCenterCurrentMetrics
+    };
+
     let weightLog = loadData("weightLog", {});
     let weightHistory = loadData("weightHistory", []);
 
