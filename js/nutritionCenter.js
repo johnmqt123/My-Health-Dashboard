@@ -202,6 +202,77 @@
         "6 Months"
     ];
 
+    function getAuthoritativeWeightReferencePlan() {
+        return {
+            expectedRate: "Approximately 1-1.5 lb/week.",
+            primaryGoal: "Lose fat while preserving muscle mass.",
+            milestones: [
+                { key: "leaveObesity", label: "Leave Obesity", weightLb: 227, bmi: "29.9" },
+                { key: "bmiUnder29", label: "BMI under 29", weightLb: 220, bmi: "29.0" },
+                { key: "bmiUnder28", label: "BMI under 28", weightLb: 212, bmi: "28.0" },
+                { key: "bmiUnder27", label: "BMI under 27", weightLb: 205, bmi: "27.0" },
+                { key: "bmiUnder26", label: "BMI under 26", weightLb: 197, bmi: "26.0" },
+                { key: "healthyWeight", label: "Healthy Weight", weightLb: 189, bmi: "24.9" }
+            ],
+            monthlyPlanTargets: [
+                {
+                    timeLabel: "Today",
+                    expectedWeightMinLb: null,
+                    expectedWeightMaxLb: null,
+                    estimatedBmiMin: null,
+                    estimatedBmiMax: null,
+                    expectedLossMinLb: 0,
+                    expectedLossMaxLb: 0
+                },
+                {
+                    timeLabel: "1 Week",
+                    expectedWeightMinLb: 236,
+                    expectedWeightMaxLb: 237,
+                    estimatedBmiMin: 31.1,
+                    estimatedBmiMax: 31.3,
+                    expectedLossMinLb: 1,
+                    expectedLossMaxLb: 2
+                },
+                {
+                    timeLabel: "1 Month",
+                    expectedWeightMinLb: 230,
+                    expectedWeightMaxLb: 234,
+                    estimatedBmiMin: 30.3,
+                    estimatedBmiMax: 30.9,
+                    expectedLossMinLb: 4,
+                    expectedLossMaxLb: 8
+                },
+                {
+                    timeLabel: "2 Months",
+                    expectedWeightMinLb: 222,
+                    expectedWeightMaxLb: 230,
+                    estimatedBmiMin: 29.3,
+                    estimatedBmiMax: 30.3,
+                    expectedLossMinLb: 8,
+                    expectedLossMaxLb: 16
+                },
+                {
+                    timeLabel: "3 Months",
+                    expectedWeightMinLb: 214,
+                    expectedWeightMaxLb: 226,
+                    estimatedBmiMin: 28.2,
+                    estimatedBmiMax: 29.8,
+                    expectedLossMinLb: 12,
+                    expectedLossMaxLb: 24
+                },
+                {
+                    timeLabel: "6 Months",
+                    expectedWeightMinLb: 198,
+                    expectedWeightMaxLb: 213,
+                    estimatedBmiMin: 26.1,
+                    estimatedBmiMax: 28.1,
+                    expectedLossMinLb: 25,
+                    expectedLossMaxLb: 40
+                }
+            ]
+        };
+    }
+
     function getNumberOrNull(value) {
         if (value === undefined || value === null || value === "") {
             return null;
@@ -309,16 +380,124 @@
         return JSON.parse(JSON.stringify(value));
     }
 
+    function hasAllAuthoritativeMilestoneKeys(milestones) {
+        if (!Array.isArray(milestones)) {
+            return false;
+        }
+
+        const keys = new Set(
+            milestones
+                .filter(function (item) {
+                    return item && typeof item === "object";
+                })
+                .map(function (item) {
+                    return getTrimmedTextOrEmpty(item.key);
+                })
+                .filter(function (key) {
+                    return !!key;
+                })
+        );
+
+        return nutritionGoalsReferenceSchema.weightReference.milestones.every(function (schemaMilestone) {
+            return keys.has(schemaMilestone.key);
+        });
+    }
+
+    function hasAllAuthoritativePlanRows(monthlyPlanTargets) {
+        if (!Array.isArray(monthlyPlanTargets)) {
+            return false;
+        }
+
+        const labels = new Set(
+            monthlyPlanTargets
+                .filter(function (row) {
+                    return row && typeof row === "object";
+                })
+                .map(function (row) {
+                    return normalizeTimeLabelForCompare(row.timeLabel);
+                })
+                .filter(function (label) {
+                    return !!label;
+                })
+        );
+
+        return editableWeightPlanRows.every(function (label) {
+            return labels.has(normalizeTimeLabelForCompare(label));
+        });
+    }
+
     function applyNutritionGoalsSafeMigrations(rawGoals) {
         if (!rawGoals || typeof rawGoals !== "object") {
             return {
                 migratedGoals: rawGoals,
-                positiveLegacyUpgradePerformed: false
+                positiveLegacyUpgradePerformed: false,
+                weightReferencePopulationPerformed: false
             };
         }
 
         const migratedGoals = cloneStorageValue(rawGoals);
         let positiveLegacyUpgradePerformed = false;
+        let weightReferencePopulationPerformed = false;
+
+        const authoritativePlan = getAuthoritativeWeightReferencePlan();
+
+        if (!migratedGoals.weightReference || typeof migratedGoals.weightReference !== "object") {
+            migratedGoals.weightReference = {};
+            weightReferencePopulationPerformed = true;
+        }
+
+        const migratedWeightReference = migratedGoals.weightReference;
+
+        const currentExpectedRate = getTrimmedTextOrEmpty(migratedWeightReference.expectedRate);
+        const normalizedExpectedRate = currentExpectedRate
+            .toLowerCase()
+            .replace(/\.$/, "")
+            .replace(/\s+/g, " ");
+        if (!currentExpectedRate || normalizedExpectedRate === "approximately 1-1.5 lb/week") {
+            migratedWeightReference.expectedRate = authoritativePlan.expectedRate;
+            weightReferencePopulationPerformed = true;
+        }
+
+        const currentPrimaryGoal = getTrimmedTextOrEmpty(migratedWeightReference.primaryGoal);
+        if (!currentPrimaryGoal) {
+            migratedWeightReference.primaryGoal = authoritativePlan.primaryGoal;
+            weightReferencePopulationPerformed = true;
+        }
+
+        const existingMilestones = Array.isArray(migratedWeightReference.milestones)
+            ? migratedWeightReference.milestones
+            : [];
+        if (!hasAllAuthoritativeMilestoneKeys(existingMilestones)) {
+            migratedWeightReference.milestones = authoritativePlan.milestones.map(function (defaultMilestone) {
+                return {
+                    key: defaultMilestone.key,
+                    label: defaultMilestone.label,
+                    weightLb: defaultMilestone.weightLb,
+                    bmi: defaultMilestone.bmi
+                };
+            });
+            weightReferencePopulationPerformed = true;
+        }
+
+        const existingTargets = Array.isArray(migratedWeightReference.monthlyPlanTargets)
+            ? migratedWeightReference.monthlyPlanTargets
+            : [];
+        if (!hasAllAuthoritativePlanRows(existingTargets)) {
+            migratedWeightReference.monthlyPlanTargets = authoritativePlan.monthlyPlanTargets.map(function (defaultRow) {
+                return {
+                    timeLabel: defaultRow.timeLabel,
+                    expectedWeightMinLb: defaultRow.expectedWeightMinLb,
+                    expectedWeightMaxLb: defaultRow.expectedWeightMaxLb,
+                    estimatedBmiMin: defaultRow.estimatedBmiMin,
+                    estimatedBmiMax: defaultRow.estimatedBmiMax,
+                    expectedLossMinLb: defaultRow.expectedLossMinLb,
+                    expectedLossMaxLb: defaultRow.expectedLossMaxLb
+                };
+            });
+            weightReferencePopulationPerformed = true;
+        }
+
+        migratedGoals.weightReference = migratedWeightReference;
 
         if (Array.isArray(migratedGoals.dailyGoals)) {
             migratedGoals.dailyGoals.forEach(function (goal) {
@@ -344,7 +523,8 @@
 
         return {
             migratedGoals: migratedGoals,
-            positiveLegacyUpgradePerformed: positiveLegacyUpgradePerformed
+            positiveLegacyUpgradePerformed: positiveLegacyUpgradePerformed,
+            weightReferencePopulationPerformed: weightReferencePopulationPerformed
         };
     }
 
@@ -352,12 +532,12 @@
         const loadedGoals = loadData(nutritionGoalsReferenceStorageKey, null);
         const migrationResult = applyNutritionGoalsSafeMigrations(loadedGoals);
 
-        if (migrationResult.positiveLegacyUpgradePerformed) {
+        if (migrationResult.positiveLegacyUpgradePerformed || migrationResult.weightReferencePopulationPerformed) {
             saveData(nutritionGoalsReferenceStorageKey, migrationResult.migratedGoals);
         }
 
         return normalizeNutritionGoalsReference(
-            migrationResult.positiveLegacyUpgradePerformed
+            (migrationResult.positiveLegacyUpgradePerformed || migrationResult.weightReferencePopulationPerformed)
                 ? migrationResult.migratedGoals
                 : loadedGoals
         );
@@ -1511,8 +1691,26 @@
         });
     }
 
-    function buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets) {
+    function buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets, liveCurrentWeightLb, liveCurrentBmi) {
         return monthlyPlanTargets.map(function (row) {
+            const isTodayRow = normalizeTimeLabelForCompare(row.timeLabel) === "today";
+
+            if (isTodayRow) {
+                const liveWeightText = liveCurrentWeightLb === null
+                    ? "--"
+                    : formatLbNumber(liveCurrentWeightLb) + " lb";
+                const liveBmiText = liveCurrentBmi === null
+                    ? "--"
+                    : String(liveCurrentBmi);
+
+                return {
+                    label: row.timeLabel,
+                    projectedWeightText: liveWeightText,
+                    projectedBmiText: liveBmiText,
+                    totalLossText: "0 lb"
+                };
+            }
+
             return {
                 label: row.timeLabel,
                 projectedWeightText: formatValueOrRange(row.expectedWeightMinLb, row.expectedWeightMaxLb, " lb"),
@@ -1652,7 +1850,7 @@
 
         const rateInfo = parseExpectedRateLbPerWeek(nutritionGoalsReferenceConfig.weightReference.expectedRate);
         const projectionRows = hasMonthlyPlanTargets
-            ? buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets)
+            ? buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets, liveMetrics.currentWeightLb, liveMetrics.currentBmi)
             : buildProjectionRows(liveMetrics.currentWeightLb, rateInfo);
         const projectionRowsHtml = projectionRows.map(function (row) {
             return '<div class="nutrition-projection-row">' +
