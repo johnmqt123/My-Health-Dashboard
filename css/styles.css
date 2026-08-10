@@ -1764,7 +1764,7 @@ button:active,
 }
 
 #nutritionLogModal .modal-content {
-    max-height: min(82dvh, 640px);
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -1774,7 +1774,7 @@ button:active,
 
 @supports not (height: 100dvh) {
     #nutritionLogModal .modal-content {
-        max-height: min(82vh, 640px);
+        max-height: calc(100vh - 24px);
     }
 }
 

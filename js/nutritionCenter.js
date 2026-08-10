@@ -2206,17 +2206,6 @@
             });
         }
 
-        if (nutritionLogModal) {
-            nutritionLogModal.addEventListener("touchmove", function (event) {
-                if (!nutritionLogModalContent) return;
-                if (!nutritionLogModalContent.contains(event.target)) {
-                    event.preventDefault();
-                }
-            }, {
-                passive: false
-            });
-        }
-
         if (nutritionDayDetailModal) {
             nutritionDayDetailModal.addEventListener("touchmove", function (event) {
                 if (!nutritionDayDetailModalContent) return;
