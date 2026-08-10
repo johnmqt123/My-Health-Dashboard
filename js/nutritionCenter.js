@@ -2123,6 +2123,12 @@
             return;
         }
 
+        const activeElement = document.activeElement;
+        if (activeElement && isFoodInputElement(activeElement)) {
+            clearNutritionDismissPending();
+            return;
+        }
+
         nutritionFoodKeyboardDismissPending = true;
         if (nutritionFoodDismissScrollTimer) {
             window.clearTimeout(nutritionFoodDismissScrollTimer);
