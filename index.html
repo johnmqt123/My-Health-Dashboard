@@ -66,7 +66,6 @@
         <button type="button" class="quick-access-button" data-feature="Reminders">Reminders</button>
         <button type="button" class="quick-access-button" data-feature="Gmail">Gmail</button>
         <button type="button" class="quick-access-button" data-feature="News">News</button>
-        <button type="button" class="quick-access-button" data-feature="Nutrition Table">Nutrition Table</button>
     </div>
     <button id="editProfileHeightButton" type="button" style="margin-top: 10px;">👤 Personal Profile</button>
 </div>
@@ -360,7 +359,7 @@
 </div>
 <div id="profileHeightModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <h2>Edit Height</h2>
+        <h2>Personal Profile</h2>
 
         <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
 
@@ -369,6 +368,21 @@
 
         <label for="profileHeightInchesInput">Inches</label>
         <input id="profileHeightInchesInput" type="number" min="0" max="11" step="1" inputmode="numeric">
+
+        <hr>
+        <h3>Quick Links</h3>
+        <div id="profileQuickLinksList" class="profile-quick-links-list"></div>
+
+        <label for="profileQuickLinkNameInput">Link Name</label>
+        <input id="profileQuickLinkNameInput" type="text" placeholder="Example: Nutrition Table">
+
+        <label for="profileQuickLinkUrlInput">URL</label>
+        <input id="profileQuickLinkUrlInput" type="url" inputmode="url" placeholder="https://example.com">
+
+        <div class="profile-quick-links-actions">
+            <button id="saveProfileQuickLinkBtn" type="button">Save Link</button>
+            <button id="cancelProfileQuickLinkEditBtn" type="button">Clear</button>
+        </div>
 
         <button id="saveProfileHeightBtn">Save</button>
         <button id="cancelProfileHeightBtn">Cancel</button>

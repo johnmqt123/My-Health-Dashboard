@@ -541,6 +541,8 @@ const todayList =
 
 const quickAccessButtons =
     document.querySelectorAll(".quick-access-button");
+const quickAccessGrid =
+    document.querySelector(".quick-access-grid");
     
 const medicationCenterCardHeading =
     document.getElementById("medicationCenterCardHeading");
@@ -653,41 +655,33 @@ if (taskListDate !== new Date().toDateString()) {
     );
 }
 
-if (quickAccessButtons.length) {
-    quickAccessButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-            const feature = this.dataset.feature || "This feature";
-            let url = this.dataset.url;
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+if (quickAccessGrid) {
+    quickAccessGrid.addEventListener("click", function (event) {
+        const button = event.target.closest(".quick-access-button");
+        if (!button || !quickAccessGrid.contains(button)) {
+            return;
+        }
 
-            if (!url && feature === "Nutrition Table" && window.personalProfileData && typeof window.personalProfileData.loadProfile === "function") {
-                const profile = window.personalProfileData.loadProfile();
-                const quickLinks = profile && profile.quickLinks && typeof profile.quickLinks === "object"
-                    ? profile.quickLinks
-                    : {};
-                const candidate = quickLinks.nutritionTableUrl;
-                if (typeof candidate === "string" && candidate.trim()) {
-                    url = candidate.trim();
-                }
-            }
+        const feature = button.dataset.feature || "This feature";
+        const url = button.dataset.url;
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-            if (feature === "Reminders") {
-                alert("Apple Reminders does not currently expose a supported URL scheme that Safari can launch from a web page. Open the Reminders app manually.");
+        if (feature === "Reminders") {
+            alert("Apple Reminders does not currently expose a supported URL scheme that Safari can launch from a web page. Open the Reminders app manually.");
+            return;
+        }
+
+        if (url) {
+            if (isIOS) {
+                window.location.href = url;
                 return;
             }
 
-            if (url) {
-                if (isIOS) {
-                    window.location.href = url;
-                    return;
-                }
+            window.open(url, "_blank", "noopener,noreferrer");
+            return;
+        }
 
-                window.open(url, "_blank", "noopener,noreferrer");
-                return;
-            }
-
-            alert(feature + " is under development.");
-        });
+        alert(feature + " is under development.");
     });
 }
 
