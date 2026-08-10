@@ -44,6 +44,7 @@ const asNeededLastTakenDisplay =
 
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
+let medicationEditorLockedScrollTop = 0;
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -196,6 +197,22 @@ function updateManageMedicationsButtonLabel(isExpanded) {
         "Edit Medications " + (isExpanded ? "▼" : "▶");
 }
 
+function lockMedicationEditorBackgroundScroll() {
+    medicationEditorLockedScrollTop = window.scrollY || window.pageYOffset || 0;
+    const target = document.getElementById("medicationCenterSection") || manageMedicationsPanel || medicationEditor;
+    if (target) {
+        const targetTop = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
+        window.scrollTo({
+            top: Math.max(0, targetTop - 12),
+            behavior: "auto"
+        });
+    }
+}
+
+function unlockMedicationEditorBackgroundScroll() {
+    window.scrollTo(0, medicationEditorLockedScrollTop);
+}
+
 updateManageMedicationsButtonLabel(false);
 
 manageMedicationsBtn.addEventListener("click", function () {
@@ -205,15 +222,18 @@ manageMedicationsBtn.addEventListener("click", function () {
         manageMedicationsPanel.style.display = "none";
         medicationEditArea.innerHTML = "";
         medicationEditArea.style.display = "none";
+        unlockMedicationEditorBackgroundScroll();
         updateManageMedicationsButtonLabel(false);
         return;
 
     }
 
     manageMedicationsPanel.style.display = "block";
+    lockMedicationEditorBackgroundScroll();
     updateManageMedicationsButtonLabel(true);
 
     buildMedicationList();
+    scrollMedicationListToTop();
 
 });
 
@@ -356,7 +376,7 @@ function buildMedicationList() {
 
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
-                scrollMedicationEditorIntoView(medicationEditArea);
+                scrollMedicationEditorIntoView(document.getElementById("cancelMedicationEditBtn"));
 
             });
 
@@ -378,6 +398,7 @@ function closeMedicationEditor() {
     medicationEditArea.style.display = "none";
     setAddScheduleControlsVisibility(true);
     scrollMedicationListToTop();
+    unlockMedicationEditorBackgroundScroll();
 }
 
 function getMedicationEditorScrollContainer() {
