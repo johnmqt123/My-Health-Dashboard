@@ -657,8 +657,19 @@ if (quickAccessButtons.length) {
     quickAccessButtons.forEach(function (button) {
         button.addEventListener("click", function () {
             const feature = this.dataset.feature || "This feature";
-            const url = this.dataset.url;
+            let url = this.dataset.url;
             const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+            if (!url && feature === "Nutrition Table" && window.personalProfileData && typeof window.personalProfileData.loadProfile === "function") {
+                const profile = window.personalProfileData.loadProfile();
+                const quickLinks = profile && profile.quickLinks && typeof profile.quickLinks === "object"
+                    ? profile.quickLinks
+                    : {};
+                const candidate = quickLinks.nutritionTableUrl;
+                if (typeof candidate === "string" && candidate.trim()) {
+                    url = candidate.trim();
+                }
+            }
 
             if (feature === "Reminders") {
                 alert("Apple Reminders does not currently expose a supported URL scheme that Safari can launch from a web page. Open the Reminders app manually.");
