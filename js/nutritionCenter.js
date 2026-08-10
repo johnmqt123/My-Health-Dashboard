@@ -64,6 +64,9 @@
     let nutritionGoalsLiveMetricsSnapshot = "";
     let nutritionGoalsLiveRefreshTimer = null;
     let nutritionFoodDismissScrollTimer = null;
+    let nutritionFoodKeyboardDismissPending = false;
+    let nutritionFoodKeyboardRecentlyFocused = false;
+    let nutritionFoodLastViewportHeight = null;
 
     const nutritionFoodInputs = [
         nutritionDescriptionInput,
@@ -73,6 +76,17 @@
         nutritionCarbsInput,
         nutritionFatInput,
         nutritionDateInput,
+        nutritionNoteInput
+    ].filter(function (input) {
+        return !!input;
+    });
+
+    const nutritionKeyboardDismissFields = [
+        nutritionDescriptionInput,
+        nutritionCaloriesInput,
+        nutritionProteinInput,
+        nutritionCarbsInput,
+        nutritionFatInput,
         nutritionNoteInput
     ].filter(function (input) {
         return !!input;
@@ -1865,53 +1879,92 @@
         return nutritionFoodInputs.indexOf(element) !== -1;
     }
 
+    function isKeyboardDismissField(element) {
+        return nutritionKeyboardDismissFields.indexOf(element) !== -1;
+    }
+
+    function getNutritionViewportHeight() {
+        if (window.visualViewport && typeof window.visualViewport.height === "number") {
+            return window.visualViewport.height;
+        }
+
+        return window.innerHeight;
+    }
+
+    function clearNutritionDismissPending() {
+        nutritionFoodKeyboardDismissPending = false;
+        if (nutritionFoodDismissScrollTimer) {
+            window.clearTimeout(nutritionFoodDismissScrollTimer);
+            nutritionFoodDismissScrollTimer = null;
+        }
+    }
+
+    function markNutritionKeyboardFieldFocus(event) {
+        const target = event && event.target ? event.target : null;
+        if (!target || !isKeyboardDismissField(target)) {
+            return;
+        }
+
+        nutritionFoodKeyboardRecentlyFocused = true;
+        clearNutritionDismissPending();
+    }
+
     function queueNutritionDismissScroll(event) {
         if (!isNutritionLogModalOpen()) {
             return;
         }
 
-        const nextFocus = event && event.relatedTarget ? event.relatedTarget : null;
-        if (nextFocus && isFoodInputElement(nextFocus)) {
+        const source = event && event.target ? event.target : null;
+        if (!source || !isKeyboardDismissField(source)) {
             return;
         }
 
+        const nextFocus = event && event.relatedTarget ? event.relatedTarget : null;
+        if (nextFocus && isFoodInputElement(nextFocus)) {
+            clearNutritionDismissPending();
+            return;
+        }
+
+        nutritionFoodKeyboardDismissPending = true;
         if (nutritionFoodDismissScrollTimer) {
             window.clearTimeout(nutritionFoodDismissScrollTimer);
         }
 
-        const tryScrollAfterDismiss = function (attemptsRemaining) {
-            nutritionFoodDismissScrollTimer = window.setTimeout(function () {
-                if (!isNutritionLogModalOpen()) {
-                    nutritionFoodDismissScrollTimer = null;
-                    return;
-                }
-
-                const active = document.activeElement;
-                if (active && isFoodInputElement(active)) {
-                    if (attemptsRemaining > 0) {
-                        tryScrollAfterDismiss(attemptsRemaining - 1);
-                        return;
-                    }
-
-                    nutritionFoodDismissScrollTimer = null;
-                    return;
-                }
-
-                nutritionFoodDismissScrollTimer = null;
-                scrollNutritionLogToBottom();
-            }, 80);
-        };
-
-        tryScrollAfterDismiss(4);
+        nutritionFoodDismissScrollTimer = window.setTimeout(function () {
+            nutritionFoodDismissScrollTimer = null;
+            nutritionFoodKeyboardDismissPending = false;
+        }, 1200);
     }
 
-    function handleNutritionFoodFieldFocusOut(event) {
-        const target = event && event.target ? event.target : null;
-        if (!target || !isFoodInputElement(target)) {
+    function handleNutritionKeyboardDismissViewportResize() {
+        const currentHeight = getNutritionViewportHeight();
+        const previousHeight = nutritionFoodLastViewportHeight;
+        nutritionFoodLastViewportHeight = currentHeight;
+
+        if (!isNutritionLogModalOpen()) {
             return;
         }
 
-        queueNutritionDismissScroll(event);
+        if (!nutritionFoodKeyboardDismissPending || !nutritionFoodKeyboardRecentlyFocused) {
+            return;
+        }
+
+        if (typeof previousHeight !== "number") {
+            return;
+        }
+
+        if (currentHeight <= previousHeight + 12) {
+            return;
+        }
+
+        const active = document.activeElement;
+        if (active && isFoodInputElement(active)) {
+            return;
+        }
+
+        clearNutritionDismissPending();
+        nutritionFoodKeyboardRecentlyFocused = false;
+        scrollNutritionLogToBottom();
     }
 
     function openNutritionLog() {
@@ -1922,6 +1975,9 @@
         resetNutritionForm();
         nutritionLogModal.style.display = "flex";
         resetNutritionLogScrollToTop();
+        clearNutritionDismissPending();
+        nutritionFoodKeyboardRecentlyFocused = false;
+        nutritionFoodLastViewportHeight = getNutritionViewportHeight();
         lockNutritionModalBackgroundScroll();
 
         if (nutritionDescriptionInput && shouldAutofocusNutritionDescription()) {
@@ -1937,10 +1993,8 @@
             return;
         }
 
-        if (nutritionFoodDismissScrollTimer) {
-            window.clearTimeout(nutritionFoodDismissScrollTimer);
-            nutritionFoodDismissScrollTimer = null;
-        }
+        clearNutritionDismissPending();
+        nutritionFoodKeyboardRecentlyFocused = false;
 
         nutritionLogModal.style.display = "none";
         resetNutritionLogScrollToTop();
@@ -2133,8 +2187,13 @@
             input.addEventListener("focusout", queueNutritionDismissScroll);
         });
 
-        if (nutritionLogModalContent) {
-            nutritionLogModalContent.addEventListener("focusout", handleNutritionFoodFieldFocusOut, true);
+        nutritionKeyboardDismissFields.forEach(function (input) {
+            input.addEventListener("focus", markNutritionKeyboardFieldFocus);
+            input.addEventListener("focusin", markNutritionKeyboardFieldFocus);
+        });
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", handleNutritionKeyboardDismissViewportResize);
         }
 
         if (nutritionHistoryButton) {
