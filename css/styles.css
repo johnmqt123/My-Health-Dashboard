@@ -448,6 +448,13 @@ header p {
     gap: 8px;
 }
 
+.nutrition-goals-header-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+}
+
 .nutrition-goals-edit-button {
     width: auto;
     margin: 0;
@@ -676,6 +683,134 @@ header p {
 
 .nutrition-daily-goals-actions button {
     margin: 8px 0 0;
+}
+
+.nutrition-weight-plan-modal-content {
+    text-align: left;
+    max-width: 740px;
+}
+
+.nutrition-weight-plan-help {
+    margin: 0 0 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
+.nutrition-weight-plan-editor {
+    display: grid;
+    gap: 12px;
+}
+
+.nutrition-weight-plan-section {
+    display: grid;
+    gap: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px;
+}
+
+.nutrition-weight-plan-section h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+
+.nutrition-weight-plan-list {
+    display: grid;
+    gap: 8px;
+}
+
+.nutrition-weight-plan-milestone-row,
+.nutrition-weight-plan-time-row {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 8px;
+    display: grid;
+    gap: 8px;
+}
+
+.nutrition-weight-plan-row-header {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.nutrition-weight-plan-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text);
+    font-weight: 600;
+    margin: 0;
+}
+
+.nutrition-weight-plan-toggle input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.nutrition-weight-plan-grid {
+    display: grid;
+    gap: 8px;
+}
+
+.nutrition-weight-plan-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.nutrition-weight-plan-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.nutrition-weight-plan-grid-7 {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.nutrition-weight-plan-field {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.nutrition-weight-plan-field label {
+    margin: 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.2;
+}
+
+.nutrition-weight-plan-field input:disabled {
+    background: #f8fafc;
+    color: var(--muted);
+}
+
+.nutrition-weight-plan-actions {
+    margin-top: 10px;
+}
+
+.nutrition-weight-plan-actions button {
+    margin: 8px 0 0;
+}
+
+@media (max-width: 900px) {
+    .nutrition-weight-plan-grid-7 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .nutrition-weight-plan-grid-2,
+    .nutrition-weight-plan-grid-3,
+    .nutrition-weight-plan-grid-7 {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nutrition-weight-plan-modal-content {
+        max-width: 420px;
+    }
 }
 
 .nutrition-month-group {
@@ -1620,6 +1755,27 @@ button:active,
     padding: 14px;
     font-size: 18px;
     cursor: pointer;
+}
+
+#nutritionLogModal {
+    align-items: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+#nutritionLogModal .modal-content {
+    max-height: min(82dvh, 640px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+@supports not (height: 100dvh) {
+    #nutritionLogModal .modal-content {
+        max-height: min(82vh, 640px);
+    }
 }
 
 #weightModal .modal-content {

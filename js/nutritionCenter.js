@@ -36,6 +36,13 @@
     const nutritionDailyGoalsEditor = document.getElementById("nutritionDailyGoalsEditor");
     const saveNutritionDailyGoalsBtn = document.getElementById("saveNutritionDailyGoalsBtn");
     const cancelNutritionDailyGoalsBtn = document.getElementById("cancelNutritionDailyGoalsBtn");
+    const nutritionWeightLossPlanModal = document.getElementById("nutritionWeightLossPlanModal");
+    const nutritionWeightLossPlanModalContent = nutritionWeightLossPlanModal
+        ? nutritionWeightLossPlanModal.querySelector(".modal-content")
+        : null;
+    const nutritionWeightLossPlanEditor = document.getElementById("nutritionWeightLossPlanEditor");
+    const saveNutritionWeightLossPlanBtn = document.getElementById("saveNutritionWeightLossPlanBtn");
+    const cancelNutritionWeightLossPlanBtn = document.getElementById("cancelNutritionWeightLossPlanBtn");
     const nutritionDayDetailModal = document.getElementById("nutritionDayDetailModal");
     const nutritionDayDetailModalContent = nutritionDayDetailModal ? nutritionDayDetailModal.querySelector(".modal-content") : null;
     const nutritionDayDetailContent = document.getElementById("nutritionDayDetailContent");
@@ -158,6 +165,15 @@
         return goal.key;
     });
 
+    const editableWeightPlanRows = [
+        "Today",
+        "1 Week",
+        "1 Month",
+        "2 Months",
+        "3 Months",
+        "6 Months"
+    ];
+
     function getNumberOrNull(value) {
         if (value === undefined || value === null || value === "") {
             return null;
@@ -211,10 +227,11 @@
             const sourceMilestone = sourceMilestones.find(function (item) {
                 return item && (item.key === schemaMilestone.key || item.label === schemaMilestone.label);
             }) || {};
+            const sourceLabel = getTrimmedTextOrEmpty(sourceMilestone.label);
 
             return {
                 key: schemaMilestone.key,
-                label: schemaMilestone.label,
+                label: sourceLabel || schemaMilestone.label,
                 weightLb: getNumberOrNull(sourceMilestone.weightLb),
                 bmi: getTrimmedTextOrEmpty(sourceMilestone.bmi)
             };
@@ -791,6 +808,328 @@
         return String(goal.target);
     }
 
+    function getMilestoneByKey(goalKey) {
+        if (!nutritionGoalsReferenceConfig || !nutritionGoalsReferenceConfig.weightReference) {
+            return null;
+        }
+
+        const milestones = Array.isArray(nutritionGoalsReferenceConfig.weightReference.milestones)
+            ? nutritionGoalsReferenceConfig.weightReference.milestones
+            : [];
+
+        return milestones.find(function (milestone) {
+            return milestone && milestone.key === goalKey;
+        }) || null;
+    }
+
+    function normalizeEditorNumberText(value) {
+        const num = getNumberOrNull(value);
+        return num === null ? "" : String(num);
+    }
+
+    function normalizeTimeLabelForCompare(value) {
+        return getTrimmedTextOrEmpty(value).toLowerCase();
+    }
+
+    function getMonthlyPlanRowForEditor(rowLabel, rowIndex) {
+        const monthlyPlanTargets = Array.isArray(nutritionGoalsReferenceConfig.weightReference.monthlyPlanTargets)
+            ? nutritionGoalsReferenceConfig.weightReference.monthlyPlanTargets
+            : [];
+        const normalizedLabel = normalizeTimeLabelForCompare(rowLabel);
+
+        const byLabel = monthlyPlanTargets.find(function (row) {
+            return row && normalizeTimeLabelForCompare(row.timeLabel) === normalizedLabel;
+        });
+        if (byLabel) {
+            return byLabel;
+        }
+
+        const byIndex = monthlyPlanTargets[rowIndex];
+        if (byIndex && typeof byIndex === "object") {
+            return byIndex;
+        }
+
+        return null;
+    }
+
+    function renderWeightLossPlanEditor() {
+        if (!nutritionWeightLossPlanEditor) {
+            return;
+        }
+
+        const expectedRateValue = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.expectedRate);
+        const primaryGoalValue = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.primaryGoal);
+
+        const milestoneRowsHtml = nutritionGoalsReferenceSchema.weightReference.milestones.map(function (schemaMilestone) {
+            const milestone = getMilestoneByKey(schemaMilestone.key) || schemaMilestone;
+            const isActive = milestone.weightLb !== null || getTrimmedTextOrEmpty(milestone.bmi) !== "";
+            const toggleId = "nutritionWeightPlanMilestoneSet_" + schemaMilestone.key;
+            const labelId = "nutritionWeightPlanMilestoneLabel_" + schemaMilestone.key;
+            const weightId = "nutritionWeightPlanMilestoneWeight_" + schemaMilestone.key;
+            const bmiId = "nutritionWeightPlanMilestoneBmi_" + schemaMilestone.key;
+
+            return '<div class="nutrition-weight-plan-milestone-row" data-milestone-key="' + escapeHtml(schemaMilestone.key) + '">' +
+                '<div class="nutrition-weight-plan-row-header">' +
+                    '<label class="nutrition-weight-plan-toggle" for="' + escapeHtml(toggleId) + '">' +
+                        '<input id="' + escapeHtml(toggleId) + '" class="nutrition-weight-plan-milestone-toggle" type="checkbox"' + (isActive ? " checked" : "") + '>' +
+                        '<span>Set milestone</span>' +
+                    '</label>' +
+                '</div>' +
+                '<div class="nutrition-weight-plan-grid nutrition-weight-plan-grid-3">' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(labelId) + '">Milestone Name</label>' +
+                        '<input id="' + escapeHtml(labelId) + '" class="nutrition-weight-plan-milestone-label" type="text" value="' + escapeHtml(getTrimmedTextOrEmpty(milestone.label) || schemaMilestone.label) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(weightId) + '">Target Weight (lb)</label>' +
+                        '<input id="' + escapeHtml(weightId) + '" class="nutrition-weight-plan-milestone-weight" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(milestone.weightLb)) + '"' + (isActive ? "" : " disabled") + '>' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(bmiId) + '">Target BMI</label>' +
+                        '<input id="' + escapeHtml(bmiId) + '" class="nutrition-weight-plan-milestone-bmi" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(getTrimmedTextOrEmpty(milestone.bmi)) + '"' + (isActive ? "" : " disabled") + '>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+
+        const planRowsHtml = editableWeightPlanRows.map(function (rowLabel, index) {
+            const row = getMonthlyPlanRowForEditor(rowLabel, index) || {};
+            const rowId = "nutritionWeightPlanRow_" + String(index);
+
+            return '<div class="nutrition-weight-plan-time-row" data-plan-row-index="' + escapeHtml(String(index)) + '">' +
+                '<div class="nutrition-weight-plan-grid nutrition-weight-plan-grid-7">' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_label') + '">Time Label</label>' +
+                        '<input id="' + escapeHtml(rowId + '_label') + '" class="nutrition-weight-plan-row-time" type="text" value="' + escapeHtml(getTrimmedTextOrEmpty(row.timeLabel) || rowLabel) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_wmin') + '">Weight Min</label>' +
+                        '<input id="' + escapeHtml(rowId + '_wmin') + '" class="nutrition-weight-plan-row-wmin" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.expectedWeightMinLb)) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_wmax') + '">Weight Max</label>' +
+                        '<input id="' + escapeHtml(rowId + '_wmax') + '" class="nutrition-weight-plan-row-wmax" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.expectedWeightMaxLb)) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_bmin') + '">BMI Min</label>' +
+                        '<input id="' + escapeHtml(rowId + '_bmin') + '" class="nutrition-weight-plan-row-bmin" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.estimatedBmiMin)) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_bmax') + '">BMI Max</label>' +
+                        '<input id="' + escapeHtml(rowId + '_bmax') + '" class="nutrition-weight-plan-row-bmax" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.estimatedBmiMax)) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_lmin') + '">Loss Min</label>' +
+                        '<input id="' + escapeHtml(rowId + '_lmin') + '" class="nutrition-weight-plan-row-lmin" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.expectedLossMinLb)) + '">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="' + escapeHtml(rowId + '_lmax') + '">Loss Max</label>' +
+                        '<input id="' + escapeHtml(rowId + '_lmax') + '" class="nutrition-weight-plan-row-lmax" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(normalizeEditorNumberText(row.expectedLossMaxLb)) + '">' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }).join("");
+
+        nutritionWeightLossPlanEditor.innerHTML =
+            '<section class="nutrition-weight-plan-section">' +
+                '<h3>Plan Information</h3>' +
+                '<div class="nutrition-weight-plan-grid nutrition-weight-plan-grid-2">' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="nutritionWeightPlanExpectedRateInput">Expected Rate</label>' +
+                        '<input id="nutritionWeightPlanExpectedRateInput" type="text" value="' + escapeHtml(expectedRateValue) + '" placeholder="Enter expected rate">' +
+                    '</div>' +
+                    '<div class="nutrition-weight-plan-field">' +
+                        '<label for="nutritionWeightPlanPrimaryGoalInput">Primary Goal</label>' +
+                        '<input id="nutritionWeightPlanPrimaryGoalInput" type="text" value="' + escapeHtml(primaryGoalValue) + '" placeholder="Describe your goal">' +
+                    '</div>' +
+                '</div>' +
+            '</section>' +
+            '<section class="nutrition-weight-plan-section">' +
+                '<h3>BMI Milestones</h3>' +
+                '<div class="nutrition-weight-plan-list">' + milestoneRowsHtml + '</div>' +
+            '</section>' +
+            '<section class="nutrition-weight-plan-section">' +
+                '<h3>Time-Based Weight-Loss Plan</h3>' +
+                '<div class="nutrition-weight-plan-list">' + planRowsHtml + '</div>' +
+            '</section>';
+    }
+
+    function openNutritionWeightLossPlanModal() {
+        if (!nutritionWeightLossPlanModal) {
+            return;
+        }
+
+        refreshNutritionGoalsReferenceConfig();
+        renderWeightLossPlanEditor();
+
+        nutritionWeightLossPlanModal.style.display = "flex";
+        lockNutritionModalBackgroundScroll();
+
+        if (nutritionWeightLossPlanModalContent) {
+            nutritionWeightLossPlanModalContent.scrollTop = 0;
+        }
+    }
+
+    function closeNutritionWeightLossPlanModal() {
+        if (!nutritionWeightLossPlanModal) {
+            return;
+        }
+
+        nutritionWeightLossPlanModal.style.display = "none";
+        unlockNutritionModalBackgroundScroll();
+    }
+
+    function collectAndValidateWeightLossPlanUpdates() {
+        if (!nutritionWeightLossPlanEditor) {
+            return null;
+        }
+
+        const expectedRateInput = document.getElementById("nutritionWeightPlanExpectedRateInput");
+        const primaryGoalInput = document.getElementById("nutritionWeightPlanPrimaryGoalInput");
+        const expectedRate = getTrimmedTextOrEmpty(expectedRateInput ? expectedRateInput.value : "");
+        const primaryGoal = getTrimmedTextOrEmpty(primaryGoalInput ? primaryGoalInput.value : "");
+
+        const validationErrors = [];
+
+        const milestoneRows = Array.from(
+            nutritionWeightLossPlanEditor.querySelectorAll(".nutrition-weight-plan-milestone-row")
+        );
+        const milestones = milestoneRows.map(function (row) {
+            const milestoneKey = getTrimmedTextOrEmpty(row.getAttribute("data-milestone-key"));
+            const toggle = row.querySelector(".nutrition-weight-plan-milestone-toggle");
+            const labelInput = row.querySelector(".nutrition-weight-plan-milestone-label");
+            const weightInput = row.querySelector(".nutrition-weight-plan-milestone-weight");
+            const bmiInput = row.querySelector(".nutrition-weight-plan-milestone-bmi");
+            const schemaMilestone = nutritionGoalsReferenceSchema.weightReference.milestones.find(function (item) {
+                return item && item.key === milestoneKey;
+            }) || {
+                key: milestoneKey,
+                label: milestoneKey
+            };
+
+            const isActive = Boolean(toggle && toggle.checked);
+            const labelValue = getTrimmedTextOrEmpty(labelInput ? labelInput.value : "") || schemaMilestone.label;
+
+            if (!isActive) {
+                return {
+                    key: schemaMilestone.key,
+                    label: labelValue,
+                    weightLb: null,
+                    bmi: ""
+                };
+            }
+
+            const rawWeight = getTrimmedTextOrEmpty(weightInput ? weightInput.value : "");
+            const rawBmi = getTrimmedTextOrEmpty(bmiInput ? bmiInput.value : "");
+            const parsedWeight = getNumberOrNull(rawWeight);
+            const parsedBmi = getNumberOrNull(rawBmi);
+
+            if (!labelValue) {
+                validationErrors.push("Milestone name is required for active milestones.");
+            }
+
+            if (parsedWeight === null || parsedWeight <= 0) {
+                validationErrors.push(labelValue + ": target weight must be a number greater than zero.");
+            }
+
+            if (parsedBmi === null || parsedBmi <= 0) {
+                validationErrors.push(labelValue + ": target BMI must be a number greater than zero.");
+            }
+
+            return {
+                key: schemaMilestone.key,
+                label: labelValue,
+                weightLb: parsedWeight,
+                bmi: parsedBmi === null ? "" : String(parsedBmi)
+            };
+        });
+
+        const planRows = Array.from(
+            nutritionWeightLossPlanEditor.querySelectorAll(".nutrition-weight-plan-time-row")
+        );
+        const monthlyPlanTargets = planRows.map(function (row) {
+            const labelInput = row.querySelector(".nutrition-weight-plan-row-time");
+            const wMinInput = row.querySelector(".nutrition-weight-plan-row-wmin");
+            const wMaxInput = row.querySelector(".nutrition-weight-plan-row-wmax");
+            const bMinInput = row.querySelector(".nutrition-weight-plan-row-bmin");
+            const bMaxInput = row.querySelector(".nutrition-weight-plan-row-bmax");
+            const lMinInput = row.querySelector(".nutrition-weight-plan-row-lmin");
+            const lMaxInput = row.querySelector(".nutrition-weight-plan-row-lmax");
+
+            const timeLabel = getTrimmedTextOrEmpty(labelInput ? labelInput.value : "");
+            const expectedWeightMinLb = getNumberOrNull(wMinInput ? wMinInput.value : "");
+            const expectedWeightMaxLb = getNumberOrNull(wMaxInput ? wMaxInput.value : "");
+            const estimatedBmiMin = getNumberOrNull(bMinInput ? bMinInput.value : "");
+            const estimatedBmiMax = getNumberOrNull(bMaxInput ? bMaxInput.value : "");
+            const expectedLossMinLb = getNumberOrNull(lMinInput ? lMinInput.value : "");
+            const expectedLossMaxLb = getNumberOrNull(lMaxInput ? lMaxInput.value : "");
+
+            if (!timeLabel) {
+                validationErrors.push("Each plan row needs a time label.");
+            }
+
+            if (expectedWeightMinLb === null || expectedWeightMaxLb === null) {
+                validationErrors.push((timeLabel || "Plan row") + ": weight min and max are required numeric values.");
+            }
+
+            if (estimatedBmiMin === null || estimatedBmiMax === null) {
+                validationErrors.push((timeLabel || "Plan row") + ": BMI min and max are required numeric values.");
+            }
+
+            if (expectedLossMinLb === null || expectedLossMaxLb === null) {
+                validationErrors.push((timeLabel || "Plan row") + ": loss min and max are required numeric values.");
+            }
+
+            return {
+                timeLabel: timeLabel,
+                expectedWeightMinLb: expectedWeightMinLb,
+                expectedWeightMaxLb: expectedWeightMaxLb,
+                estimatedBmiMin: estimatedBmiMin,
+                estimatedBmiMax: estimatedBmiMax,
+                expectedLossMinLb: expectedLossMinLb,
+                expectedLossMaxLb: expectedLossMaxLb
+            };
+        });
+
+        if (validationErrors.length > 0) {
+            alert(validationErrors.join("\n"));
+            return null;
+        }
+
+        return {
+            expectedRate: expectedRate,
+            primaryGoal: primaryGoal,
+            milestones: milestones,
+            monthlyPlanTargets: monthlyPlanTargets
+        };
+    }
+
+    function saveNutritionWeightLossPlan() {
+        const updates = collectAndValidateWeightLossPlanUpdates();
+        if (!updates) {
+            return;
+        }
+
+        const loadedGoals = loadData(nutritionGoalsReferenceStorageKey, null);
+        const writableGoals = (loadedGoals && typeof loadedGoals === "object")
+            ? cloneStorageValue(loadedGoals)
+            : {};
+        const writableWeightReference = (writableGoals.weightReference && typeof writableGoals.weightReference === "object")
+            ? writableGoals.weightReference
+            : {};
+
+        writableWeightReference.expectedRate = updates.expectedRate;
+        writableWeightReference.primaryGoal = updates.primaryGoal;
+        writableWeightReference.milestones = updates.milestones;
+        writableWeightReference.monthlyPlanTargets = updates.monthlyPlanTargets;
+        writableGoals.weightReference = writableWeightReference;
+
+        saveData(nutritionGoalsReferenceStorageKey, writableGoals);
+        refreshNutritionGoalsReferenceConfig();
+        renderNutritionGoalsReference();
+        closeNutritionWeightLossPlanModal();
+    }
+
     function renderNutritionDailyGoalsEditor() {
         if (!nutritionDailyGoalsEditor) {
             return;
@@ -1320,7 +1659,10 @@
             '<section class="nutrition-goals-block">' +
                 '<div class="nutrition-goals-header-row">' +
                     '<h3 class="nutrition-goals-heading">Daily Nutrition Goals</h3>' +
-                    '<button id="nutritionEditDailyGoalsButton" class="nutrition-goals-edit-button" type="button">Edit Daily Goals</button>' +
+                    '<div class="nutrition-goals-header-actions">' +
+                        '<button id="nutritionEditDailyGoalsButton" class="nutrition-goals-edit-button" type="button">Edit Daily Goals</button>' +
+                        '<button id="nutritionEditWeightLossPlanButton" class="nutrition-goals-edit-button" type="button">Edit Weight-Loss Plan</button>' +
+                    "</div>" +
                 "</div>" +
                 '<div class="nutrition-goals-grid">' + dailyGoalsHtml + "</div>" +
             "</section>" +
@@ -1475,6 +1817,16 @@
         if (nutritionNoteInput) nutritionNoteInput.value = "";
     }
 
+    function shouldAutofocusNutritionDescription() {
+        if (!window.matchMedia) {
+            return true;
+        }
+
+        const isCoarsePointer = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+        const isSmallViewport = window.innerWidth <= 430;
+        return !(isCoarsePointer && isSmallViewport);
+    }
+
     function openNutritionLog() {
         if (!nutritionLogModal) {
             return;
@@ -1484,7 +1836,7 @@
         nutritionLogModal.style.display = "flex";
         lockNutritionModalBackgroundScroll();
 
-        if (nutritionDescriptionInput) {
+        if (nutritionDescriptionInput && shouldAutofocusNutritionDescription()) {
             requestAnimationFrame(function () {
                 nutritionDescriptionInput.focus();
             });
@@ -1742,11 +2094,15 @@
         if (nutritionGoalsReferenceContent) {
             nutritionGoalsReferenceContent.addEventListener("click", function (event) {
                 const editButton = event.target.closest("#nutritionEditDailyGoalsButton");
-                if (!editButton) {
+                if (editButton) {
+                    openNutritionDailyGoalsModal();
                     return;
                 }
 
-                openNutritionDailyGoalsModal();
+                const editWeightPlanButton = event.target.closest("#nutritionEditWeightLossPlanButton");
+                if (editWeightPlanButton) {
+                    openNutritionWeightLossPlanModal();
+                }
             });
         }
 
@@ -1785,6 +2141,42 @@
         if (saveNutritionDailyGoalsBtn) {
             saveNutritionDailyGoalsBtn.addEventListener("click", function () {
                 saveNutritionDailyGoals();
+            });
+        }
+
+        if (nutritionWeightLossPlanEditor) {
+            nutritionWeightLossPlanEditor.addEventListener("change", function (event) {
+                const toggle = event.target.closest(".nutrition-weight-plan-milestone-toggle");
+                if (!toggle) {
+                    return;
+                }
+
+                const row = toggle.closest(".nutrition-weight-plan-milestone-row");
+                if (!row) {
+                    return;
+                }
+
+                const weightInput = row.querySelector(".nutrition-weight-plan-milestone-weight");
+                const bmiInput = row.querySelector(".nutrition-weight-plan-milestone-bmi");
+                const nextDisabled = !toggle.checked;
+                if (weightInput) {
+                    weightInput.disabled = nextDisabled;
+                }
+                if (bmiInput) {
+                    bmiInput.disabled = nextDisabled;
+                }
+            });
+        }
+
+        if (cancelNutritionWeightLossPlanBtn) {
+            cancelNutritionWeightLossPlanBtn.addEventListener("click", function () {
+                closeNutritionWeightLossPlanModal();
+            });
+        }
+
+        if (saveNutritionWeightLossPlanBtn) {
+            saveNutritionWeightLossPlanBtn.addEventListener("click", function () {
+                saveNutritionWeightLossPlan();
             });
         }
 
@@ -1840,6 +2232,17 @@
             nutritionDailyGoalsModal.addEventListener("touchmove", function (event) {
                 if (!nutritionDailyGoalsModalContent) return;
                 if (!nutritionDailyGoalsModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+        }
+
+        if (nutritionWeightLossPlanModal) {
+            nutritionWeightLossPlanModal.addEventListener("touchmove", function (event) {
+                if (!nutritionWeightLossPlanModalContent) return;
+                if (!nutritionWeightLossPlanModalContent.contains(event.target)) {
                     event.preventDefault();
                 }
             }, {
