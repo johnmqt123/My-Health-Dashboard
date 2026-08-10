@@ -1306,18 +1306,46 @@ button:active,
     background-color: var(--accent-hover);
 }
 
-#manageMedicationsPanel {
-    max-height: calc(100dvh - 112px);
+#manageMedicationsModal {
+    align-items: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+#manageMedicationsModal .medication-manage-modal-content {
+    max-width: 460px;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
-    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
-    padding-right: 2px;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    text-align: left;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
 
 @supports not (height: 100dvh) {
-    #manageMedicationsPanel {
-        max-height: calc(100vh - 112px);
+    #manageMedicationsModal .medication-manage-modal-content {
+        max-height: calc(100vh - 24px);
     }
+}
+
+.medication-manage-modal-header {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.medication-manage-modal-header h2 {
+    margin-bottom: 0;
+}
+
+.medication-manage-modal-header button {
+    margin: 0;
+}
+
+#manageMedicationsPanel {
+    display: grid;
+    gap: 0;
 }
 
 #medicationEditArea {

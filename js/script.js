@@ -1278,6 +1278,10 @@ medicationCenterCardHeading.addEventListener("click", function () {
 
     } else {
 
+        if (typeof window.closeMedicationManagementModal === "function") {
+            window.closeMedicationManagementModal();
+        }
+
         medicationCenterSection.style.display = "none";
 
         medicationCenterCardHeading.textContent =
@@ -1301,26 +1305,8 @@ if (summaryMedicationStatus) {
 
 backToTop.addEventListener("click", function () {
 
-    const manageMedicationsPanel = document.getElementById("manageMedicationsPanel");
-    const medicationEditor = document.getElementById("medicationEditor");
-    const medicationEditArea = document.getElementById("medicationEditArea");
-    const manageMedicationsButton = document.getElementById("manageMedicationsBtn");
-
-    if (manageMedicationsPanel) {
-        manageMedicationsPanel.style.display = "none";
-    }
-
-    if (medicationEditor) {
-        medicationEditor.innerHTML = "";
-    }
-
-    if (medicationEditArea) {
-        medicationEditArea.innerHTML = "";
-        medicationEditArea.style.display = "none";
-    }
-
-    if (manageMedicationsButton) {
-        manageMedicationsButton.textContent = "Edit Medications ▶";
+    if (typeof window.closeMedicationManagementModal === "function") {
+        window.closeMedicationManagementModal();
     }
 
     document.getElementById("medicationCenterSection")

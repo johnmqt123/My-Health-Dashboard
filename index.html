@@ -196,13 +196,6 @@
     </button>
 </div>
     </div>
-    <div id="manageMedicationsPanel" style="display: none;">
-    <h3>Manage Medications</h3>
-
-    <div id="medicationEditor"></div>
-    <div id="medicationEditArea"></div>
-    
-</div>
     <section class="briefing">
 
     
@@ -468,6 +461,19 @@
         <button id="exerciseDetailEditBtn">Edit</button>
         <button id="exerciseDetailDeleteBtn">Delete</button>
         <button id="exerciseDetailCloseBtn">Close</button>
+    </div>
+</div>
+<div id="manageMedicationsModal" class="modal" style="display: none;">
+    <div id="manageMedicationsModalContent" class="modal-content medication-manage-modal-content">
+        <div class="medication-manage-modal-header">
+            <h2>Manage Medications</h2>
+            <button id="closeManageMedicationsModalBtn" type="button">Close</button>
+        </div>
+
+        <div id="manageMedicationsPanel">
+            <div id="medicationEditor"></div>
+            <div id="medicationEditArea"></div>
+        </div>
     </div>
 </div>
 <div id="nutritionLogModal" class="modal" style="display: none;">
