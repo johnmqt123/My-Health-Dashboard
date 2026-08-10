@@ -45,6 +45,7 @@ const asNeededLastTakenDisplay =
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 let medicationEditorLockedScrollTop = 0;
+let medicationEditorReturnScrollSnapshot = null;
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -213,6 +214,57 @@ function unlockMedicationEditorBackgroundScroll() {
     window.scrollTo(0, medicationEditorLockedScrollTop);
 }
 
+function captureMedicationEditorReturnScrollSnapshot() {
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+    const currentPageTop = window.scrollY || window.pageYOffset || 0;
+
+    if (!medicationCenterSection) {
+        medicationEditorReturnScrollSnapshot = {
+            pageTop: currentPageTop,
+            sectionOffset: 0
+        };
+        return;
+    }
+
+    const medicationCenterTop = medicationCenterSection.getBoundingClientRect().top + currentPageTop;
+
+    medicationEditorReturnScrollSnapshot = {
+        pageTop: currentPageTop,
+        sectionOffset: currentPageTop - medicationCenterTop
+    };
+}
+
+function restoreMedicationEditorReturnScrollSnapshot() {
+    if (!medicationEditorReturnScrollSnapshot) {
+        return;
+    }
+
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+    const documentRoot = document.documentElement;
+    const body = document.body;
+    const maxScrollTop = Math.max(
+        0,
+        Math.max(
+            documentRoot ? documentRoot.scrollHeight - documentRoot.clientHeight : 0,
+            body ? body.scrollHeight - window.innerHeight : 0
+        )
+    );
+
+    let targetTop = medicationEditorReturnScrollSnapshot.pageTop;
+
+    if (medicationCenterSection) {
+        const medicationCenterTop = medicationCenterSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
+        targetTop = medicationCenterTop + medicationEditorReturnScrollSnapshot.sectionOffset;
+    }
+
+    window.scrollTo({
+        top: Math.min(maxScrollTop, Math.max(0, targetTop)),
+        behavior: "auto"
+    });
+
+    medicationEditorReturnScrollSnapshot = null;
+}
+
 updateManageMedicationsButtonLabel(false);
 
 manageMedicationsBtn.addEventListener("click", function () {
@@ -222,6 +274,7 @@ manageMedicationsBtn.addEventListener("click", function () {
         manageMedicationsPanel.style.display = "none";
         medicationEditArea.innerHTML = "";
         medicationEditArea.style.display = "none";
+        medicationEditorReturnScrollSnapshot = null;
         unlockMedicationEditorBackgroundScroll();
         updateManageMedicationsButtonLabel(false);
         return;
@@ -374,6 +427,7 @@ function buildMedicationList() {
                     return;
                 }
 
+                captureMedicationEditorReturnScrollSnapshot();
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
                 scrollMedicationEditorIntoView(document.getElementById("cancelMedicationEditBtn"));
@@ -397,16 +451,11 @@ function closeMedicationEditor() {
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
     setAddScheduleControlsVisibility(true);
-    scrollMedicationListToTop();
-    unlockMedicationEditorBackgroundScroll();
+    restoreMedicationEditorReturnScrollSnapshot();
 }
 
 function getMedicationEditorScrollContainer() {
-    if (!manageMedicationsPanel) {
-        return null;
-    }
-
-    return manageMedicationsPanel;
+    return null;
 }
 
 function scrollMedicationListToTop() {
@@ -709,7 +758,7 @@ Cancel
             saveMedicationSchedule();
 
             buildMedicationList();
-            scrollMedicationListToTop();
+            restoreMedicationEditorReturnScrollSnapshot();
 
             alert("Medication list updated.");
 
