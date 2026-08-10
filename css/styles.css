@@ -501,7 +501,7 @@ header p {
 .nutrition-goals-milestone-head,
 .nutrition-goals-milestone-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.4fr) auto auto;
+    grid-template-columns: minmax(0, 1.2fr) auto auto minmax(96px, auto);
     gap: 8px;
     align-items: baseline;
 }
@@ -524,6 +524,55 @@ header p {
 
 .nutrition-goals-milestone-weight,
 .nutrition-goals-milestone-bmi {
+    color: var(--text);
+    text-align: right;
+    white-space: nowrap;
+}
+
+.nutrition-goals-milestone-distance {
+    color: var(--muted);
+    text-align: right;
+    white-space: nowrap;
+    font-size: 0.84rem;
+}
+
+.nutrition-goals-warning {
+    color: #475569;
+}
+
+.nutrition-projection-table {
+    display: grid;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.nutrition-projection-head,
+.nutrition-projection-row {
+    display: grid;
+    grid-template-columns: minmax(90px, 1fr) minmax(100px, 1fr) minmax(80px, auto) minmax(80px, auto);
+    gap: 8px;
+    align-items: baseline;
+}
+
+.nutrition-projection-head {
+    color: var(--muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+    padding-bottom: 2px;
+}
+
+.nutrition-projection-row {
+    font-size: 0.9rem;
+}
+
+.nutrition-projection-time {
+    color: var(--text);
+    font-weight: 600;
+}
+
+.nutrition-projection-weight,
+.nutrition-projection-bmi,
+.nutrition-projection-loss {
     color: var(--text);
     text-align: right;
     white-space: nowrap;
