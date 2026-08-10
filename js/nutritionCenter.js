@@ -63,6 +63,20 @@
     let nutritionModalLockCount = 0;
     let nutritionGoalsLiveMetricsSnapshot = "";
     let nutritionGoalsLiveRefreshTimer = null;
+    let nutritionFoodDismissScrollTimer = null;
+
+    const nutritionFoodInputs = [
+        nutritionDescriptionInput,
+        nutritionMealInput,
+        nutritionCaloriesInput,
+        nutritionProteinInput,
+        nutritionCarbsInput,
+        nutritionFatInput,
+        nutritionDateInput,
+        nutritionNoteInput
+    ].filter(function (input) {
+        return !!input;
+    });
 
     const nutritionGoalsReferenceStorageKey = "nutritionGoalsReference";
     const nutritionGoalsReferenceSchema = {
@@ -1827,6 +1841,79 @@
         return !(isCoarsePointer && isSmallViewport);
     }
 
+    function isNutritionLogModalOpen() {
+        return !!(nutritionLogModal && nutritionLogModal.style.display === "flex");
+    }
+
+    function resetNutritionLogScrollToTop() {
+        if (!nutritionLogModalContent) {
+            return;
+        }
+
+        nutritionLogModalContent.scrollTop = 0;
+    }
+
+    function scrollNutritionLogToBottom() {
+        if (!nutritionLogModalContent) {
+            return;
+        }
+
+        nutritionLogModalContent.scrollTop = nutritionLogModalContent.scrollHeight;
+    }
+
+    function isFoodInputElement(element) {
+        return nutritionFoodInputs.indexOf(element) !== -1;
+    }
+
+    function queueNutritionDismissScroll(event) {
+        if (!isNutritionLogModalOpen()) {
+            return;
+        }
+
+        const nextFocus = event && event.relatedTarget ? event.relatedTarget : null;
+        if (nextFocus && isFoodInputElement(nextFocus)) {
+            return;
+        }
+
+        if (nutritionFoodDismissScrollTimer) {
+            window.clearTimeout(nutritionFoodDismissScrollTimer);
+        }
+
+        const tryScrollAfterDismiss = function (attemptsRemaining) {
+            nutritionFoodDismissScrollTimer = window.setTimeout(function () {
+                if (!isNutritionLogModalOpen()) {
+                    nutritionFoodDismissScrollTimer = null;
+                    return;
+                }
+
+                const active = document.activeElement;
+                if (active && isFoodInputElement(active)) {
+                    if (attemptsRemaining > 0) {
+                        tryScrollAfterDismiss(attemptsRemaining - 1);
+                        return;
+                    }
+
+                    nutritionFoodDismissScrollTimer = null;
+                    return;
+                }
+
+                nutritionFoodDismissScrollTimer = null;
+                scrollNutritionLogToBottom();
+            }, 80);
+        };
+
+        tryScrollAfterDismiss(4);
+    }
+
+    function handleNutritionFoodFieldFocusOut(event) {
+        const target = event && event.target ? event.target : null;
+        if (!target || !isFoodInputElement(target)) {
+            return;
+        }
+
+        queueNutritionDismissScroll(event);
+    }
+
     function openNutritionLog() {
         if (!nutritionLogModal) {
             return;
@@ -1834,11 +1921,13 @@
 
         resetNutritionForm();
         nutritionLogModal.style.display = "flex";
+        resetNutritionLogScrollToTop();
         lockNutritionModalBackgroundScroll();
 
         if (nutritionDescriptionInput && shouldAutofocusNutritionDescription()) {
             requestAnimationFrame(function () {
                 nutritionDescriptionInput.focus();
+                resetNutritionLogScrollToTop();
             });
         }
     }
@@ -1848,7 +1937,13 @@
             return;
         }
 
+        if (nutritionFoodDismissScrollTimer) {
+            window.clearTimeout(nutritionFoodDismissScrollTimer);
+            nutritionFoodDismissScrollTimer = null;
+        }
+
         nutritionLogModal.style.display = "none";
+        resetNutritionLogScrollToTop();
         unlockNutritionModalBackgroundScroll();
     }
 
@@ -2031,6 +2126,15 @@
                 resetNutritionForm();
                 refreshNutritionData();
             });
+        }
+
+        nutritionFoodInputs.forEach(function (input) {
+            input.addEventListener("blur", queueNutritionDismissScroll);
+            input.addEventListener("focusout", queueNutritionDismissScroll);
+        });
+
+        if (nutritionLogModalContent) {
+            nutritionLogModalContent.addEventListener("focusout", handleNutritionFoodFieldFocusOut, true);
         }
 
         if (nutritionHistoryButton) {
