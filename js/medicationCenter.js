@@ -46,6 +46,7 @@ let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 let medicationEditorLockedScrollTop = 0;
 let medicationEditorReturnScrollSnapshot = null;
+let medicationEditorViewportStyles = null;
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -198,39 +199,115 @@ function updateManageMedicationsButtonLabel(isExpanded) {
         "Edit Medications " + (isExpanded ? "▼" : "▶");
 }
 
+function getMedicationEditorViewportInset() {
+    const safeAreaInset = 12;
+    return {
+        top: safeAreaInset,
+        right: 12,
+        bottom: 12,
+        left: 12
+    };
+}
+
+function captureMedicationEditorViewportStyles() {
+    if (!manageMedicationsPanel || medicationEditorViewportStyles) {
+        return;
+    }
+
+    medicationEditorViewportStyles = {
+        position: manageMedicationsPanel.style.position,
+        top: manageMedicationsPanel.style.top,
+        right: manageMedicationsPanel.style.right,
+        bottom: manageMedicationsPanel.style.bottom,
+        left: manageMedicationsPanel.style.left,
+        zIndex: manageMedicationsPanel.style.zIndex,
+        maxHeight: manageMedicationsPanel.style.maxHeight,
+        height: manageMedicationsPanel.style.height,
+        padding: manageMedicationsPanel.style.padding,
+        paddingRight: manageMedicationsPanel.style.paddingRight,
+        marginTop: manageMedicationsPanel.style.marginTop,
+        background: manageMedicationsPanel.style.background,
+        borderRadius: manageMedicationsPanel.style.borderRadius,
+        boxShadow: manageMedicationsPanel.style.boxShadow,
+        border: manageMedicationsPanel.style.border,
+        overscrollBehavior: manageMedicationsPanel.style.overscrollBehavior,
+        overflowY: manageMedicationsPanel.style.overflowY,
+        WebkitOverflowScrolling: manageMedicationsPanel.style.WebkitOverflowScrolling
+    };
+}
+
+function activateMedicationEditorViewport() {
+    if (!manageMedicationsPanel) {
+        return;
+    }
+
+    captureMedicationEditorViewportStyles();
+
+    const inset = getMedicationEditorViewportInset();
+    manageMedicationsPanel.style.position = "fixed";
+    manageMedicationsPanel.style.top = inset.top + "px";
+    manageMedicationsPanel.style.right = inset.right + "px";
+    manageMedicationsPanel.style.bottom = inset.bottom + "px";
+    manageMedicationsPanel.style.left = inset.left + "px";
+    manageMedicationsPanel.style.zIndex = "1100";
+    manageMedicationsPanel.style.maxHeight = "none";
+    manageMedicationsPanel.style.height = "auto";
+    manageMedicationsPanel.style.padding = "16px 14px calc(16px + env(safe-area-inset-bottom))";
+    manageMedicationsPanel.style.paddingRight = "14px";
+    manageMedicationsPanel.style.marginTop = "0";
+    manageMedicationsPanel.style.background = "#ffffff";
+    manageMedicationsPanel.style.borderRadius = "14px";
+    manageMedicationsPanel.style.boxShadow = "0 24px 60px rgba(15, 23, 42, 0.2)";
+    manageMedicationsPanel.style.border = "1px solid rgba(148, 163, 184, 0.35)";
+    manageMedicationsPanel.style.overflowY = "auto";
+    manageMedicationsPanel.style.overscrollBehavior = "contain";
+    manageMedicationsPanel.style.WebkitOverflowScrolling = "touch";
+}
+
+function deactivateMedicationEditorViewport() {
+    if (!manageMedicationsPanel || !medicationEditorViewportStyles) {
+        return;
+    }
+
+    manageMedicationsPanel.style.position = medicationEditorViewportStyles.position;
+    manageMedicationsPanel.style.top = medicationEditorViewportStyles.top;
+    manageMedicationsPanel.style.right = medicationEditorViewportStyles.right;
+    manageMedicationsPanel.style.bottom = medicationEditorViewportStyles.bottom;
+    manageMedicationsPanel.style.left = medicationEditorViewportStyles.left;
+    manageMedicationsPanel.style.zIndex = medicationEditorViewportStyles.zIndex;
+    manageMedicationsPanel.style.maxHeight = medicationEditorViewportStyles.maxHeight;
+    manageMedicationsPanel.style.height = medicationEditorViewportStyles.height;
+    manageMedicationsPanel.style.padding = medicationEditorViewportStyles.padding;
+    manageMedicationsPanel.style.paddingRight = medicationEditorViewportStyles.paddingRight;
+    manageMedicationsPanel.style.marginTop = medicationEditorViewportStyles.marginTop;
+    manageMedicationsPanel.style.background = medicationEditorViewportStyles.background;
+    manageMedicationsPanel.style.borderRadius = medicationEditorViewportStyles.borderRadius;
+    manageMedicationsPanel.style.boxShadow = medicationEditorViewportStyles.boxShadow;
+    manageMedicationsPanel.style.border = medicationEditorViewportStyles.border;
+    manageMedicationsPanel.style.overscrollBehavior = medicationEditorViewportStyles.overscrollBehavior;
+    manageMedicationsPanel.style.overflowY = medicationEditorViewportStyles.overflowY;
+    manageMedicationsPanel.style.WebkitOverflowScrolling = medicationEditorViewportStyles.WebkitOverflowScrolling;
+
+    medicationEditorViewportStyles = null;
+}
+
 function lockMedicationEditorBackgroundScroll() {
     medicationEditorLockedScrollTop = window.scrollY || window.pageYOffset || 0;
-    const target = document.getElementById("medicationCenterSection") || manageMedicationsPanel || medicationEditor;
-    if (target) {
-        const targetTop = target.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
-        window.scrollTo({
-            top: Math.max(0, targetTop - 12),
-            behavior: "auto"
-        });
-    }
+    document.documentElement.classList.add("medication-editor-open");
+    document.body.classList.add("medication-editor-open");
+    document.body.style.top = "-" + medicationEditorLockedScrollTop + "px";
 }
 
 function unlockMedicationEditorBackgroundScroll() {
+    document.documentElement.classList.remove("medication-editor-open");
+    document.body.classList.remove("medication-editor-open");
+    document.body.style.top = "";
     window.scrollTo(0, medicationEditorLockedScrollTop);
 }
 
 function captureMedicationEditorReturnScrollSnapshot() {
-    const medicationCenterSection = document.getElementById("medicationCenterSection");
-    const currentPageTop = window.scrollY || window.pageYOffset || 0;
-
-    if (!medicationCenterSection) {
-        medicationEditorReturnScrollSnapshot = {
-            pageTop: currentPageTop,
-            sectionOffset: 0
-        };
-        return;
-    }
-
-    const medicationCenterTop = medicationCenterSection.getBoundingClientRect().top + currentPageTop;
-
     medicationEditorReturnScrollSnapshot = {
-        pageTop: currentPageTop,
-        sectionOffset: currentPageTop - medicationCenterTop
+        panelScrollTop: manageMedicationsPanel ? manageMedicationsPanel.scrollTop : 0
     };
 }
 
@@ -239,28 +316,12 @@ function restoreMedicationEditorReturnScrollSnapshot() {
         return;
     }
 
-    const medicationCenterSection = document.getElementById("medicationCenterSection");
-    const documentRoot = document.documentElement;
-    const body = document.body;
-    const maxScrollTop = Math.max(
-        0,
-        Math.max(
-            documentRoot ? documentRoot.scrollHeight - documentRoot.clientHeight : 0,
-            body ? body.scrollHeight - window.innerHeight : 0
-        )
-    );
-
-    let targetTop = medicationEditorReturnScrollSnapshot.pageTop;
-
-    if (medicationCenterSection) {
-        const medicationCenterTop = medicationCenterSection.getBoundingClientRect().top + (window.scrollY || window.pageYOffset || 0);
-        targetTop = medicationCenterTop + medicationEditorReturnScrollSnapshot.sectionOffset;
+    if (manageMedicationsPanel) {
+        manageMedicationsPanel.scrollTo({
+            top: Math.max(0, medicationEditorReturnScrollSnapshot.panelScrollTop || 0),
+            behavior: "auto"
+        });
     }
-
-    window.scrollTo({
-        top: Math.min(maxScrollTop, Math.max(0, targetTop)),
-        behavior: "auto"
-    });
 
     medicationEditorReturnScrollSnapshot = null;
 }
@@ -272,6 +333,7 @@ manageMedicationsBtn.addEventListener("click", function () {
     if (manageMedicationsPanel.style.display === "block") {
 
         manageMedicationsPanel.style.display = "none";
+        deactivateMedicationEditorViewport();
         medicationEditArea.innerHTML = "";
         medicationEditArea.style.display = "none";
         medicationEditorReturnScrollSnapshot = null;
@@ -283,6 +345,7 @@ manageMedicationsBtn.addEventListener("click", function () {
 
     manageMedicationsPanel.style.display = "block";
     lockMedicationEditorBackgroundScroll();
+    activateMedicationEditorViewport();
     updateManageMedicationsButtonLabel(true);
 
     buildMedicationList();
@@ -455,7 +518,7 @@ function closeMedicationEditor() {
 }
 
 function getMedicationEditorScrollContainer() {
-    return null;
+    return manageMedicationsPanel || null;
 }
 
 function scrollMedicationListToTop() {
@@ -471,12 +534,6 @@ function scrollMedicationListToTop() {
     if (!medicationEditor) {
         return;
     }
-
-    const listTop = medicationEditor.getBoundingClientRect().top + window.scrollY;
-    window.scrollTo({
-        top: Math.max(0, listTop - 16),
-        behavior: "auto"
-    });
 }
 
 function getMedicationCenterStickyOffset() {

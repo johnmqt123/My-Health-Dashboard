@@ -1922,6 +1922,18 @@ body.exercise-modal-open {
     width: 100%;
 }
 
+html.medication-editor-open,
+body.medication-editor-open {
+    overflow: hidden;
+}
+
+body.medication-editor-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
 #stationaryBikeBtn,
 #ebikeRideBtn {
     background: #f8fafc;
