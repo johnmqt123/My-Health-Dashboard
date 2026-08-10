@@ -441,6 +441,21 @@ header p {
     color: var(--text);
 }
 
+.nutrition-goals-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.nutrition-goals-edit-button {
+    width: auto;
+    margin: 0;
+    padding: 7px 10px;
+    font-size: 0.85rem;
+    line-height: 1.2;
+}
+
 .nutrition-goals-grid {
     display: grid;
     gap: 6px;
@@ -512,6 +527,74 @@ header p {
     color: var(--text);
     text-align: right;
     white-space: nowrap;
+}
+
+.nutrition-daily-goals-modal-content {
+    text-align: left;
+    max-width: 420px;
+}
+
+.nutrition-daily-goals-editor {
+    display: grid;
+    gap: 10px;
+}
+
+.nutrition-daily-goal-editor-row {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 10px;
+}
+
+.nutrition-daily-goal-editor-header {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 8px;
+}
+
+.nutrition-daily-goal-set-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    color: var(--text);
+    font-weight: 600;
+}
+
+.nutrition-daily-goal-set-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+}
+
+.nutrition-daily-goal-input-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+}
+
+.nutrition-daily-goal-target-input {
+    margin: 0;
+}
+
+.nutrition-daily-goal-target-input:disabled {
+    background: #f8fafc;
+    color: var(--muted);
+}
+
+.nutrition-daily-goal-unit {
+    color: var(--muted);
+    font-size: 0.88rem;
+    white-space: nowrap;
+}
+
+.nutrition-daily-goals-actions {
+    margin-top: 10px;
+}
+
+.nutrition-daily-goals-actions button {
+    margin: 8px 0 0;
 }
 
 .nutrition-month-group {

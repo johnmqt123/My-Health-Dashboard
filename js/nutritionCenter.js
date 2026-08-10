@@ -29,6 +29,13 @@
     const nutritionNoteInput = document.getElementById("nutritionNoteInput");
     const saveNutritionBtn = document.getElementById("saveNutritionBtn");
     const cancelNutritionBtn = document.getElementById("cancelNutritionBtn");
+    const nutritionDailyGoalsModal = document.getElementById("nutritionDailyGoalsModal");
+    const nutritionDailyGoalsModalContent = nutritionDailyGoalsModal
+        ? nutritionDailyGoalsModal.querySelector(".modal-content")
+        : null;
+    const nutritionDailyGoalsEditor = document.getElementById("nutritionDailyGoalsEditor");
+    const saveNutritionDailyGoalsBtn = document.getElementById("saveNutritionDailyGoalsBtn");
+    const cancelNutritionDailyGoalsBtn = document.getElementById("cancelNutritionDailyGoalsBtn");
     const nutritionDayDetailModal = document.getElementById("nutritionDayDetailModal");
     const nutritionDayDetailModalContent = nutritionDayDetailModal ? nutritionDayDetailModal.querySelector(".modal-content") : null;
     const nutritionDayDetailContent = document.getElementById("nutritionDayDetailContent");
@@ -136,6 +143,10 @@
             return goal.key;
         })
     );
+
+    const editableDailyGoalKeys = nutritionGoalsReferenceSchema.dailyGoals.map(function (goal) {
+        return goal.key;
+    });
 
     function getNumberOrNull(value) {
         if (value === undefined || value === null || value === "") {
@@ -716,6 +727,194 @@
         return String(weightLb) + " lb";
     }
 
+    function getSchemaDailyGoalByKey(goalKey) {
+        return nutritionGoalsReferenceSchema.dailyGoals.find(function (goal) {
+            return goal && goal.key === goalKey;
+        }) || null;
+    }
+
+    function getEditableDailyGoalByKey(goalKey) {
+        return nutritionGoalsReferenceConfig.dailyGoals.find(function (goal) {
+            return goal && goal.key === goalKey;
+        }) || null;
+    }
+
+    function formatEditorTargetValue(goal) {
+        if (!goal || goal.target === null || goal.target === undefined) {
+            return "";
+        }
+
+        if (!goal.established && Number(goal.target) <= 0) {
+            return "";
+        }
+
+        return String(goal.target);
+    }
+
+    function renderNutritionDailyGoalsEditor() {
+        if (!nutritionDailyGoalsEditor) {
+            return;
+        }
+
+        const rowHtml = editableDailyGoalKeys.map(function (goalKey) {
+            const goal = getEditableDailyGoalByKey(goalKey);
+            if (!goal) {
+                return "";
+            }
+
+            const targetText = formatEditorTargetValue(goal);
+            const checkboxId = "nutritionGoalSet_" + goal.key;
+            const inputId = "nutritionGoalTarget_" + goal.key;
+            const unitText = getTrimmedTextOrEmpty(goal.unit) || "Unit not set";
+
+            return '<div class="nutrition-daily-goal-editor-row" data-daily-goal-key="' + escapeHtml(goal.key) + '">' +
+                '<div class="nutrition-daily-goal-editor-header">' + escapeHtml(goal.label) + "</div>" +
+                '<label class="nutrition-daily-goal-set-label" for="' + escapeHtml(checkboxId) + '">' +
+                    '<input id="' + escapeHtml(checkboxId) + '" class="nutrition-daily-goal-set-toggle" type="checkbox"' + (goal.established ? " checked" : "") + ">" +
+                    "<span>Set Goal</span>" +
+                "</label>" +
+                '<div class="nutrition-daily-goal-input-row">' +
+                    '<input id="' + escapeHtml(inputId) + '" class="nutrition-daily-goal-target-input" type="number" min="0" step="0.1" inputmode="decimal" value="' + escapeHtml(targetText) + '"' + (goal.established ? "" : " disabled") + ">" +
+                    '<span class="nutrition-daily-goal-unit">' + escapeHtml(unitText) + "</span>" +
+                "</div>" +
+            "</div>";
+        }).join("");
+
+        nutritionDailyGoalsEditor.innerHTML = rowHtml;
+    }
+
+    function openNutritionDailyGoalsModal() {
+        if (!nutritionDailyGoalsModal) {
+            return;
+        }
+
+        refreshNutritionGoalsReferenceConfig();
+        renderNutritionDailyGoalsEditor();
+
+        nutritionDailyGoalsModal.style.display = "flex";
+        lockNutritionModalBackgroundScroll();
+
+        if (nutritionDailyGoalsModalContent) {
+            nutritionDailyGoalsModalContent.scrollTop = 0;
+        }
+    }
+
+    function closeNutritionDailyGoalsModal() {
+        if (!nutritionDailyGoalsModal) {
+            return;
+        }
+
+        nutritionDailyGoalsModal.style.display = "none";
+        unlockNutritionModalBackgroundScroll();
+    }
+
+    function collectAndValidateDailyGoalUpdates() {
+        if (!nutritionDailyGoalsEditor) {
+            return null;
+        }
+
+        const rows = nutritionDailyGoalsEditor.querySelectorAll(".nutrition-daily-goal-editor-row");
+        const updates = [];
+        const validationErrors = [];
+
+        rows.forEach(function (row) {
+            const goalKey = row.getAttribute("data-daily-goal-key") || "";
+            const schemaGoal = getSchemaDailyGoalByKey(goalKey);
+            if (!schemaGoal) {
+                return;
+            }
+
+            const toggle = row.querySelector(".nutrition-daily-goal-set-toggle");
+            const input = row.querySelector(".nutrition-daily-goal-target-input");
+            const isEstablished = Boolean(toggle && toggle.checked);
+
+            if (isEstablished) {
+                const rawValue = input ? input.value.trim() : "";
+                if (!rawValue) {
+                    validationErrors.push(schemaGoal.label + ": enter a target greater than zero.");
+                    return;
+                }
+
+                const parsedValue = Number(rawValue);
+                if (!Number.isFinite(parsedValue) || parsedValue <= 0) {
+                    validationErrors.push(schemaGoal.label + ": target must be a valid number greater than zero.");
+                    return;
+                }
+
+                updates.push({
+                    key: schemaGoal.key,
+                    label: schemaGoal.label,
+                    unit: schemaGoal.unit,
+                    established: true,
+                    target: parsedValue
+                });
+                return;
+            }
+
+            updates.push({
+                key: schemaGoal.key,
+                label: schemaGoal.label,
+                unit: schemaGoal.unit,
+                established: false
+            });
+        });
+
+        if (validationErrors.length > 0) {
+            alert(validationErrors.join("\n"));
+            return null;
+        }
+
+        return updates;
+    }
+
+    function saveNutritionDailyGoals() {
+        const updates = collectAndValidateDailyGoalUpdates();
+        if (!updates) {
+            return;
+        }
+
+        const loadedGoals = loadData(nutritionGoalsReferenceStorageKey, null);
+        const writableGoals = (loadedGoals && typeof loadedGoals === "object")
+            ? cloneStorageValue(loadedGoals)
+            : {};
+
+        if (!Array.isArray(writableGoals.dailyGoals)) {
+            writableGoals.dailyGoals = [];
+        }
+
+        updates.forEach(function (update) {
+            let existingGoal = writableGoals.dailyGoals.find(function (goal) {
+                return goal && goal.key === update.key;
+            });
+
+            if (!existingGoal) {
+                existingGoal = {
+                    key: update.key,
+                    label: update.label,
+                    target: null,
+                    unit: update.unit,
+                    established: false
+                };
+                writableGoals.dailyGoals.push(existingGoal);
+            }
+
+            existingGoal.key = update.key;
+            existingGoal.label = update.label;
+            existingGoal.unit = update.unit;
+            existingGoal.established = update.established;
+
+            if (update.established) {
+                existingGoal.target = update.target;
+            }
+        });
+
+        saveData(nutritionGoalsReferenceStorageKey, writableGoals);
+        refreshNutritionGoalsReferenceConfig();
+        renderNutritionGoalsReference();
+        renderTodaySummary();
+        closeNutritionDailyGoalsModal();
+    }
+
     function formatBmiValue(bmiValue) {
         const text = getTrimmedTextOrEmpty(bmiValue);
         return text || "--";
@@ -805,7 +1004,10 @@
 
         nutritionGoalsReferenceContent.innerHTML =
             '<section class="nutrition-goals-block">' +
-                '<h3 class="nutrition-goals-heading">Daily Nutrition Goals</h3>' +
+                '<div class="nutrition-goals-header-row">' +
+                    '<h3 class="nutrition-goals-heading">Daily Nutrition Goals</h3>' +
+                    '<button id="nutritionEditDailyGoalsButton" class="nutrition-goals-edit-button" type="button">Edit Daily Goals</button>' +
+                "</div>" +
                 '<div class="nutrition-goals-grid">' + dailyGoalsHtml + "</div>" +
             "</section>" +
             '<section class="nutrition-goals-block">' +
@@ -1206,6 +1408,55 @@
             });
         }
 
+        if (nutritionGoalsReferenceContent) {
+            nutritionGoalsReferenceContent.addEventListener("click", function (event) {
+                const editButton = event.target.closest("#nutritionEditDailyGoalsButton");
+                if (!editButton) {
+                    return;
+                }
+
+                openNutritionDailyGoalsModal();
+            });
+        }
+
+        if (nutritionDailyGoalsEditor) {
+            nutritionDailyGoalsEditor.addEventListener("change", function (event) {
+                const toggle = event.target.closest(".nutrition-daily-goal-set-toggle");
+                if (!toggle) {
+                    return;
+                }
+
+                const row = toggle.closest(".nutrition-daily-goal-editor-row");
+                if (!row) {
+                    return;
+                }
+
+                const input = row.querySelector(".nutrition-daily-goal-target-input");
+                if (!input) {
+                    return;
+                }
+
+                input.disabled = !toggle.checked;
+                if (toggle.checked) {
+                    requestAnimationFrame(function () {
+                        input.focus();
+                    });
+                }
+            });
+        }
+
+        if (cancelNutritionDailyGoalsBtn) {
+            cancelNutritionDailyGoalsBtn.addEventListener("click", function () {
+                closeNutritionDailyGoalsModal();
+            });
+        }
+
+        if (saveNutritionDailyGoalsBtn) {
+            saveNutritionDailyGoalsBtn.addEventListener("click", function () {
+                saveNutritionDailyGoals();
+            });
+        }
+
         if (nutritionHistoryDisplay) {
             nutritionHistoryDisplay.addEventListener("click", function (event) {
                 const row = event.target.closest(".nutrition-history-row");
@@ -1247,6 +1498,17 @@
             nutritionDayDetailModal.addEventListener("touchmove", function (event) {
                 if (!nutritionDayDetailModalContent) return;
                 if (!nutritionDayDetailModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+        }
+
+        if (nutritionDailyGoalsModal) {
+            nutritionDailyGoalsModal.addEventListener("touchmove", function (event) {
+                if (!nutritionDailyGoalsModalContent) return;
+                if (!nutritionDailyGoalsModalContent.contains(event.target)) {
                     event.preventDefault();
                 }
             }, {
