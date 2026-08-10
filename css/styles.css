@@ -538,6 +538,8 @@ header p {
 
 .nutrition-goals-warning {
     color: #475569;
+    white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .nutrition-projection-table {
@@ -576,6 +578,36 @@ header p {
     color: var(--text);
     text-align: right;
     white-space: nowrap;
+}
+
+@media (max-width: 420px) {
+    .nutrition-goals-reference {
+        overflow-wrap: anywhere;
+    }
+
+    .nutrition-goals-milestone-head,
+    .nutrition-goals-milestone-row {
+        grid-template-columns: minmax(0, 1fr) auto auto;
+    }
+
+    .nutrition-goals-milestone-distance {
+        grid-column: 1 / -1;
+        text-align: left;
+        white-space: normal;
+        margin-top: -2px;
+    }
+
+    .nutrition-projection-head,
+    .nutrition-projection-row {
+        grid-template-columns: minmax(62px, 0.9fr) minmax(86px, 1fr) minmax(70px, 0.9fr) minmax(72px, 0.9fr);
+        gap: 6px;
+    }
+
+    .nutrition-projection-weight,
+    .nutrition-projection-bmi,
+    .nutrition-projection-loss {
+        white-space: normal;
+    }
 }
 
 .nutrition-daily-goals-modal-content {

@@ -106,6 +106,12 @@
         weightReference: {
             milestones: [
                 {
+                    key: "leaveObesity",
+                    label: "Leave Obesity",
+                    weightLb: null,
+                    bmi: ""
+                },
+                {
                     key: "bmiUnder29",
                     label: "BMI under 29",
                     weightLb: null,
@@ -136,7 +142,9 @@
                     bmi: ""
                 }
             ],
-            expectedRate: ""
+            expectedRate: "",
+            primaryGoal: "",
+            monthlyPlanTargets: []
         }
     };
 
@@ -176,6 +184,9 @@
         const sourceMilestones = Array.isArray(sourceWeightReference.milestones)
             ? sourceWeightReference.milestones
             : [];
+        const sourceMonthlyPlanTargets = Array.isArray(sourceWeightReference.monthlyPlanTargets)
+            ? sourceWeightReference.monthlyPlanTargets
+            : [];
 
         const normalizedDailyGoals = nutritionGoalsReferenceSchema.dailyGoals.map(function (schemaGoal) {
             const sourceGoal = sourceDailyGoals.find(function (item) {
@@ -209,11 +220,38 @@
             };
         });
 
+        const normalizedMonthlyPlanTargets = sourceMonthlyPlanTargets
+            .map(function (row) {
+                if (!row || typeof row !== "object") {
+                    return null;
+                }
+
+                const timeLabel = getTrimmedTextOrEmpty(row.timeLabel);
+                if (!timeLabel) {
+                    return null;
+                }
+
+                return {
+                    timeLabel: timeLabel,
+                    expectedWeightMinLb: getNumberOrNull(row.expectedWeightMinLb),
+                    expectedWeightMaxLb: getNumberOrNull(row.expectedWeightMaxLb),
+                    estimatedBmiMin: getNumberOrNull(row.estimatedBmiMin),
+                    estimatedBmiMax: getNumberOrNull(row.estimatedBmiMax),
+                    expectedLossMinLb: getNumberOrNull(row.expectedLossMinLb),
+                    expectedLossMaxLb: getNumberOrNull(row.expectedLossMaxLb)
+                };
+            })
+            .filter(function (row) {
+                return Boolean(row);
+            });
+
         return {
             dailyGoals: normalizedDailyGoals,
             weightReference: {
                 milestones: normalizedMilestones,
-                expectedRate: getTrimmedTextOrEmpty(sourceWeightReference.expectedRate)
+                expectedRate: getTrimmedTextOrEmpty(sourceWeightReference.expectedRate),
+                primaryGoal: getTrimmedTextOrEmpty(sourceWeightReference.primaryGoal),
+                monthlyPlanTargets: normalizedMonthlyPlanTargets
             }
         };
     }
@@ -950,6 +988,30 @@
         return lowText + "-" + highText + (suffix || "");
     }
 
+    function formatValueOrRange(minValue, maxValue, suffix) {
+        const minNum = getNumberOrNull(minValue);
+        const maxNum = getNumberOrNull(maxValue);
+        if (minNum === null && maxNum === null) {
+            return "--";
+        }
+
+        if (minNum !== null && maxNum === null) {
+            return formatLbNumber(minNum) + (suffix || "");
+        }
+
+        if (minNum === null && maxNum !== null) {
+            return formatLbNumber(maxNum) + (suffix || "");
+        }
+
+        if (Math.abs(minNum - maxNum) < 0.0001) {
+            return formatLbNumber(minNum) + (suffix || "");
+        }
+
+        const low = Math.min(minNum, maxNum);
+        const high = Math.max(minNum, maxNum);
+        return formatLbNumber(low) + "-" + formatLbNumber(high) + (suffix || "");
+    }
+
     function getProjectedBmiFromLiveApis(weightLb) {
         const safeWeight = getNumberOrNull(weightLb);
         if (safeWeight === null) {
@@ -1082,6 +1144,17 @@
         });
     }
 
+    function buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets) {
+        return monthlyPlanTargets.map(function (row) {
+            return {
+                label: row.timeLabel,
+                projectedWeightText: formatValueOrRange(row.expectedWeightMinLb, row.expectedWeightMaxLb, " lb"),
+                projectedBmiText: formatValueOrRange(row.estimatedBmiMin, row.estimatedBmiMax, ""),
+                totalLossText: formatValueOrRange(row.expectedLossMinLb, row.expectedLossMaxLb, " lb")
+            };
+        });
+    }
+
     function getLiveMetricsSnapshotText() {
         const liveMetrics = getLiveWeightCenterMetrics();
         return [
@@ -1172,7 +1245,11 @@
         const liveMetrics = getLiveWeightCenterMetrics();
         nutritionGoalsLiveMetricsSnapshot = getLiveMetricsSnapshotText();
 
-        const milestonesHtml = nutritionGoalsReferenceConfig.weightReference.milestones
+        const configuredMilestones = nutritionGoalsReferenceConfig.weightReference.milestones.filter(function (milestone) {
+            return milestone.weightLb !== null || getTrimmedTextOrEmpty(milestone.bmi) !== "";
+        });
+
+        const milestonesHtml = configuredMilestones
             .map(function (milestone) {
                 const distanceText = formatMilestoneDistanceText(liveMetrics.currentWeightLb, milestone.weightLb);
                 return '<div class="nutrition-goals-milestone-row">' +
@@ -1197,8 +1274,19 @@
             ? "Expected rate: " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.expectedRate)
             : "Expected rate to be added later";
 
+        const primaryGoalLine = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.primaryGoal)
+            ? "Primary goal: " + escapeHtml(nutritionGoalsReferenceConfig.weightReference.primaryGoal)
+            : "Primary goal to be added later";
+
+        const monthlyPlanTargets = Array.isArray(nutritionGoalsReferenceConfig.weightReference.monthlyPlanTargets)
+            ? nutritionGoalsReferenceConfig.weightReference.monthlyPlanTargets
+            : [];
+        const hasMonthlyPlanTargets = monthlyPlanTargets.length > 0;
+
         const rateInfo = parseExpectedRateLbPerWeek(nutritionGoalsReferenceConfig.weightReference.expectedRate);
-        const projectionRows = buildProjectionRows(liveMetrics.currentWeightLb, rateInfo);
+        const projectionRows = hasMonthlyPlanTargets
+            ? buildProjectionRowsFromMonthlyPlanTargets(monthlyPlanTargets)
+            : buildProjectionRows(liveMetrics.currentWeightLb, rateInfo);
         const projectionRowsHtml = projectionRows.map(function (row) {
             return '<div class="nutrition-projection-row">' +
                 '<span class="nutrition-projection-time">' + escapeHtml(row.label) + "</span>" +
@@ -1208,17 +1296,25 @@
             "</div>";
         }).join("");
 
-        const rateParseNotice = rateInfo
-            ? "Projection uses your stored expected rate."
-            : "Projection needs an expected rate in lb/week to calculate future rows.";
+        const expectedRateForNote = getTrimmedTextOrEmpty(nutritionGoalsReferenceConfig.weightReference.expectedRate);
 
-        const milestonesConfigured = nutritionGoalsReferenceConfig.weightReference.milestones.some(function (milestone) {
-            return milestone.weightLb !== null || getTrimmedTextOrEmpty(milestone.bmi) !== "";
-        });
+        const rateParseNotice = hasMonthlyPlanTargets
+            ? (expectedRateForNote
+                ? "These are planning ranges based on an expected loss of " + expectedRateForNote + ". Actual results will vary."
+                : "These are planning ranges. Actual results will vary.")
+            : (rateInfo
+                ? "Projection uses your stored expected rate."
+                : "Weight-loss plan is not configured in your local data yet.");
+
+        const milestonesConfigured = configuredMilestones.length > 0;
 
         const milestonesMissingNotice = milestonesConfigured
             ? ""
             : '<p class="nutrition-goals-reference nutrition-goals-warning">Milestones are not configured in your local data yet.</p>';
+
+        const projectionMissingNotice = hasMonthlyPlanTargets
+            ? ""
+            : '<p class="nutrition-goals-reference nutrition-goals-warning">Add monthly plan targets to see your stored time-based plan ranges.</p>';
 
         nutritionGoalsReferenceContent.innerHTML =
             '<section class="nutrition-goals-block">' +
@@ -1233,26 +1329,31 @@
                 '<p class="nutrition-goals-reference">' + currentWeightLine + "</p>" +
                 '<p class="nutrition-goals-reference">' + currentBmiLine + "</p>" +
                 milestonesMissingNotice +
-                '<div class="nutrition-goals-milestone-table">' +
-                    '<div class="nutrition-goals-milestone-head">' +
-                        '<span>Milestone</span><span>Weight</span><span>BMI</span><span>Distance</span>' +
-                    "</div>" +
-                    milestonesHtml +
-                "</div>" +
+                (milestonesConfigured
+                    ? ('<div class="nutrition-goals-milestone-table">' +
+                        '<div class="nutrition-goals-milestone-head">' +
+                            '<span>Milestone</span><span>Weight</span><span>BMI</span><span>Distance</span>' +
+                        "</div>" +
+                        milestonesHtml +
+                    "</div>")
+                    : "") +
             "</section>" +
             '<section class="nutrition-goals-block">' +
-                '<h3 class="nutrition-goals-heading">Illustrative Weight-Loss Projection</h3>' +
+                '<h3 class="nutrition-goals-heading">Weight-Loss Plan &amp; Projection</h3>' +
                 '<p class="nutrition-goals-reference">Current Weight: ' + escapeHtml(liveMetrics.currentWeightLb !== null ? formatWeightValue(liveMetrics.currentWeightLb) : "Weight not available") + "</p>" +
                 '<p class="nutrition-goals-reference">Current BMI: ' + escapeHtml(liveMetrics.currentBmi !== null ? String(liveMetrics.currentBmi) : (liveMetrics.bmiMissingReason || "Not available")) + "</p>" +
+                '<p class="nutrition-goals-reference">' + primaryGoalLine + "</p>" +
                 '<p class="nutrition-goals-reference">' + expectedRateLine + "</p>" +
                 '<p class="nutrition-goals-reference nutrition-goals-warning">' + escapeHtml(rateParseNotice) + "</p>" +
-                '<p class="nutrition-goals-reference nutrition-goals-warning">This is an illustrative projection, not a prediction. Actual progress will vary.</p>' +
-                '<div class="nutrition-projection-table">' +
-                    '<div class="nutrition-projection-head">' +
-                        '<span>Time</span><span>Projected Weight</span><span>Projected BMI</span><span>Total Loss</span>' +
-                    '</div>' +
-                    projectionRowsHtml +
-                '</div>' +
+                projectionMissingNotice +
+                (projectionRows.length > 0
+                    ? ('<div class="nutrition-projection-table">' +
+                        '<div class="nutrition-projection-head">' +
+                            '<span>Time</span><span>Expected Weight</span><span>Estimated BMI</span><span>Expected Loss</span>' +
+                        '</div>' +
+                        projectionRowsHtml +
+                    '</div>')
+                    : "") +
             "</section>";
     }
 
