@@ -211,7 +211,11 @@ function updateManageMedicationsButtonLabel(isExpanded) {
 }
 
 function isMedicationManagementModalOpen() {
-    return !!(manageMedicationsModal && manageMedicationsModal.style.display === "flex");
+    if (!manageMedicationsModal) {
+        return false;
+    }
+
+    return window.getComputedStyle(manageMedicationsModal).display !== "none";
 }
 
 function resetMedicationManagementModalScrollToTop() {
@@ -263,6 +267,7 @@ function openMedicationManagementModal() {
     }
 
     manageMedicationsModal.style.display = "flex";
+    setMedicationScheduleListVisibility(true);
     buildMedicationList();
     resetMedicationManagementModalScrollToTop();
     lockMedicationEditorBackgroundScroll();
@@ -277,6 +282,7 @@ function closeMedicationManagementModal() {
     manageMedicationsModal.style.display = "none";
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
+    setMedicationScheduleListVisibility(true);
     setAddScheduleControlsVisibility(true);
     medicationEditorReturnScrollSnapshot = null;
     updateManageMedicationsButtonLabel(false);
@@ -286,9 +292,12 @@ function closeMedicationManagementModal() {
 updateManageMedicationsButtonLabel(false);
 
 if (manageMedicationsBtn) {
-    manageMedicationsBtn.addEventListener("click", function () {
+    manageMedicationsBtn.addEventListener("click", function (event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         if (isMedicationManagementModalOpen()) {
-            closeMedicationManagementModal();
             return;
         }
 
@@ -297,7 +306,11 @@ if (manageMedicationsBtn) {
 }
 
 if (closeManageMedicationsModalBtn) {
-    closeManageMedicationsModalBtn.addEventListener("click", function () {
+    closeManageMedicationsModalBtn.addEventListener("click", function (event) {
+        if (event) {
+            event.preventDefault();
+        }
+
         closeMedicationManagementModal();
     });
 }
@@ -321,6 +334,7 @@ window.isMedicationManagementModalOpen = isMedicationManagementModalOpen;
 
 function buildMedicationList() {
 
+    setMedicationScheduleListVisibility(true);
     medicationEditor.innerHTML = "";
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
