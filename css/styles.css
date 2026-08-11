@@ -1227,7 +1227,7 @@ header p {
 
 #dailyDiaryCard .daily-diary-input {
     width: 100%;
-    min-height: 170px;
+    min-height: 122px;
     resize: vertical;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
@@ -1279,25 +1279,67 @@ header p {
     justify-content: space-between;
     gap: 10px;
     width: 100%;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    background: #ffffff;
-    padding: 8px 10px;
+    min-height: 48px;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    padding: 10px;
     color: var(--text);
     box-shadow: none;
     text-align: left;
-    transition: background-color 0.18s ease, border-color 0.18s ease;
+    transition: background-color 0.18s ease;
+}
+
+.diary-history-item {
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
 }
 
 .diary-history-row:hover,
-.diary-history-row:active {
+.diary-history-row:active,
+.diary-history-item.is-expanded .diary-history-row {
     background: #f8fafc;
     transform: none;
 }
 
-.diary-history-row.is-tapped {
-    background: #eaf4ff;
-    border-color: #bfdbfe;
+.diary-history-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.diary-history-details {
+    border-top: 1px solid #e2e8f0;
+    padding: 10px;
+    gap: 10px;
+}
+
+.diary-history-full-text {
+    color: var(--text);
+    font-size: 0.95rem;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.diary-history-edit-btn {
+    width: auto;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #e0f2fe;
+    color: #075985;
+    box-shadow: none;
+    align-self: flex-start;
+    font-size: 0.92rem;
+}
+
+.diary-history-edit-btn:hover,
+.diary-history-edit-btn:active {
+    background: #bae6fd;
+    transform: none;
 }
 
 .diary-history-main {
@@ -2431,7 +2473,7 @@ body.zepbound-modal-open {
     }
 
     #dailyDiaryCard .daily-diary-input {
-        min-height: 190px;
+        min-height: 132px;
     }
 }
 .approx-time {

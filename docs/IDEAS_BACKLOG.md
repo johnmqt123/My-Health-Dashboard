@@ -1033,3 +1033,73 @@ Future enhancement — Medium/High
 Do not implement piecemeal unless a specific usability problem requires an isolated fix.
 
 Prefer designing the complete user-configurable specialized-medication architecture before making major changes to the current Zepbound Center.
+
+## Daily Diary — Long-Entry Display and History Readability
+
+### Goal
+
+Allow Daily Diary entries to contain as much information as the user wants without making the Diary History unnecessarily long or difficult to browse.
+
+### Entry Length
+
+Do not impose an arbitrary or restrictive character limit on individual diary entries.
+
+A user may write:
+
+- A sentence or two on a typical day.
+- Several paragraphs on an important day.
+- A longer personal account when desired.
+
+The complete original entry should always be preserved.
+
+### History Display
+
+Long diary entries should not make the entire history excessively tall.
+
+For longer entries, show a compact preview in the history list.
+
+Example:
+
+August 11, 2026
+
+"Beautiful weather today. Played golf this afternoon and felt really good. My energy was excellent..."
+
+[Read More]
+
+Short entries may be displayed in their entirety without a Read More control.
+
+### Full Entry
+
+Tapping Read More should reveal the complete diary entry.
+
+Possible approaches:
+
+- Expand the entry inline.
+- Open the entry in a larger view.
+- Load the full entry into the existing editor/viewer.
+
+Choose the approach that best fits the application's existing UI patterns.
+
+### Editing
+
+The complete original entry must remain available when the user chooses to edit it.
+
+Editing a long entry must not truncate or otherwise alter text that was not intentionally changed.
+
+### Design Principle
+
+Separate the amount of information the user is allowed to STORE from the amount of information the interface initially SHOWS.
+
+The user should never feel that they cannot write something because the diary has a short display limit.
+
+### Future Consideration
+
+As the Diary grows, consider adding:
+
+- Search within diary entries.
+- Date-based navigation.
+- Calendar/date picker navigation.
+- Automatic weather attached to the entry.
+- Connections between diary entries and health/activity records.
+
+Do not implement these features as part of this backlog item.

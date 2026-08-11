@@ -13,6 +13,7 @@
     const dailyDiaryEditTodayButton = document.getElementById("dailyDiaryEditTodayButton");
 
     let activeEditDate = null;
+    let expandedHistoryDate = null;
 
     function getLocalDateKey(dateValue) {
         const safeDate = dateValue instanceof Date ? dateValue : new Date();
@@ -140,8 +141,9 @@
         }
 
         return parsed.toLocaleDateString([], {
-            month: "short",
-            day: "numeric"
+            month: "long",
+            day: "numeric",
+            year: "numeric"
         });
     }
 
@@ -228,23 +230,61 @@
             group.appendChild(header);
 
             grouped[monthLabel].forEach(function (entry) {
+                const isExpanded = expandedHistoryDate === entry.date;
+                const item = document.createElement("div");
+                item.className = "diary-history-item" + (isExpanded ? " is-expanded" : "");
+
                 const row = document.createElement("button");
                 row.type = "button";
                 row.className = "diary-history-row";
                 row.setAttribute("data-date", entry.date);
-                row.setAttribute("aria-label", "Edit diary entry for " + getFriendlyDateLabel(entry.date, true));
+                row.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+                row.setAttribute("aria-label", "View diary entry for " + getFriendlyDateLabel(entry.date, true));
                 row.innerHTML =
                     '<span class="diary-history-main">' +
                         '<span class="diary-history-date">' + escapeHtml(getHistoryDayLabel(entry.date)) + "</span>" +
                         '<span class="diary-history-preview">' + escapeHtml(getPreviewText(entry.text)) + "</span>" +
                     "</span>" +
-                    '<span class="diary-history-chevron" aria-hidden="true">&gt;</span>';
+                    '<span class="diary-history-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>";
 
-                group.appendChild(row);
+                item.appendChild(row);
+
+                const details = document.createElement("div");
+                details.className = "diary-history-details";
+                details.style.display = isExpanded ? "grid" : "none";
+                details.innerHTML =
+                    '<div class="diary-history-full-text">' + escapeHtml(entry.text || "") + "</div>" +
+                    '<button type="button" class="diary-history-edit-btn" data-date="' + escapeHtml(entry.date) +
+                    '" aria-label="Edit diary entry for ' + escapeHtml(getFriendlyDateLabel(entry.date, true)) +
+                    '">Edit Entry</button>';
+
+                item.appendChild(details);
+                group.appendChild(item);
             });
 
             dailyDiaryHistoryDisplay.appendChild(group);
         });
+    }
+
+    function toggleHistoryEntry(dateKey) {
+        if (!parseDateKey(dateKey)) {
+            return;
+        }
+
+        expandedHistoryDate = expandedHistoryDate === dateKey ? null : dateKey;
+        renderHistory();
+    }
+
+    function beginEditingHistoryDate(dateKey) {
+        if (!parseDateKey(dateKey)) {
+            return;
+        }
+
+        setActiveEditDate(dateKey);
+
+        if (dailyDiaryInput) {
+            dailyDiaryInput.focus();
+        }
     }
 
     function handleSaveEntry() {
@@ -291,6 +331,7 @@
             return;
         }
 
+        expandedHistoryDate = null;
         dailyDiaryHistorySection.style.display = "none";
         dailyDiaryHistoryButton.textContent = "📊 History";
         dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
@@ -328,24 +369,20 @@
 
         if (dailyDiaryHistoryDisplay) {
             dailyDiaryHistoryDisplay.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".diary-history-edit-btn");
+                if (editButton) {
+                    const editDate = String(editButton.getAttribute("data-date") || "");
+                    beginEditingHistoryDate(editDate);
+                    return;
+                }
+
                 const row = event.target.closest(".diary-history-row");
                 if (!row) {
                     return;
                 }
 
                 const dateKey = String(row.getAttribute("data-date") || "");
-                if (!parseDateKey(dateKey)) {
-                    return;
-                }
-
-                row.classList.add("is-tapped");
-                window.setTimeout(function () {
-                    row.classList.remove("is-tapped");
-                    setActiveEditDate(dateKey);
-                    if (dailyDiaryInput) {
-                        dailyDiaryInput.focus();
-                    }
-                }, 120);
+                toggleHistoryEntry(dateKey);
             });
         }
 
