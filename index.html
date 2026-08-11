@@ -103,6 +103,21 @@
 
 </div>
 
+        <div class="card" id="dailyDiaryCard">
+            <h2>📖 Daily Diary</h2>
+            <p id="dailyDiaryCurrentDate"></p>
+            <label for="dailyDiaryInput" class="daily-diary-label">Diary Entry</label>
+            <textarea id="dailyDiaryInput" class="daily-diary-input" rows="6" placeholder="Write about your day..."></textarea>
+            <p id="dailyDiaryEditStatus" class="daily-diary-status" aria-live="polite">Editing today's entry.</p>
+            <button id="dailyDiaryEditTodayButton" type="button" style="display: none;">Edit Today</button>
+            <button id="dailyDiarySaveButton" type="button">Save Entry</button>
+            <button id="dailyDiaryHistoryButton" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
+        </div>
+        <div class="summary-card history-section" id="dailyDiaryHistorySection" style="display: none;">
+            <h2 class="history-section-header">📖 Diary History</h2>
+            <div id="dailyDiaryHistoryDisplay" class="history-display history-stack">No diary entries yet.</div>
+        </div>
+
         <div class="card">
     <h2>🚴 Exercise</h2>
 
@@ -604,6 +619,7 @@
 <script src="js/nutritionCenter.js"></script>
 <script src="js/weightCenter.js"></script>
 <script src="js/bloodPressureCenter.js"></script>
+<script src="js/dailyDiary.js"></script>
 <script src="js/zepboundCenter.js"></script>
 <script src="js/medicationCenter.js"></script>
 <script src="js/home.js"></script>

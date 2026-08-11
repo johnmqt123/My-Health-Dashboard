@@ -1218,6 +1218,118 @@ header p {
     display: flex;
 }
 
+#dailyDiaryCard .daily-diary-label {
+    margin: 0;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+#dailyDiaryCard .daily-diary-input {
+    width: 100%;
+    min-height: 170px;
+    resize: vertical;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    padding: 10px;
+    color: var(--text);
+    font-size: 1rem;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+#dailyDiaryCard .daily-diary-status {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+#dailyDiaryEditTodayButton {
+    background: #f8fafc;
+    color: var(--text);
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
+
+#dailyDiaryEditTodayButton:hover,
+#dailyDiaryEditTodayButton:active {
+    background: #f1f5f9;
+    transform: none;
+}
+
+#dailyDiaryHistoryDisplay.diary-history-list {
+    gap: 6px;
+}
+
+.diary-month-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.diary-month-header {
+    margin: 8px 0 2px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.diary-history-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 8px 10px;
+    color: var(--text);
+    box-shadow: none;
+    text-align: left;
+    transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.diary-history-row:hover,
+.diary-history-row:active {
+    background: #f8fafc;
+    transform: none;
+}
+
+.diary-history-row.is-tapped {
+    background: #eaf4ff;
+    border-color: #bfdbfe;
+}
+
+.diary-history-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-width: 0;
+    width: 100%;
+}
+
+.diary-history-date {
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.25;
+}
+
+.diary-history-preview {
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    white-space: normal;
+}
+
+.diary-history-chevron {
+    color: #94a3b8;
+    font-weight: 700;
+    font-size: 1rem;
+    line-height: 1;
+}
+
 .card > :first-child,
 .summary-card > :first-child {
     margin-top: 0;
@@ -2316,6 +2428,10 @@ body.zepbound-modal-open {
 
     .summary-card > button {
         align-self: stretch;
+    }
+
+    #dailyDiaryCard .daily-diary-input {
+        min-height: 190px;
     }
 }
 .approx-time {

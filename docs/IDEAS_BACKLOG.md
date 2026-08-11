@@ -877,3 +877,159 @@ Design a navigation system that scales naturally as new modules are added while 
 
 - **Edit/Delete button styling:** Replace the current generic baby-blue and baby-pink button colors with the app's current visual language.
 - **Long-history usability:** Revisit the Zepbound injection history when it becomes substantially longer. Consider a more compact presentation and/or an easier way to close or navigate the history without requiring a long scroll.
+
+## Zepbound Center — Future Robustness and Scheduling
+
+### Goal
+
+Develop the Zepbound Center into a complete, user-configurable medication-specific center rather than a simple injection log.
+
+The current Zepbound Center successfully records injections and history, but future versions should provide configuration, scheduling, reminders, and better integration with the Medication Center.
+
+### Current Dose / Medication Settings
+
+Allow the user to configure the current Zepbound regimen without modifying historical records.
+
+Possible settings:
+
+- Current dose
+- Injection frequency
+- Next injection date
+- Preferred injection time
+- Preferred/allowed injection sites
+- Injection rotation preferences
+- Other medication-specific settings as appropriate
+
+Important principle:
+
+Changing the current dose or regimen must affect future injections only.
+
+Historical injections must retain the dose, date, time, site, and notes that were actually recorded at the time.
+
+Example:
+
+- Previous injections: 2.5 mg
+- Current dose: 5 mg
+
+Changing the current dose to 5 mg must not change the previous 2.5 mg history entries.
+
+### Injection Scheduling
+
+Provide a user-configurable injection schedule.
+
+Possible functionality:
+
+- Set the recurring injection interval (for example, weekly).
+- Set the next injection date.
+- Optionally set a preferred injection time.
+- Automatically calculate the next scheduled injection after an injection is logged.
+- Display the upcoming injection date prominently in the Zepbound Center.
+
+The schedule should remain editable by the user.
+
+### Reminders and "What's Up Next"
+
+Integrate scheduled Zepbound injections into John's Assistant's reminder system and/or "What's Up Next."
+
+Examples:
+
+- "Zepbound injection due today"
+- "Zepbound injection tomorrow"
+- "Next Zepbound injection: Monday, August 17"
+
+The user should not have to rely solely on an external calendar to remember the injection.
+
+Avoid creating duplicate reminders if the user already has an external calendar reminder; future integration should be considered carefully.
+
+### Injection History
+
+Continue maintaining a complete injection history including:
+
+- Date
+- Time
+- Dose
+- Injection site
+- Notes
+
+History should support:
+
+- View
+- Edit
+- Delete
+- Chronological ordering
+
+Editing or deleting a history entry must not alter the user's current medication settings or future schedule unless explicitly intended.
+
+### Injection Site Rotation
+
+Provide a configurable rotation system.
+
+Possible functionality:
+
+- Track the last injection site.
+- Show the recommended/next rotation site.
+- Display a six-site or other user-configurable rotation.
+- Allow the user to skip a site when necessary.
+- Allow the user to manually select a different site.
+- Preserve the actual site used in historical records.
+
+The system should assist the user rather than force a specific site.
+
+### Medication-Specific Information
+
+Consider allowing the specialized medication center to contain information relevant to that medication, such as:
+
+- Current dose
+- Injection schedule
+- Next injection
+- Last injection
+- Injection site
+- Rotation status
+- Injection history
+- User notes
+
+Do not add medical advice or dosing recommendations unless the feature is specifically designed and validated for that purpose.
+
+### Future Architecture — User-Configurable Specialized Medication Centers
+
+Zepbound should eventually become an example of a broader architecture rather than a hard-coded special case.
+
+Users may take different specialized medications, such as:
+
+- Zepbound or another GLP-1 medication
+- Insulin
+- Other injectable medications
+- Anticoagulant therapy
+- Other medications requiring specialized tracking
+
+The application should eventually allow the user to enable/configure the appropriate specialized medication center.
+
+Design principle:
+
+"John's Assistant should adapt to the user's medication regimen rather than assuming every user takes Zepbound."
+
+### Medication Center Integration
+
+Future versions should consider integrating Zepbound into the Medication Center while preserving its specialized functionality.
+
+Possible design:
+
+- Zepbound appears as a specialized expandable section within Medication Center.
+- Brief summary shown by default.
+- Expanded section provides:
+  - Next injection
+  - Current dose
+  - Last injection
+  - Log Injection
+  - Rotation information
+  - History
+
+The user should not need to navigate through multiple layers just to determine when the next injection is due.
+
+### Priority
+
+Future enhancement — Medium/High
+
+Do not implement piecemeal unless a specific usability problem requires an isolated fix.
+
+Prefer designing the complete user-configurable specialized-medication architecture before making major changes to the current Zepbound Center.

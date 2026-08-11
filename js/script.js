@@ -381,6 +381,7 @@ initExerciseCenter();
 initNutritionCenter();
 initWeightCenter();
 initBloodPressureCenter();
+initDailyDiaryCenter();
 initZepboundCenter();
 
 const wakeUpButton = document.getElementById("logButton");
