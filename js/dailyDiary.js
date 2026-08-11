@@ -316,32 +316,6 @@
         }
     }
 
-    function scrollToDailyDiaryHistoryTop() {
-        if (!dailyDiaryHistorySection) {
-            return;
-        }
-
-        if (typeof dailyDiaryHistorySection.scrollIntoView === "function") {
-            dailyDiaryHistorySection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
-
-        window.setTimeout(function () {
-            const top = dailyDiaryHistorySection.getBoundingClientRect().top;
-            if (top < 0 || top > 40) {
-                const elementTop =
-                    window.pageYOffset + dailyDiaryHistorySection.getBoundingClientRect().top;
-                const targetTop = Math.max(0, elementTop - 12);
-                window.scrollTo({
-                    top: targetTop,
-                    behavior: "smooth"
-                });
-            }
-        }, 160);
-    }
-
     function toggleHistory() {
         if (!dailyDiaryHistorySection || !dailyDiaryHistoryButton) {
             return;
@@ -354,7 +328,35 @@
             dailyDiaryHistorySection.style.display = "block";
             dailyDiaryHistoryButton.textContent = "Hide History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "true");
-            scrollToDailyDiaryHistoryTop();
+
+            const alignHistoryControl = function () {
+                const buttonTop =
+                    window.pageYOffset + dailyDiaryHistoryButton.getBoundingClientRect().top;
+                const targetTop = Math.max(0, buttonTop - 8);
+
+                window.scrollTo({
+                    top: targetTop,
+                    behavior: "auto"
+                });
+            };
+
+            requestAnimationFrame(function () {
+                alignHistoryControl();
+
+                window.setTimeout(function () {
+                    const buttonRect = dailyDiaryHistoryButton.getBoundingClientRect();
+                    const sectionRect = dailyDiaryHistorySection.getBoundingClientRect();
+                    const buttonVisible = buttonRect.top >= 0 && buttonRect.bottom <= window.innerHeight;
+                    const sectionStartVisible = sectionRect.top < window.innerHeight;
+
+                    if (buttonVisible && sectionStartVisible) {
+                        return;
+                    }
+
+                    alignHistoryControl();
+                }, 160);
+            });
+
             return;
         }
 
