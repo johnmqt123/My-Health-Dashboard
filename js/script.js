@@ -61,6 +61,23 @@ const medicationEventCompatibilityList = [
     medicationEventCompatibility.evening
 ];
 
+function getClockMinutes(value) {
+    const normalized = parseClockTimeTo24Hour(value);
+    if (!normalized) {
+        return null;
+    }
+
+    const parts = normalized.split(":");
+    const hours = Number(parts[0]);
+    const minutes = Number(parts[1]);
+
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) {
+        return null;
+    }
+
+    return (hours * 60) + minutes;
+}
+
 function getTrimmedString(value) {
     if (value === undefined || value === null) {
         return "";
@@ -231,10 +248,25 @@ function normalizeMedicationScheduleEvents(rawSchedule) {
     });
 
     normalized.sort(function (a, b) {
+        const minutesA = getClockMinutes(a.time);
+        const minutesB = getClockMinutes(b.time);
+
+        if (minutesA !== null && minutesB !== null) {
+            const timeDiff = minutesA - minutesB;
+            if (timeDiff !== 0) {
+                return timeDiff;
+            }
+        } else if (minutesA !== null) {
+            return -1;
+        } else if (minutesB !== null) {
+            return 1;
+        }
+
         const orderDiff = Number(a.order) - Number(b.order);
         if (orderDiff !== 0) {
             return orderDiff;
         }
+
         return a.name.localeCompare(b.name);
     });
 
@@ -367,6 +399,7 @@ const eveningHeading = document.getElementById("eveningHeading");
 const medicationCardSlots = {
     wakeUp: {
         key: "wakeUp",
+        cardId: "medCard",
         headingElement: wakeUpHeading,
         listElement: wakeUpMedicationList,
         buttonId: "logButton",
@@ -376,6 +409,7 @@ const medicationCardSlots = {
     },
     breakfast: {
         key: "breakfast",
+        cardId: "breakfastCard",
         headingElement: breakfastHeading,
         listElement: breakfastMedicationList,
         buttonId: "breakfastButton",
@@ -385,6 +419,7 @@ const medicationCardSlots = {
     },
     midday: {
         key: "midday",
+        cardId: "middayCard",
         headingElement: middayHeading,
         listElement: middayMedicationList,
         buttonId: "middayButton",
@@ -394,6 +429,7 @@ const medicationCardSlots = {
     },
     dinner: {
         key: "dinner",
+        cardId: "dinnerCard",
         headingElement: dinnerHeading,
         listElement: dinnerMedicationList,
         buttonId: "dinnerButton",
@@ -403,6 +439,7 @@ const medicationCardSlots = {
     },
     evening: {
         key: "evening",
+        cardId: "eveningCard",
         headingElement: eveningHeading,
         listElement: eveningMedicationList,
         buttonId: "eveningButton",
@@ -446,21 +483,40 @@ function renderMedicationListForSlot(slotConfig, eventData) {
         ? eventData.medications
         : [];
 
-    if (!medications.length) {
-        slotConfig.listElement.innerHTML = "<em>No medications configured.</em>";
-        return;
-    }
+    const notesText = eventData && eventData.notes
+        ? String(eventData.notes).trim()
+        : "";
 
-    slotConfig.listElement.innerHTML =
-        "<ul><li>" +
-        medications.join("</li><li>") +
-        "</li></ul>";
+    const medicationsMarkup = medications.length
+        ? "<ul><li>" + medications.join("</li><li>") + "</li></ul>"
+        : "<em>No medications configured.</em>";
+
+    const notesMarkup = notesText
+        ? "<p class=\"medication-schedule-note\"><strong>Notes:</strong> " + notesText + "</p>"
+        : "";
+
+    slotConfig.listElement.innerHTML = medicationsMarkup + notesMarkup;
 }
 
 function renderMedicationScheduleCards() {
     Object.keys(medicationCardSlots).forEach(function (legacyKey) {
         const slotConfig = medicationCardSlots[legacyKey];
         const eventData = getMedicationEventForLegacyKey(legacyKey);
+        const cardElement = slotConfig.cardId
+            ? document.getElementById(slotConfig.cardId)
+            : null;
+
+        if (!eventData) {
+            if (cardElement) {
+                cardElement.style.display = "none";
+            }
+            return;
+        }
+
+        if (cardElement) {
+            cardElement.style.display = "flex";
+        }
+
         renderMedicationCardHeading(slotConfig, eventData);
         renderMedicationListForSlot(slotConfig, eventData);
 
@@ -697,6 +753,9 @@ function updateAtAGlanceStatus() {
         const medicationPeriods = medicationEventCompatibilityList
             .map(function (defaults, index) {
                 const eventData = getMedicationEventForLegacyKey(defaults.id);
+                if (!eventData) {
+                    return null;
+                }
                 const normalizedTime = parseClockTimeTo24Hour(eventData && eventData.time) || defaults.defaultTime;
                 const parts = normalizedTime.split(":");
                 const minutes = Number(parts[0]) * 60 + Number(parts[1]);
@@ -711,6 +770,9 @@ function updateAtAGlanceStatus() {
                     order: Number.isFinite(orderValue) ? orderValue : index + 1
                 };
             })
+            .filter(function (period) {
+                return !!period;
+            })
             .sort(function (a, b) {
                 const timeDiff = a.minutes - b.minutes;
                 if (timeDiff !== 0) {
@@ -718,6 +780,11 @@ function updateAtAGlanceStatus() {
                 }
                 return a.order - b.order;
             });
+
+        if (!medicationPeriods.length) {
+            summaryMedicationStatus.textContent = "No medication schedules configured.";
+            return;
+        }
 
         const nextPeriod = medicationPeriods.find(function (period) {
             const logEntry = medicationLog[period.key];

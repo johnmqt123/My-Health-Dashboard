@@ -207,7 +207,7 @@ function updateManageMedicationsButtonLabel(isExpanded) {
     }
 
     manageMedicationsBtn.textContent =
-        "Edit Medications " + (isExpanded ? "▼" : "▶");
+        "Manage Medications " + (isExpanded ? "▼" : "▶");
 }
 
 function isMedicationManagementModalOpen() {
@@ -459,7 +459,7 @@ function buildMedicationList() {
                 captureMedicationEditorReturnScrollSnapshot();
                 setAddScheduleControlsVisibility(false);
                 showMedicationEditor(group);
-                scrollMedicationEditorIntoView(document.getElementById("cancelMedicationEditBtn"));
+                scrollMedicationEditorIntoView(medicationEditArea);
 
             });
 
@@ -476,9 +476,18 @@ function setAddScheduleControlsVisibility(isVisible) {
     addTimeContainer.style.display = isVisible ? "grid" : "none";
 }
 
+function setMedicationScheduleListVisibility(isVisible) {
+    if (!medicationEditor) {
+        return;
+    }
+
+    medicationEditor.style.display = isVisible ? "block" : "none";
+}
+
 function closeMedicationEditor() {
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
+    setMedicationScheduleListVisibility(true);
     setAddScheduleControlsVisibility(true);
     restoreMedicationEditorReturnScrollSnapshot();
 }
@@ -529,22 +538,25 @@ function showNotesEditor(group) {
     const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
 
     medicationEditArea.innerHTML = `
-<h4>${groupName} Notes</h4>
+<div class="medication-edit-card">
+    <h4>${groupName} Notes</h4>
 
-<textarea
-    id="groupNotesInput"
-    rows="6"
-    style="width:100%; resize:vertical;"
->${group.notes || ""}</textarea>
+    <label for="groupNotesInput">Schedule Notes</label>
+    <textarea
+        id="groupNotesInput"
+        rows="5"
+        class="medication-edit-input"
+    >${group.notes || ""}</textarea>
 
-<br><br>
-
-<button id="saveNotesBtn">
-    Save Notes
-</button>
+    <div class="medication-editor-actions compact-actions">
+        <button id="saveNotesBtn" type="button">Save Notes</button>
+        <button id="closeNotesBtn" type="button">Close</button>
+    </div>
+</div>
 `;
 
     medicationEditArea.style.display = "block";
+    setMedicationScheduleListVisibility(false);
 
     document.getElementById("saveNotesBtn")
         .addEventListener("click", function () {
@@ -554,8 +566,15 @@ function showNotesEditor(group) {
 
             saveMedicationSchedule();
 
-            alert("Notes saved.");
+            showMedicationEditor(group);
+            scrollMedicationEditorIntoView(medicationEditArea);
 
+        });
+
+    document.getElementById("closeNotesBtn")
+        .addEventListener("click", function () {
+            showMedicationEditor(group);
+            scrollMedicationEditorIntoView(medicationEditArea);
         });
 
 }
@@ -568,72 +587,47 @@ function showMedicationEditor(group) {
         : (group && group.time ? group.time : "");
 
     medicationEditArea.innerHTML = `
-<h4>Editing ${groupName}</h4>
+<div class="medication-edit-card">
+    <h4>Editing ${groupName}</h4>
 
-<label>Schedule Event Name:</label><br>
+    <div class="medication-edit-grid">
+        <div>
+            <label for="editScheduleEventNameInput">Schedule Event Name</label>
+            <input type="text" id="editScheduleEventNameInput" class="medication-edit-input">
+        </div>
+        <div>
+            <label for="editScheduleEventTimeInput">Scheduled Time</label>
+            <input type="time" id="editScheduleEventTimeInput" class="medication-edit-input">
+        </div>
+    </div>
 
-<input
-type="text"
-id="editScheduleEventNameInput"
-style="width:100%;"
->
+    <label for="editMedicationInput">Medications</label>
+    <textarea id="editMedicationInput" rows="3" class="medication-edit-input">${group.medications.join(", ")}</textarea>
 
-<br><br>
+    <div class="medication-edit-grid add-medication-row">
+        <div>
+            <label for="newMedicationInput">New Medication</label>
+            <input type="text" id="newMedicationInput" class="medication-edit-input">
+        </div>
+        <div class="grid-action-cell">
+            <button id="addMedicationBtn" type="button">Add Medication</button>
+        </div>
+    </div>
 
-<label>Scheduled Time:</label><br>
+    <div class="medication-editor-secondary-actions">
+        <button id="openNotesEditorBtn" type="button">Notes</button>
+        <button id="deleteScheduleBtn" type="button">Delete Schedule</button>
+    </div>
 
-<input
-type="time"
-id="editScheduleEventTimeInput"
-style="width:100%;"
->
-
-<br><br>
-
-<label>Medications:</label><br>
-
-<textarea
-id="editMedicationInput"
-rows="4"
-style="width:100%; resize:vertical;"
->${group.medications.join(", ")}</textarea>
-
-<br><br>
-
-<label>New Medication:</label><br>
-
-<input
-type="text"
-id="newMedicationInput"
-style="width:100%;"
->
-
-<br><br>
-
-<button id="addMedicationBtn">
-Add Medication
-</button>
-
-<br><br>
-
-<button id="openNotesEditorBtn">
-Edit ${groupName} Notes
-</button>
-
-<br><br>
-
-<div class="medication-editor-actions">
-<button id="saveMedicationBtn">
-Save
-</button>
-
-<button id="cancelMedicationEditBtn">
-Cancel
-</button>
+    <div class="medication-editor-actions compact-actions">
+        <button id="saveMedicationBtn" type="button">Save</button>
+        <button id="cancelMedicationEditBtn" type="button">Cancel</button>
+    </div>
 </div>
 `;
 
     medicationEditArea.style.display = "block";
+    setMedicationScheduleListVisibility(false);
 
     const editScheduleEventNameInput = document.getElementById("editScheduleEventNameInput");
     const editScheduleEventTimeInput = document.getElementById("editScheduleEventTimeInput");
@@ -715,6 +709,40 @@ Cancel
     document.getElementById("openNotesEditorBtn")
         .addEventListener("click", function () {
             showNotesEditor(group);
+            scrollMedicationEditorIntoView(medicationEditArea);
+        });
+
+    document.getElementById("deleteScheduleBtn")
+        .addEventListener("click", function () {
+            const scheduleName = group && group.name ? group.name : "this schedule";
+            const confirmDelete = window.confirm(
+                "Delete the entire medication schedule \"" + scheduleName + "\"? This will remove its medications and schedule notes."
+            );
+
+            if (!confirmDelete) {
+                return;
+            }
+
+            personalMedicationSchedule = personalMedicationSchedule.filter(function (entry) {
+                return entry && entry.id !== group.id;
+            });
+
+            if (group && group.id && medicationLog[group.id]) {
+                delete medicationLog[group.id];
+                localStorage.setItem("medicationLog", JSON.stringify(medicationLog));
+            }
+
+            if (window.medicationScheduleCompat && typeof window.medicationScheduleCompat.getMedicationHistoryPeriod === "function") {
+                const historyPeriod = window.medicationScheduleCompat.getMedicationHistoryPeriod(group.id);
+                medicationHistory = medicationHistory.filter(function (entry) {
+                    return entry && entry.period !== historyPeriod;
+                });
+                localStorage.setItem("medicationHistory", JSON.stringify(medicationHistory));
+            }
+
+            saveMedicationSchedule();
+            buildMedicationList();
+            closeMedicationEditor();
         });
 
     document.getElementById("saveMedicationBtn")

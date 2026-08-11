@@ -1435,13 +1435,13 @@ button:active,
 
 #medicationEditArea {
     display: none;
-    margin-top: 20px;
-    padding: 15px;
+    margin-top: 12px;
+    padding: 12px;
     border: 2px solid var(--accent);
     border-radius: 8px;
     background-color: white;
     color: black;
-    padding-bottom: calc(15px + env(safe-area-inset-bottom));
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
 .medication-editor-hint {
@@ -1475,6 +1475,12 @@ button:active,
     font-size: 0.97rem;
 }
 
+.medication-schedule-note {
+    margin-top: 6px;
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
 .medication-schedule-empty {
     list-style: none;
     margin-left: -18px;
@@ -1495,7 +1501,9 @@ button:active,
 #addMedicationBtn,
 #saveMedicationBtn,
 #openNotesEditorBtn,
-#saveNotesBtn {
+#saveNotesBtn,
+#closeNotesBtn,
+#deleteScheduleBtn {
     background-color: var(--accent);
     color: white;
     border: none;
@@ -1512,7 +1520,9 @@ button:active,
 #addMedicationBtn,
 #saveMedicationBtn,
 #openNotesEditorBtn,
-#saveNotesBtn {
+#saveNotesBtn,
+#closeNotesBtn,
+#deleteScheduleBtn {
     min-height: 40px;
 }
 
@@ -1521,32 +1531,110 @@ button:active,
 #addMedicationBtn:hover,
 #saveMedicationBtn:hover,
 #openNotesEditorBtn:hover,
-#saveNotesBtn:hover {
+#saveNotesBtn:hover,
+#closeNotesBtn:hover,
+#deleteScheduleBtn:hover {
     background-color: var(--accent-hover);
+}
+
+#closeNotesBtn,
+#openNotesEditorBtn {
+    background: #f8fafc;
+    color: var(--text);
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
+
+#closeNotesBtn:hover,
+#closeNotesBtn:active,
+#openNotesEditorBtn:hover,
+#openNotesEditorBtn:active {
+    background: #f1f5f9;
+    transform: none;
+}
+
+#deleteScheduleBtn {
+    background: #fff1f2;
+    color: #9f1239;
+    border: 1px solid #fecdd3;
+    box-shadow: none;
+}
+
+#deleteScheduleBtn:hover,
+#deleteScheduleBtn:active {
+    background: #ffe4e6;
+    transform: none;
 }
 
 #medicationEditArea h4 {
     margin-top: 0;
+    margin-bottom: 8px;
 }
 
 #medicationEditArea label {
-    display: inline-block;
+    display: block;
     margin-bottom: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+#medicationEditArea .medication-edit-card {
+    display: grid;
+    gap: 8px;
+}
+
+#medicationEditArea .medication-edit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-items: end;
+}
+
+#medicationEditArea .medication-edit-input {
+    width: 100%;
+    margin: 0;
+}
+
+#medicationEditArea .add-medication-row {
+    margin-top: 2px;
+}
+
+#medicationEditArea .grid-action-cell {
+    display: grid;
+}
+
+#medicationEditArea .medication-editor-secondary-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+#medicationEditArea .compact-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
 }
 
 #medicationEditArea .medication-editor-actions {
     position: sticky;
     bottom: 0;
     background: #ffffff;
-    padding-top: 10px;
-    padding-bottom: 4px;
+    padding-top: 8px;
+    padding-bottom: 2px;
     border-top: 1px solid #e2e8f0;
     z-index: 1;
 }
 
 #cancelMedicationEditBtn {
-    display: block;
-    margin-top: 10px;
+    margin-top: 0;
+}
+
+@media (max-width: 640px) {
+    #medicationEditArea .medication-edit-grid,
+    #medicationEditArea .medication-editor-secondary-actions,
+    #medicationEditArea .compact-actions {
+        grid-template-columns: 1fr;
+    }
 }
 
 .quick-access-card {
