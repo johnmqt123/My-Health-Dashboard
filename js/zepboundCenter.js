@@ -1,9 +1,8 @@
 function initZepboundCenter() {
-    const zepboundButton = document.getElementById("zepboundButton");
-    const closeZepboundButton = document.getElementById("closeZepboundButton");
-    const zepboundCenterSection = document.getElementById("zepboundCenterSection");
-    const mainDashboardHeader = document.querySelector("header");
-    const mainDashboardBriefing = document.querySelector("section.briefing");
+    const openZepboundModalBtn = document.getElementById("openZepboundModalBtn");
+    const zepboundModal = document.getElementById("zepboundModal");
+    const zepboundModalContent = document.getElementById("zepboundModalContent");
+    const closeZepboundModalBtn = document.getElementById("closeZepboundModalBtn");
     const logInjectionButton = document.getElementById("logInjectionButton");
     const historyInjectionButton = document.getElementById("historyInjectionButton");
     const historyInjectionSection = document.getElementById("historyInjectionSection");
@@ -19,6 +18,7 @@ function initZepboundCenter() {
     const injectionNotesInput = document.getElementById("injectionNotes");
     let history = loadData("zepboundInjectionHistory", []);
     let editingEntryIndex = null;
+    let zepboundLockedScrollTop = 0;
 
     function renderLatestInjection() {
         if (!injectionLogDisplay) {
@@ -93,20 +93,11 @@ function initZepboundCenter() {
         }).join("");
     }
 
-    function showDashboard() {
-        if (mainDashboardHeader) {
-            mainDashboardHeader.style.display = "block";
-        }
-
-        if (mainDashboardBriefing) {
-            mainDashboardBriefing.style.display = "block";
-        }
-
-        zepboundCenterSection.style.display = "none";
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+    function lockZepboundModalBackgroundScroll() {
+        zepboundLockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        document.documentElement.classList.add("zepbound-modal-open");
+        document.body.classList.add("zepbound-modal-open");
+        document.body.style.top = "-" + zepboundLockedScrollTop + "px";
     }
 
     function populateModalForEdit(index) {
@@ -143,36 +134,72 @@ function initZepboundCenter() {
         }
     }
 
-    function showZepboundCenter() {
-        if (mainDashboardHeader) {
-            mainDashboardHeader.style.display = "none";
-        }
-
-        if (mainDashboardBriefing) {
-            mainDashboardBriefing.style.display = "none";
-        }
-
-        zepboundCenterSection.style.display = "block";
-        window.setTimeout(function () {
-            zepboundCenterSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }, 50);
+    function unlockZepboundModalBackgroundScroll() {
+        document.documentElement.classList.remove("zepbound-modal-open");
+        document.body.classList.remove("zepbound-modal-open");
+        document.body.style.top = "";
+        window.scrollTo(0, zepboundLockedScrollTop);
     }
 
-    if (!zepboundButton || !closeZepboundButton || !zepboundCenterSection) {
+    function resetZepboundModalScrollToTop() {
+        if (!zepboundModalContent) {
+            return;
+        }
+
+        zepboundModalContent.scrollTop = 0;
+    }
+
+    function isZepboundModalOpen() {
+        return !!(zepboundModal && zepboundModal.style.display === "flex");
+    }
+
+    function openZepboundModal() {
+        if (!zepboundModal) {
+            return;
+        }
+
+        zepboundModal.style.display = "flex";
+        resetZepboundModalScrollToTop();
+        lockZepboundModalBackgroundScroll();
+        renderLatestInjection();
+    }
+
+    function closeZepboundModal() {
+        if (!zepboundModal || !isZepboundModalOpen()) {
+            return;
+        }
+
+        zepboundModal.style.display = "none";
+
+        if (historyInjectionSection) {
+            historyInjectionSection.style.display = "none";
+        }
+
+        if (historyInjectionButton) {
+            historyInjectionButton.textContent = "📊 History";
+        }
+
+        if (injectionModal) {
+            injectionModal.style.display = "none";
+        }
+
+        clearModalFields();
+        editingEntryIndex = null;
+        unlockZepboundModalBackgroundScroll();
+    }
+
+    if (!openZepboundModalBtn || !zepboundModal || !closeZepboundModalBtn) {
         return;
     }
 
     renderLatestInjection();
 
-    zepboundButton.addEventListener("click", function () {
-        showZepboundCenter();
+    openZepboundModalBtn.addEventListener("click", function () {
+        openZepboundModal();
     });
 
-    closeZepboundButton.addEventListener("click", function () {
-        showDashboard();
+    closeZepboundModalBtn.addEventListener("click", function () {
+        closeZepboundModal();
     });
 
     if (logInjectionButton && injectionModal) {
@@ -190,15 +217,12 @@ function initZepboundCenter() {
             if (isHidden) {
                 renderHistory();
 
-                if (typeof window.scrollMedicationCenterTo === "function") {
-                    window.scrollMedicationCenterTo(historyInjectionButton);
-                    return;
+                if (historyInjectionSection && typeof historyInjectionSection.scrollIntoView === "function") {
+                    historyInjectionSection.scrollIntoView({
+                        behavior: "smooth",
+                        block: "nearest"
+                    });
                 }
-
-                historyInjectionButton.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
             }
         });
     }
@@ -261,6 +285,23 @@ function initZepboundCenter() {
             }
         });
     }
+
+    if (zepboundModal) {
+        zepboundModal.addEventListener("touchmove", function (event) {
+            if (!zepboundModalContent) {
+                return;
+            }
+
+            if (!zepboundModalContent.contains(event.target)) {
+                event.preventDefault();
+            }
+        }, {
+            passive: false
+        });
+    }
+
+    window.closeZepboundModal = closeZepboundModal;
+    window.isZepboundModalOpen = isZepboundModalOpen;
 
     renderLatestInjection();
     renderHistory();

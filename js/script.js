@@ -1282,6 +1282,10 @@ medicationCenterCardHeading.addEventListener("click", function () {
             window.closeMedicationManagementModal();
         }
 
+        if (typeof window.closeZepboundModal === "function") {
+            window.closeZepboundModal();
+        }
+
         medicationCenterSection.style.display = "none";
 
         medicationCenterCardHeading.textContent =
@@ -1309,6 +1313,10 @@ backToTop.addEventListener("click", function () {
         window.closeMedicationManagementModal();
     }
 
+    if (typeof window.closeZepboundModal === "function") {
+        window.closeZepboundModal();
+    }
+
     document.getElementById("medicationCenterSection")
         .style.display = "none";
 
@@ -1324,18 +1332,6 @@ backToTop.addEventListener("click", function () {
 
 if (pageBackToTop) {
     pageBackToTop.addEventListener("click", function () {
-        const zepboundCenterSection = document.getElementById("zepboundCenterSection");
-        const closeZepboundButton = document.getElementById("closeZepboundButton");
-
-        if (
-            zepboundCenterSection &&
-            zepboundCenterSection.style.display === "block" &&
-            closeZepboundButton
-        ) {
-            closeZepboundButton.click();
-            return;
-        }
-
         const medicationCenterSection = document.getElementById("medicationCenterSection");
 
         if (

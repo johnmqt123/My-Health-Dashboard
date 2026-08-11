@@ -28,23 +28,6 @@
 
     </header>
 
-    <section class="summary-card" id="zepboundCenterSection" style="display: none;">
-        <h2 style="text-align: center;">💉 Zepbound Center</h2>
-        <button id="closeZepboundButton">← Back to Dashboard</button>
-
-        <div class="card">
-            <h2>💉 Injection Log</h2>
-            <p>Record each Zepbound injection.</p>
-            <button id="logInjectionButton">Log Injection</button>
-            <button id="historyInjectionButton">📊 History</button>
-            <div id="historyInjectionSection" class="history-section history-section-scroll" style="display: none;">
-                <div id="historyInjectionDisplay" class="history-display history-stack"></div>
-            </div>
-            <div id="injectionLogDisplay"></div>
-        </div>
-    </section>
-     
-
     <section class="briefing">
         <div class="card medication-center-card">
     <h2 id="medicationCenterCardHeading" style="cursor: pointer;">
@@ -169,13 +152,6 @@
 
 </div>
 
-        <div class="card">
-    <h2 id="zepboundButton" style="cursor: pointer;">
-    💉 Zepbound Center ▼
-</h2>
-    <p>Track injections, rotation sites, prescriptions, and costs.</p>
-</div>
-
 </div>
      </section>
     
@@ -275,6 +251,11 @@
         <div id="asNeededLastTakenDisplay">No as-needed medications logged yet.</div>
         <button id="logAsNeededMedicationButton">Log As-Needed Medication</button>
     </div>
+</div>
+<div class="card" id="zepboundMedicationCard">
+    <h2 style="cursor: pointer;">💉 Zepbound</h2>
+    <p>Track injections, rotation sites, prescriptions, and costs.</p>
+    <button id="openZepboundModalBtn" type="button">Open Zepbound</button>
 </div>
     </section>
 </div>
@@ -473,6 +454,24 @@
         <div id="manageMedicationsPanel">
             <div id="medicationEditor"></div>
             <div id="medicationEditArea"></div>
+        </div>
+    </div>
+</div>
+<div id="zepboundModal" class="modal" style="display: none;">
+    <div id="zepboundModalContent" class="modal-content zepbound-modal-content">
+        <div class="zepbound-modal-header">
+            <h2>💉 Zepbound Center</h2>
+            <button id="closeZepboundModalBtn" type="button">Close</button>
+        </div>
+
+        <div class="zepbound-modal-body">
+            <p>Record each Zepbound injection.</p>
+            <button id="logInjectionButton" type="button">Log Injection</button>
+            <button id="historyInjectionButton" type="button">📊 History</button>
+            <div id="historyInjectionSection" class="history-section history-section-scroll" style="display: none;">
+                <div id="historyInjectionDisplay" class="history-display history-stack"></div>
+            </div>
+            <div id="injectionLogDisplay"></div>
         </div>
     </div>
 </div>

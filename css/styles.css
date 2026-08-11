@@ -129,11 +129,6 @@ header p {
     margin-bottom: 0;
 }
 
-#zepboundCenterSection {
-    max-height: none;
-    overflow: visible;
-}
-
 /*
  * Shared History Framework
  * Future history modules should compose these classes instead of inventing
@@ -1343,6 +1338,57 @@ button:active,
     margin: 0;
 }
 
+#zepboundModal {
+    align-items: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+#zepboundModal .zepbound-modal-content {
+    max-width: 460px;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    text-align: left;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+@supports not (height: 100dvh) {
+    #zepboundModal .zepbound-modal-content {
+        max-height: calc(100vh - 24px);
+    }
+}
+
+.zepbound-modal-header {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.zepbound-modal-header h2 {
+    margin-bottom: 0;
+}
+
+.zepbound-modal-header button {
+    margin: 0;
+}
+
+.zepbound-modal-body {
+    display: grid;
+    gap: 10px;
+}
+
+#zepboundModal #historyInjectionSection {
+    max-height: 46dvh;
+}
+
+#zepboundModal #injectionLogDisplay h3 {
+    margin-top: 8px;
+    margin-bottom: 6px;
+}
+
 #manageMedicationsPanel {
     display: grid;
     gap: 0;
@@ -1956,6 +2002,18 @@ body.medication-editor-open {
 }
 
 body.medication-editor-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
+html.zepbound-modal-open,
+body.zepbound-modal-open {
+    overflow: hidden;
+}
+
+body.zepbound-modal-open {
     position: fixed;
     left: 0;
     right: 0;
