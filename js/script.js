@@ -457,6 +457,18 @@ function getScheduleEventTimeForDisplay(eventData, fallbackTime) {
     return parseClockTimeTo24Hour(fallbackTime);
 }
 
+function getMedicationSectionExpanded(listElement) {
+    if (!listElement) {
+        return false;
+    }
+
+    return window.getComputedStyle(listElement).display !== "none";
+}
+
+function getMedicationHeadingChevron(isExpanded) {
+    return isExpanded ? "⌄" : "›";
+}
+
 function renderMedicationCardHeading(slotConfig, eventData) {
     if (!slotConfig || !slotConfig.headingElement) {
         return;
@@ -467,11 +479,26 @@ function renderMedicationCardHeading(slotConfig, eventData) {
         : slotConfig.defaultName;
     const eventTime = getScheduleEventTimeForDisplay(eventData, slotConfig.defaultTime);
     const timeLabel = formatClockTimeLabel(eventTime);
+    const isExpanded = getMedicationSectionExpanded(slotConfig.listElement);
+    const chevron = getMedicationHeadingChevron(isExpanded);
 
     slotConfig.headingElement.innerHTML =
-        slotConfig.icon + " " +
-        name +
-        ' <span class="approx-time">~' + (timeLabel || "--") + "</span>";
+        '<span class="medication-heading-main">' +
+        '<span class="medication-heading-title">' +
+        slotConfig.icon + " " + name +
+        '</span>' +
+        '<span class="medication-heading-chevron" aria-hidden="true">' + chevron + "</span>" +
+        "</span>" +
+        '<span class="approx-time">~' + (timeLabel || "--") + "</span>";
+
+    slotConfig.headingElement.classList.add("medication-heading-toggle");
+    slotConfig.headingElement.setAttribute("role", "button");
+    slotConfig.headingElement.setAttribute("tabindex", "0");
+    if (slotConfig.listElement && slotConfig.listElement.id) {
+        slotConfig.headingElement.setAttribute("aria-controls", slotConfig.listElement.id);
+    }
+    slotConfig.headingElement.setAttribute("aria-label", (name || slotConfig.defaultName) + " details");
+    slotConfig.headingElement.setAttribute("aria-expanded", isExpanded ? "true" : "false");
 }
 
 function renderMedicationListForSlot(slotConfig, eventData) {
@@ -583,9 +610,22 @@ function setupMedicationToggle(headingId, listId) {
 
     if (!heading || !list) return;
 
-    heading.addEventListener("click", () => {
-        const isHidden = list.style.display === "none";
-        setMedicationSectionExpanded(list, isHidden);
+    const toggle = function () {
+        const isExpanded = getMedicationSectionExpanded(list);
+        setMedicationSectionExpanded(list, !isExpanded);
+    };
+
+    heading.addEventListener("click", function () {
+        toggle();
+    });
+
+    heading.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" && event.key !== " ") {
+            return;
+        }
+
+        event.preventDefault();
+        toggle();
     });
 }
 
@@ -595,6 +635,17 @@ function setMedicationSectionExpanded(list, isExpanded) {
     }
 
     list.style.display = isExpanded ? "block" : "none";
+
+    const headingId = list.id.replace("MedicationList", "Heading");
+    const heading = document.getElementById(headingId);
+    if (heading) {
+        heading.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+
+        const chevron = heading.querySelector(".medication-heading-chevron");
+        if (chevron) {
+            chevron.textContent = getMedicationHeadingChevron(isExpanded);
+        }
+    }
 }
 
 setupMedicationToggle("wakeUpHeading", "wakeUpMedicationList");
