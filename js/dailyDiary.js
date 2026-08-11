@@ -316,6 +316,32 @@
         }
     }
 
+    function scrollToDailyDiaryHistoryTop() {
+        if (!dailyDiaryHistorySection) {
+            return;
+        }
+
+        if (typeof dailyDiaryHistorySection.scrollIntoView === "function") {
+            dailyDiaryHistorySection.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+
+        window.setTimeout(function () {
+            const top = dailyDiaryHistorySection.getBoundingClientRect().top;
+            if (top < 0 || top > 40) {
+                const elementTop =
+                    window.pageYOffset + dailyDiaryHistorySection.getBoundingClientRect().top;
+                const targetTop = Math.max(0, elementTop - 12);
+                window.scrollTo({
+                    top: targetTop,
+                    behavior: "smooth"
+                });
+            }
+        }, 160);
+    }
+
     function toggleHistory() {
         if (!dailyDiaryHistorySection || !dailyDiaryHistoryButton) {
             return;
@@ -328,6 +354,7 @@
             dailyDiaryHistorySection.style.display = "block";
             dailyDiaryHistoryButton.textContent = "Hide History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "true");
+            scrollToDailyDiaryHistoryTop();
             return;
         }
 

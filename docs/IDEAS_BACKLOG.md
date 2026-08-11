@@ -1103,3 +1103,47 @@ As the Diary grows, consider adding:
 - Connections between diary entries and health/activity records.
 
 Do not implement these features as part of this backlog item.
+
+## Quick Links — Constrained Scrollable List
+
+### Goal
+
+Allow the Quick Links section of the Profile & Links Dashboard card to grow without allowing the entire card to consume excessive vertical space.
+
+### Proposed Behavior
+
+When the number of Quick Links becomes large enough to require significant vertical space:
+
+- Make only the Quick Links list independently scrollable.
+- Keep the Profile & Links editor button fixed and always visible.
+- Keep the surrounding Dashboard card at a reasonable height.
+- Allow the user to scroll through all Quick Links without scrolling the entire Dashboard card.
+
+Conceptually:
+
+    Profile & Links
+
+    [ Quick Link ]
+    [ Quick Link ]
+    [ Quick Link ]
+       ↕ scrollable
+    [ Quick Link ]
+    [ Quick Link ]
+
+    [ Edit Profile & Links ]
+
+### Design Considerations
+
+- Do not impose an arbitrary limit on the number of Quick Links.
+- Use a reasonable maximum height for the Quick Links scrolling area.
+- Preserve the existing link ordering.
+- Preserve existing Quick Link functionality.
+- Keep touch targets comfortable on iPhone.
+- Make the scrolling behavior obvious without making the list look like a separate application component.
+- Keep the Profile & Links editor button outside the scrolling region so it remains immediately accessible.
+
+### Future Enhancement
+
+Consider whether the Quick Links list should automatically become scrollable only after it exceeds a certain height, allowing short lists to remain fully visible without an unnecessary scrollbar or nested scrolling area.
+
+Do not implement until the Quick Links list has grown enough through actual use to determine an appropriate height and scrolling behavior.
