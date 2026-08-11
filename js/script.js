@@ -501,6 +501,37 @@ function renderMedicationCardHeading(slotConfig, eventData) {
     slotConfig.headingElement.setAttribute("aria-expanded", isExpanded ? "true" : "false");
 }
 
+function renderAsNeededHeadingToggle() {
+    const heading = document.getElementById("asNeededHeading");
+    const list = document.getElementById("asNeededMedicationContent");
+
+    if (!heading || !list) {
+        return;
+    }
+
+    const existingLabel = heading.dataset.baseLabel || heading.textContent || "As-Needed Medications";
+    const baseLabel = existingLabel
+        .replace(/[›⌄]/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    const isExpanded = getMedicationSectionExpanded(list);
+    const chevron = getMedicationHeadingChevron(isExpanded);
+
+    heading.dataset.baseLabel = baseLabel;
+    heading.innerHTML =
+        '<span class="medication-heading-main">' +
+        '<span class="medication-heading-title">' + baseLabel + "</span>" +
+        '<span class="medication-heading-chevron" aria-hidden="true">' + chevron + "</span>" +
+        "</span>";
+
+    heading.classList.add("medication-heading-toggle");
+    heading.setAttribute("role", "button");
+    heading.setAttribute("tabindex", "0");
+    heading.setAttribute("aria-controls", list.id);
+    heading.setAttribute("aria-label", baseLabel + " details");
+    heading.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+}
+
 function renderMedicationListForSlot(slotConfig, eventData) {
     if (!slotConfig || !slotConfig.listElement) {
         return;
@@ -610,6 +641,8 @@ function setupMedicationToggle(headingId, listId) {
 
     if (!heading || !list) return;
 
+    list.dataset.headingId = headingId;
+
     const toggle = function () {
         const isExpanded = getMedicationSectionExpanded(list);
         setMedicationSectionExpanded(list, !isExpanded);
@@ -636,7 +669,7 @@ function setMedicationSectionExpanded(list, isExpanded) {
 
     list.style.display = isExpanded ? "block" : "none";
 
-    const headingId = list.id.replace("MedicationList", "Heading");
+    const headingId = list.dataset.headingId || list.id.replace("MedicationList", "Heading");
     const heading = document.getElementById(headingId);
     if (heading) {
         heading.setAttribute("aria-expanded", isExpanded ? "true" : "false");
@@ -654,6 +687,7 @@ setupMedicationToggle("middayHeading", "middayMedicationList");
 setupMedicationToggle("dinnerHeading", "dinnerMedicationList");
 setupMedicationToggle("eveningHeading", "eveningMedicationList");
 setupMedicationToggle("asNeededHeading", "asNeededMedicationContent");
+renderAsNeededHeadingToggle();
 const breakfastButton =
     document.getElementById("breakfastButton");
 
@@ -757,7 +791,7 @@ function openMedicationCenter(targetElement) {
 
     const asNeededContent = document.getElementById("asNeededMedicationContent");
     if (asNeededContent) {
-        asNeededContent.style.display = "none";
+        setMedicationSectionExpanded(asNeededContent, false);
     }
 
     if (medicationCenterCardHeading) {
