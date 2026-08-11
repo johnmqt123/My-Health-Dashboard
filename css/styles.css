@@ -1159,7 +1159,42 @@ header p {
     padding: 8px 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-    cursor: pointer;
+    cursor: default;
+}
+
+#addAsNeededMedicationButton {
+    background: #f8fafc;
+    color: var(--text);
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
+
+#addAsNeededMedicationButton:hover,
+#addAsNeededMedicationButton:active {
+    background: #f1f5f9;
+    transform: none;
+}
+
+#asNeededMedicationContent .as-needed-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#asNeededMedicationContent .as-needed-entry:last-child {
+    border-bottom: 0;
+}
+
+#asNeededMedicationContent .as-needed-delete-btn {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    white-space: nowrap;
+    align-self: center;
 }
 
 #asNeededMedicationContent .as-needed-disclosure {

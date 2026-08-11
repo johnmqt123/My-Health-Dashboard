@@ -27,6 +27,9 @@ const medicationEditArea =
 const logAsNeededMedicationButton =
     document.getElementById("logAsNeededMedicationButton");
 
+const addAsNeededMedicationButton =
+    document.getElementById("addAsNeededMedicationButton");
+
 const asNeededMedicationModal =
     document.getElementById("asNeededMedicationModal");
 
@@ -141,9 +144,9 @@ function renderAsNeededMedicationHistory() {
         const tabletsText = tablets + " tablet" + (tablets === 1 ? "" : "s");
         const noteText = latest.note ? " — " + latest.note : "";
 
-        return "<p><strong>" + medicationName + "</strong><br>Last Taken: " +
+        return "<div class=\"as-needed-entry\"><p><strong>" + medicationName + "</strong><br>Last Taken: " +
             formatDateTime(latest.dateTime) + " · " + tabletsText + noteText +
-            " <button type=\"button\" class=\"history-delete-btn medication-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">🗑️</button></p>";
+            "</p><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete</button></div>";
     }).join("");
 }
 
@@ -771,6 +774,10 @@ Cancel
 
 if (logAsNeededMedicationButton) {
     logAsNeededMedicationButton.addEventListener("click", openAsNeededMedicationModal);
+}
+
+if (addAsNeededMedicationButton) {
+    addAsNeededMedicationButton.addEventListener("click", openAsNeededMedicationModal);
 }
 
 if (asNeededMedicationChoice) {
