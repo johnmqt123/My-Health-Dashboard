@@ -1380,8 +1380,12 @@ button:active,
     gap: 10px;
 }
 
-#zepboundModal #historyInjectionSection {
-    max-height: 46dvh;
+#zepboundModal #historyInjectionSection,
+#zepboundModal #historyInjectionDisplay {
+    max-height: none;
+    overflow-y: visible;
+    overflow-x: visible;
+    padding-right: 0;
 }
 
 #zepboundModal #injectionLogDisplay h3 {
