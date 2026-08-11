@@ -483,19 +483,93 @@ function renderMedicationListForSlot(slotConfig, eventData) {
         ? eventData.medications
         : [];
 
-    const notesText = eventData && eventData.notes
-        ? String(eventData.notes).trim()
-        : "";
-
     const medicationsMarkup = medications.length
         ? "<ul><li>" + medications.join("</li><li>") + "</li></ul>"
         : "<em>No medications configured.</em>";
 
-    const notesMarkup = notesText
-        ? "<p class=\"medication-schedule-note\"><strong>Notes:</strong> " + notesText + "</p>"
+    slotConfig.listElement.innerHTML = medicationsMarkup;
+}
+
+function getNotePreviewText(noteValue) {
+    const text = noteValue ? String(noteValue).trim() : "";
+    if (!text) {
+        return "Add a note";
+    }
+
+    const collapsed = text.replace(/\s+/g, " ").trim();
+    if (collapsed.length <= 90) {
+        return collapsed;
+    }
+
+    return collapsed.slice(0, 87) + "...";
+}
+
+function ensureMedicationCardNotesRow(slotConfig) {
+    if (!slotConfig || !slotConfig.cardId) {
+        return null;
+    }
+
+    const cardElement = document.getElementById(slotConfig.cardId);
+    if (!cardElement) {
+        return null;
+    }
+
+    let notesRow = cardElement.querySelector(".medication-card-notes-row");
+    if (notesRow) {
+        return notesRow;
+    }
+
+    notesRow = document.createElement("button");
+    notesRow.type = "button";
+    notesRow.className = "medication-card-notes-row";
+    notesRow.innerHTML =
+        '<span class="medication-card-notes-head"><span>Notes</span><span class="medication-card-notes-chevron" aria-hidden="true">›</span></span>' +
+        '<span class="medication-card-notes-preview"></span>';
+
+    notesRow.addEventListener("click", function () {
+        const eventId = this.dataset.eventId || "";
+        if (!eventId) {
+            return;
+        }
+
+        if (typeof window.openMedicationScheduleNotesModal === "function") {
+            window.openMedicationScheduleNotesModal(eventId);
+        }
+    });
+
+    const cardLogButton = slotConfig.buttonId
+        ? document.getElementById(slotConfig.buttonId)
+        : null;
+
+    if (cardLogButton && cardLogButton.parentElement === cardElement) {
+        cardElement.insertBefore(notesRow, cardLogButton);
+    } else {
+        cardElement.appendChild(notesRow);
+    }
+
+    return notesRow;
+}
+
+function renderMedicationNotesRowForSlot(slotConfig, eventData) {
+    const notesRow = ensureMedicationCardNotesRow(slotConfig);
+    if (!notesRow || !eventData) {
+        return;
+    }
+
+    const notesPreviewElement = notesRow.querySelector(".medication-card-notes-preview");
+    const displayName = eventData && eventData.name
+        ? String(eventData.name).trim()
+        : slotConfig.defaultName;
+    const noteValue = eventData && eventData.notes
+        ? String(eventData.notes)
         : "";
 
-    slotConfig.listElement.innerHTML = medicationsMarkup + notesMarkup;
+    notesRow.dataset.eventId = eventData.id || "";
+    notesRow.setAttribute("aria-label", "Open " + displayName + " notes");
+
+    if (notesPreviewElement) {
+        notesPreviewElement.textContent = getNotePreviewText(noteValue);
+    }
 }
 
 function renderMedicationScheduleCards() {
@@ -519,6 +593,7 @@ function renderMedicationScheduleCards() {
 
         renderMedicationCardHeading(slotConfig, eventData);
         renderMedicationListForSlot(slotConfig, eventData);
+        renderMedicationNotesRowForSlot(slotConfig, eventData);
 
         const button = slotConfig.buttonId
             ? document.getElementById(slotConfig.buttonId)

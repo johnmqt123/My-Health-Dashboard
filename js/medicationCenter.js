@@ -18,6 +18,21 @@ const closeManageMedicationsModalBtn =
 const manageMedicationsPanel =
     document.getElementById("manageMedicationsPanel");
 
+const scheduleNotesModal =
+    document.getElementById("scheduleNotesModal");
+
+const scheduleNotesModalTitle =
+    document.getElementById("scheduleNotesModalTitle");
+
+const scheduleNotesModalInput =
+    document.getElementById("scheduleNotesModalInput");
+
+const saveScheduleNotesModalBtn =
+    document.getElementById("saveScheduleNotesModalBtn");
+
+const closeScheduleNotesModalBtn =
+    document.getElementById("closeScheduleNotesModalBtn");
+
 const medicationEditor =
     document.getElementById("medicationEditor");
 
@@ -58,6 +73,7 @@ let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 let medicationEditorLockedScrollTop = 0;
 let medicationEditorReturnScrollSnapshot = null;
+let activeScheduleNotesEventId = "";
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -100,6 +116,51 @@ function saveMedicationSchedule() {
     if (typeof window.updateAtAGlanceStatus === "function") {
         window.updateAtAGlanceStatus();
     }
+}
+
+function getMedicationScheduleGroupById(eventId) {
+    if (!eventId || !Array.isArray(personalMedicationSchedule)) {
+        return null;
+    }
+
+    return personalMedicationSchedule.find(function (group) {
+        return group && group.id === eventId;
+    }) || null;
+}
+
+function getMedicationScheduleGroupDisplayName(group) {
+    return group && group.name
+        ? group.name
+        : (group && group.time ? group.time : "Schedule");
+}
+
+function closeScheduleNotesModal() {
+    if (!scheduleNotesModal) {
+        return;
+    }
+
+    scheduleNotesModal.style.display = "none";
+    activeScheduleNotesEventId = "";
+}
+
+function openScheduleNotesModal(eventId) {
+    if (!scheduleNotesModal || !scheduleNotesModalInput || !scheduleNotesModalTitle) {
+        return;
+    }
+
+    const group = getMedicationScheduleGroupById(eventId);
+    if (!group) {
+        return;
+    }
+
+    activeScheduleNotesEventId = group.id;
+    scheduleNotesModalTitle.textContent = getMedicationScheduleGroupDisplayName(group) + " Notes";
+    scheduleNotesModalInput.value = group.notes || "";
+    scheduleNotesModal.style.display = "flex";
+
+    window.requestAnimationFrame(function () {
+        scheduleNotesModalInput.focus();
+    });
 }
 
 function getMedicationHistoryFor(medicationName) {
@@ -329,8 +390,58 @@ if (manageMedicationsModal) {
     });
 }
 
+if (scheduleNotesModal) {
+    scheduleNotesModal.addEventListener("touchmove", function (event) {
+        const content = scheduleNotesModal.querySelector(".schedule-notes-modal-content");
+        if (!content) {
+            return;
+        }
+
+        if (!content.contains(event.target)) {
+            event.preventDefault();
+        }
+    }, {
+        passive: false
+    });
+
+    scheduleNotesModal.addEventListener("click", function (event) {
+        if (event.target === scheduleNotesModal) {
+            closeScheduleNotesModal();
+        }
+    });
+}
+
+if (closeScheduleNotesModalBtn) {
+    closeScheduleNotesModalBtn.addEventListener("click", function () {
+        closeScheduleNotesModal();
+    });
+}
+
+if (saveScheduleNotesModalBtn) {
+    saveScheduleNotesModalBtn.addEventListener("click", function () {
+        const group = getMedicationScheduleGroupById(activeScheduleNotesEventId);
+        if (!group) {
+            closeScheduleNotesModal();
+            return;
+        }
+
+        group.notes = scheduleNotesModalInput
+            ? scheduleNotesModalInput.value
+            : "";
+
+        saveMedicationSchedule();
+
+        if (typeof window.buildMedicationList === "function" && isMedicationManagementModalOpen()) {
+            window.buildMedicationList();
+        }
+
+        closeScheduleNotesModal();
+    });
+}
+
 window.closeMedicationManagementModal = closeMedicationManagementModal;
 window.isMedicationManagementModalOpen = isMedicationManagementModalOpen;
+window.openMedicationScheduleNotesModal = openScheduleNotesModal;
 
 function buildMedicationList() {
 
