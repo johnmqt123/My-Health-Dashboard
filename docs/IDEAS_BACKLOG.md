@@ -858,3 +858,8 @@ Topics to evaluate:
 
 Goal:
 Design a navigation system that scales naturally as new modules are added while keeping the app simple and easy to use.
+
+## Zepbound History — Future Improvements
+
+- **Edit/Delete button styling:** Replace the current generic baby-blue and baby-pink button colors with the app's current visual language.
+- **Long-history usability:** Revisit the Zepbound injection history when it becomes substantially longer. Consider a more compact presentation and/or an easier way to close or navigate the history without requiring a long scroll.
