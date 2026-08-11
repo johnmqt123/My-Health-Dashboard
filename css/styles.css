@@ -2334,11 +2334,6 @@ body.zepbound-modal-open {
     user-select: none;
 }
 
-.medication-heading-toggle:hover,
-.medication-heading-toggle:active {
-    background: #f1f5f9;
-}
-
 .medication-heading-toggle:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
