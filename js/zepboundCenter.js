@@ -216,13 +216,6 @@ function initZepboundCenter() {
 
             if (isHidden) {
                 renderHistory();
-
-                if (historyInjectionSection && typeof historyInjectionSection.scrollIntoView === "function") {
-                    historyInjectionSection.scrollIntoView({
-                        behavior: "smooth",
-                        block: "nearest"
-                    });
-                }
             }
         });
     }

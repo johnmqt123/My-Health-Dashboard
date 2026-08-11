@@ -464,6 +464,20 @@ Example:
 Rather than only recording that a medication was taken, optionally record the quantity taken for medications where dosage may vary.
 
 This enhancement should be optional and should not complicate medications that are always taken in fixed amounts.
+
+### User-Configurable Specialized Medication Centers
+
+Future architectural direction:
+
+- Medication-specific centers (for example, Zepbound) should be configurable rather than hard-coded to one medication.
+- Users should be able to enable specialized medication centers that match their own regimen.
+- Potential examples include GLP-1 medications, insulin workflows, anticoagulant therapy, and other specialized medication tracking needs.
+- The Medication Center should display only the specialized centers relevant to that user.
+- The architecture should support adding specialized medication types without custom code changes for each individual user.
+
+Design principle:
+
+John's Assistant should adapt to the user's medication regimen rather than assuming every user takes Zepbound.
 ## Quick Links Customization
 
 Allow users to customize the order of Quick Links.
