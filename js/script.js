@@ -482,12 +482,23 @@ function renderMedicationListForSlot(slotConfig, eventData) {
     const medications = eventData && Array.isArray(eventData.medications)
         ? eventData.medications
         : [];
+    const notesText = eventData && eventData.notes
+        ? String(eventData.notes)
+        : "";
 
     const medicationsMarkup = medications.length
         ? "<ul><li>" + medications.join("</li><li>") + "</li></ul>"
         : "<em>No medications configured.</em>";
 
-    slotConfig.listElement.innerHTML = medicationsMarkup;
+    const notesMarkup =
+        '<button type="button" class="medication-card-notes-row" data-event-id="' + (eventData && eventData.id ? eventData.id : "") + '" aria-label="Open ' +
+        ((eventData && eventData.name ? String(eventData.name).trim() : slotConfig.defaultName) || "Schedule") +
+        ' notes">' +
+        '<span class="medication-card-notes-head"><span>Notes</span><span class="medication-card-notes-chevron" aria-hidden="true">›</span></span>' +
+        '<span class="medication-card-notes-preview">' + getNotePreviewText(notesText) + '</span>' +
+        "</button>";
+
+    slotConfig.listElement.innerHTML = medicationsMarkup + notesMarkup;
 }
 
 function getNotePreviewText(noteValue) {
@@ -504,30 +515,22 @@ function getNotePreviewText(noteValue) {
     return collapsed.slice(0, 87) + "...";
 }
 
-function ensureMedicationCardNotesRow(slotConfig) {
-    if (!slotConfig || !slotConfig.cardId) {
-        return null;
+function ensureMedicationListNotesRowInteraction(slotConfig) {
+    if (!slotConfig || !slotConfig.listElement) {
+        return;
     }
 
-    const cardElement = document.getElementById(slotConfig.cardId);
-    if (!cardElement) {
-        return null;
+    if (slotConfig.listElement.dataset.notesClickBound === "true") {
+        return;
     }
 
-    let notesRow = cardElement.querySelector(".medication-card-notes-row");
-    if (notesRow) {
-        return notesRow;
-    }
+    slotConfig.listElement.addEventListener("click", function (event) {
+        const notesRow = event.target.closest(".medication-card-notes-row");
+        if (!notesRow || !slotConfig.listElement.contains(notesRow)) {
+            return;
+        }
 
-    notesRow = document.createElement("button");
-    notesRow.type = "button";
-    notesRow.className = "medication-card-notes-row";
-    notesRow.innerHTML =
-        '<span class="medication-card-notes-head"><span>Notes</span><span class="medication-card-notes-chevron" aria-hidden="true">›</span></span>' +
-        '<span class="medication-card-notes-preview"></span>';
-
-    notesRow.addEventListener("click", function () {
-        const eventId = this.dataset.eventId || "";
+        const eventId = notesRow.dataset.eventId || "";
         if (!eventId) {
             return;
         }
@@ -537,39 +540,7 @@ function ensureMedicationCardNotesRow(slotConfig) {
         }
     });
 
-    const cardLogButton = slotConfig.buttonId
-        ? document.getElementById(slotConfig.buttonId)
-        : null;
-
-    if (cardLogButton && cardLogButton.parentElement === cardElement) {
-        cardElement.insertBefore(notesRow, cardLogButton);
-    } else {
-        cardElement.appendChild(notesRow);
-    }
-
-    return notesRow;
-}
-
-function renderMedicationNotesRowForSlot(slotConfig, eventData) {
-    const notesRow = ensureMedicationCardNotesRow(slotConfig);
-    if (!notesRow || !eventData) {
-        return;
-    }
-
-    const notesPreviewElement = notesRow.querySelector(".medication-card-notes-preview");
-    const displayName = eventData && eventData.name
-        ? String(eventData.name).trim()
-        : slotConfig.defaultName;
-    const noteValue = eventData && eventData.notes
-        ? String(eventData.notes)
-        : "";
-
-    notesRow.dataset.eventId = eventData.id || "";
-    notesRow.setAttribute("aria-label", "Open " + displayName + " notes");
-
-    if (notesPreviewElement) {
-        notesPreviewElement.textContent = getNotePreviewText(noteValue);
-    }
+    slotConfig.listElement.dataset.notesClickBound = "true";
 }
 
 function renderMedicationScheduleCards() {
@@ -593,7 +564,7 @@ function renderMedicationScheduleCards() {
 
         renderMedicationCardHeading(slotConfig, eventData);
         renderMedicationListForSlot(slotConfig, eventData);
-        renderMedicationNotesRowForSlot(slotConfig, eventData);
+        ensureMedicationListNotesRowInteraction(slotConfig);
 
         const button = slotConfig.buttonId
             ? document.getElementById(slotConfig.buttonId)
