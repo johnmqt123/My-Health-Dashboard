@@ -4,16 +4,21 @@
     let diaryEntries = loadData(DIARY_STORAGE_KEY, []);
 
     const dailyDiaryCurrentDate = document.getElementById("dailyDiaryCurrentDate");
-    const dailyDiaryInput = document.getElementById("dailyDiaryInput");
-    const dailyDiarySaveButton = document.getElementById("dailyDiarySaveButton");
+    const dailyDiaryTodayPreview = document.getElementById("dailyDiaryTodayPreview");
+    const dailyDiaryOpenTodayButton = document.getElementById("dailyDiaryOpenTodayButton");
     const dailyDiaryHistoryButton = document.getElementById("dailyDiaryHistoryButton");
     const dailyDiaryHistorySection = document.getElementById("dailyDiaryHistorySection");
     const dailyDiaryHistoryDisplay = document.getElementById("dailyDiaryHistoryDisplay");
-    const dailyDiaryEditStatus = document.getElementById("dailyDiaryEditStatus");
-    const dailyDiaryEditTodayButton = document.getElementById("dailyDiaryEditTodayButton");
 
-    let activeEditDate = null;
+    const dailyDiaryEditorModal = document.getElementById("dailyDiaryEditorModal");
+    const dailyDiaryEditorTitle = document.getElementById("dailyDiaryEditorTitle");
+    const dailyDiaryEditorDate = document.getElementById("dailyDiaryEditorDate");
+    const dailyDiaryEditorInput = document.getElementById("dailyDiaryEditorInput");
+    const dailyDiaryEditorSaveButton = document.getElementById("dailyDiaryEditorSaveButton");
+    const dailyDiaryEditorCloseButton = document.getElementById("dailyDiaryEditorCloseButton");
+
     let expandedHistoryDate = null;
+    let editorActiveDate = null;
 
     function getLocalDateKey(dateValue) {
         const safeDate = dateValue instanceof Date ? dateValue : new Date();
@@ -150,7 +155,7 @@
     function getPreviewText(textValue) {
         const compact = String(textValue || "").replace(/\s+/g, " ").trim();
         if (!compact) {
-            return "(No text saved yet)";
+            return "No entry yet. Add today's diary entry.";
         }
 
         if (compact.length <= 120) {
@@ -170,26 +175,76 @@
         });
     }
 
-    function setActiveEditDate(dateKey) {
-        activeEditDate = dateKey;
+    function renderTodaySummary() {
+        const todayKey = getLocalDateKey();
+        const todayEntry = getEntryByDate(todayKey);
 
-        const entry = getEntryByDate(dateKey);
-        if (dailyDiaryInput) {
-            dailyDiaryInput.value = entry && typeof entry.text === "string" ? entry.text : "";
+        if (dailyDiaryCurrentDate) {
+            dailyDiaryCurrentDate.textContent = getFriendlyDateLabel(todayKey, true);
         }
+
+        if (dailyDiaryTodayPreview) {
+            dailyDiaryTodayPreview.textContent = getPreviewText(todayEntry ? todayEntry.text : "");
+        }
+    }
+
+    function openEditorForDate(dateKey) {
+        if (!parseDateKey(dateKey) || !dailyDiaryEditorModal || !dailyDiaryEditorInput) {
+            return;
+        }
+
+        editorActiveDate = dateKey;
 
         const todayKey = getLocalDateKey();
-        const isToday = dateKey === todayKey;
+        const isToday = editorActiveDate === todayKey;
+        const entry = getEntryByDate(editorActiveDate);
 
-        if (dailyDiaryEditStatus) {
-            dailyDiaryEditStatus.textContent = isToday
-                ? "Editing today's entry."
-                : "Editing " + getFriendlyDateLabel(dateKey, true) + ".";
+        if (dailyDiaryEditorTitle) {
+            dailyDiaryEditorTitle.textContent = isToday ? "Today's Diary" : "Edit Diary Entry";
         }
 
-        if (dailyDiaryEditTodayButton) {
-            dailyDiaryEditTodayButton.style.display = isToday ? "none" : "block";
+        if (dailyDiaryEditorDate) {
+            dailyDiaryEditorDate.textContent = getFriendlyDateLabel(editorActiveDate, true);
         }
+
+        dailyDiaryEditorInput.value = entry ? String(entry.text || "") : "";
+        dailyDiaryEditorModal.style.display = "block";
+
+        window.requestAnimationFrame(function () {
+            dailyDiaryEditorInput.focus();
+            const length = dailyDiaryEditorInput.value.length;
+            dailyDiaryEditorInput.setSelectionRange(length, length);
+        });
+    }
+
+    function closeEditor() {
+        if (!dailyDiaryEditorModal || !dailyDiaryEditorInput) {
+            editorActiveDate = null;
+            return;
+        }
+
+        dailyDiaryEditorModal.style.display = "none";
+        dailyDiaryEditorInput.value = "";
+        editorActiveDate = null;
+    }
+
+    function handleEditorSave() {
+        if (!dailyDiaryEditorInput || !editorActiveDate) {
+            return;
+        }
+
+        const textValue = dailyDiaryEditorInput.value.trim();
+        if (!textValue) {
+            alert("Please enter a diary entry before saving.");
+            return;
+        }
+
+        upsertEntry(editorActiveDate, textValue);
+        diaryEntries = normalizeDiaryEntries(diaryEntries);
+        saveDiaryEntries();
+        renderTodaySummary();
+        renderHistory();
+        closeEditor();
     }
 
     function renderHistory() {
@@ -253,6 +308,7 @@
                 details.className = "diary-history-details";
                 details.style.display = isExpanded ? "grid" : "none";
                 details.innerHTML =
+                    '<div class="diary-history-detail-date">' + escapeHtml(getFriendlyDateLabel(entry.date, true)) + "</div>" +
                     '<div class="diary-history-full-text">' + escapeHtml(entry.text || "") + "</div>" +
                     '<button type="button" class="diary-history-edit-btn" data-date="' + escapeHtml(entry.date) +
                     '" aria-label="Edit diary entry for ' + escapeHtml(getFriendlyDateLabel(entry.date, true)) +
@@ -275,45 +331,12 @@
         renderHistory();
     }
 
-    function beginEditingHistoryDate(dateKey) {
+    function editHistoryDate(dateKey) {
         if (!parseDateKey(dateKey)) {
             return;
         }
 
-        setActiveEditDate(dateKey);
-
-        if (dailyDiaryInput) {
-            dailyDiaryInput.focus();
-        }
-    }
-
-    function handleSaveEntry() {
-        if (!dailyDiaryInput) {
-            return;
-        }
-
-        const textValue = dailyDiaryInput.value.trim();
-        if (!textValue) {
-            alert("Please enter a diary entry before saving.");
-            return;
-        }
-
-        const todayKey = getLocalDateKey();
-        const targetDate = activeEditDate || todayKey;
-
-        upsertEntry(targetDate, textValue);
-        diaryEntries = normalizeDiaryEntries(diaryEntries);
-        saveDiaryEntries();
-
-        setActiveEditDate(targetDate);
-        renderHistory();
-    }
-
-    function openTodayForEditing() {
-        setActiveEditDate(getLocalDateKey());
-        if (dailyDiaryInput) {
-            dailyDiaryInput.focus();
-        }
+        openEditorForDate(dateKey);
     }
 
     function toggleHistory() {
@@ -340,22 +363,25 @@
                 });
             };
 
-            requestAnimationFrame(function () {
+            alignHistoryControl();
+
+            window.setTimeout(function () {
+                const buttonRect = dailyDiaryHistoryButton.getBoundingClientRect();
+                const sectionRect = dailyDiaryHistorySection.getBoundingClientRect();
+                const monthHeading = dailyDiaryHistoryDisplay
+                    ? dailyDiaryHistoryDisplay.querySelector(".diary-month-header")
+                    : null;
+                const monthRect = monthHeading ? monthHeading.getBoundingClientRect() : null;
+                const buttonVisible = buttonRect.top >= 0 && buttonRect.bottom <= window.innerHeight;
+                const sectionStartVisible = sectionRect.top < window.innerHeight;
+                const monthVisible = !monthRect || (monthRect.top >= 0 && monthRect.top < window.innerHeight);
+
+                if (buttonVisible && sectionStartVisible && monthVisible) {
+                    return;
+                }
+
                 alignHistoryControl();
-
-                window.setTimeout(function () {
-                    const buttonRect = dailyDiaryHistoryButton.getBoundingClientRect();
-                    const sectionRect = dailyDiaryHistorySection.getBoundingClientRect();
-                    const buttonVisible = buttonRect.top >= 0 && buttonRect.bottom <= window.innerHeight;
-                    const sectionStartVisible = sectionRect.top < window.innerHeight;
-
-                    if (buttonVisible && sectionStartVisible) {
-                        return;
-                    }
-
-                    alignHistoryControl();
-                }, 160);
-            });
+            }, 160);
 
             return;
         }
@@ -367,18 +393,14 @@
     }
 
     function initDailyDiaryCenter() {
-        if (!dailyDiaryInput || !dailyDiarySaveButton) {
+        if (!dailyDiaryOpenTodayButton || !dailyDiaryEditorInput || !dailyDiaryEditorSaveButton) {
             return;
         }
 
         diaryEntries = normalizeDiaryEntries(diaryEntries);
         saveDiaryEntries();
 
-        const todayKey = getLocalDateKey();
-
-        if (dailyDiaryCurrentDate) {
-            dailyDiaryCurrentDate.textContent = getFriendlyDateLabel(todayKey, true);
-        }
+        renderTodaySummary();
 
         if (dailyDiaryHistorySection) {
             dailyDiaryHistorySection.style.display = "none";
@@ -390,10 +412,22 @@
             dailyDiaryHistoryButton.addEventListener("click", toggleHistory);
         }
 
-        dailyDiarySaveButton.addEventListener("click", handleSaveEntry);
+        dailyDiaryOpenTodayButton.addEventListener("click", function () {
+            openEditorForDate(getLocalDateKey());
+        });
 
-        if (dailyDiaryEditTodayButton) {
-            dailyDiaryEditTodayButton.addEventListener("click", openTodayForEditing);
+        dailyDiaryEditorSaveButton.addEventListener("click", handleEditorSave);
+
+        if (dailyDiaryEditorCloseButton) {
+            dailyDiaryEditorCloseButton.addEventListener("click", closeEditor);
+        }
+
+        if (dailyDiaryEditorModal) {
+            dailyDiaryEditorModal.addEventListener("click", function (event) {
+                if (event.target === dailyDiaryEditorModal) {
+                    closeEditor();
+                }
+            });
         }
 
         if (dailyDiaryHistoryDisplay) {
@@ -401,7 +435,7 @@
                 const editButton = event.target.closest(".diary-history-edit-btn");
                 if (editButton) {
                     const editDate = String(editButton.getAttribute("data-date") || "");
-                    beginEditingHistoryDate(editDate);
+                    editHistoryDate(editDate);
                     return;
                 }
 
@@ -415,7 +449,6 @@
             });
         }
 
-        setActiveEditDate(todayKey);
         renderHistory();
     }
 

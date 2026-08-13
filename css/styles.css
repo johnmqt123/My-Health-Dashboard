@@ -1225,16 +1225,15 @@ header p {
     font-size: 0.95rem;
 }
 
-#dailyDiaryCard .daily-diary-input {
-    width: 100%;
-    min-height: 122px;
-    resize: vertical;
-    border: 1px solid #cbd5e1;
-    border-radius: 10px;
+#dailyDiaryCard .daily-diary-preview {
     padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
     color: var(--text);
-    font-size: 1rem;
+    font-size: 0.96rem;
     line-height: 1.45;
+    white-space: normal;
     overflow-wrap: anywhere;
 }
 
@@ -1252,6 +1251,62 @@ header p {
 
 #dailyDiaryEditTodayButton:hover,
 #dailyDiaryEditTodayButton:active {
+    background: #f1f5f9;
+    transform: none;
+}
+
+#dailyDiaryEditorModal {
+    align-items: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+#dailyDiaryEditorModal .daily-diary-editor-modal-content {
+    max-width: 520px;
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    text-align: left;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+@supports not (height: 100dvh) {
+    #dailyDiaryEditorModal .daily-diary-editor-modal-content {
+        max-height: calc(100vh - 24px);
+    }
+}
+
+#dailyDiaryEditorModal .daily-diary-editor-date {
+    margin-bottom: 8px;
+    color: var(--muted);
+    font-size: 0.95rem;
+}
+
+#dailyDiaryEditorModal .daily-diary-editor-input {
+    min-height: 300px;
+    resize: vertical;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}
+
+#dailyDiaryEditorModal .daily-diary-editor-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+#dailyDiaryEditorCloseButton {
+    background: #f8fafc;
+    color: var(--text);
+    border: 1px solid #cbd5e1;
+    box-shadow: none;
+}
+
+#dailyDiaryEditorCloseButton:hover,
+#dailyDiaryEditorCloseButton:active {
     background: #f1f5f9;
     transform: none;
 }
@@ -1321,6 +1376,12 @@ header p {
     line-height: 1.45;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.diary-history-detail-date {
+    color: var(--text);
+    font-size: 0.9rem;
+    font-weight: 700;
 }
 
 .diary-history-edit-btn {
@@ -1943,6 +2004,10 @@ button:active,
     #medicationEditArea .medication-draft-row,
     #medicationEditArea .medication-editor-secondary-actions,
     #medicationEditArea .compact-actions {
+        grid-template-columns: 1fr;
+    }
+
+    #dailyDiaryEditorModal .daily-diary-editor-actions {
         grid-template-columns: 1fr;
     }
 

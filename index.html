@@ -106,11 +106,8 @@
         <div class="card" id="dailyDiaryCard">
             <h2>📖 Daily Diary</h2>
             <p id="dailyDiaryCurrentDate"></p>
-            <label for="dailyDiaryInput" class="daily-diary-label">Diary Entry</label>
-            <textarea id="dailyDiaryInput" class="daily-diary-input" rows="6" placeholder="Write about your day..."></textarea>
-            <p id="dailyDiaryEditStatus" class="daily-diary-status" aria-live="polite">Editing today's entry.</p>
-            <button id="dailyDiaryEditTodayButton" type="button" style="display: none;">Edit Today</button>
-            <button id="dailyDiarySaveButton" type="button">Save Entry</button>
+            <p id="dailyDiaryTodayPreview" class="daily-diary-preview" aria-live="polite">No entry yet. Add today's diary entry.</p>
+            <button id="dailyDiaryOpenTodayButton" type="button">Open Today's Diary</button>
             <button id="dailyDiaryHistoryButton" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
         </div>
         <div class="summary-card history-section" id="dailyDiaryHistorySection" style="display: none;">
@@ -610,6 +607,18 @@
 
         <button id="saveInjectionBtn">Save</button>
         <button id="cancelInjectionBtn">Cancel</button>
+    </div>
+</div>
+<div id="dailyDiaryEditorModal" class="modal" style="display: none;">
+    <div class="modal-content daily-diary-editor-modal-content">
+        <h2 id="dailyDiaryEditorTitle">Daily Diary</h2>
+        <p id="dailyDiaryEditorDate" class="daily-diary-editor-date"></p>
+        <label for="dailyDiaryEditorInput">Diary Entry</label>
+        <textarea id="dailyDiaryEditorInput" class="daily-diary-editor-input" rows="12" placeholder="Write about your day..."></textarea>
+        <div class="daily-diary-editor-actions">
+            <button id="dailyDiaryEditorSaveButton" type="button">Save Entry</button>
+            <button id="dailyDiaryEditorCloseButton" type="button">Close</button>
+        </div>
     </div>
 </div>
 <script src="js/storage.js"></script>
