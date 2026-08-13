@@ -76,6 +76,7 @@ let medicationEditorReturnScrollSnapshot = null;
 let activeScheduleNotesEventId = "";
 let activeMedicationEditorGroupId = "";
 let medicationEditorDraftMedications = [];
+let medicationEditorStatusMessage = "";
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -694,6 +695,24 @@ function confirmMedicationDraftRemove(medicationName) {
     );
 }
 
+function setMedicationEditorStatusMessage(messageText) {
+    medicationEditorStatusMessage = String(messageText || "").trim();
+
+    const statusElement = document.getElementById("medicationDraftStatusMessage");
+    if (!statusElement) {
+        return;
+    }
+
+    if (!medicationEditorStatusMessage) {
+        statusElement.textContent = "";
+        statusElement.style.display = "none";
+        return;
+    }
+
+    statusElement.textContent = medicationEditorStatusMessage;
+    statusElement.style.display = "block";
+}
+
 function syncMedicationDraftsToEditor() {
     const list = document.getElementById("currentMedicationList");
     if (!list) {
@@ -763,6 +782,9 @@ function addMedicationDraftFromInput() {
     medicationEditorDraftMedications.push(medicationName);
     input.value = "";
     syncMedicationDraftsToEditor();
+    setMedicationEditorStatusMessage(
+        "✓ " + medicationName + " added. Tap Save to keep this change."
+    );
     return true;
 }
 
@@ -850,6 +872,7 @@ function showMedicationEditor(group) {
     medicationEditorDraftMedications = Array.isArray(group && group.medications)
         ? group.medications.slice()
         : [];
+    medicationEditorStatusMessage = "";
 
     medicationEditArea.innerHTML = `
 <div class="medication-edit-card">
@@ -871,6 +894,8 @@ function showMedicationEditor(group) {
         <input type="text" id="newMedicationInput" class="medication-edit-input" autocomplete="off">
         <button id="addMedicationBtn" type="button">Add Medication</button>
     </div>
+
+    <p id="medicationDraftStatusMessage" class="medication-draft-status" style="display: none;" aria-live="polite"></p>
 
     <div class="medication-current-list-block">
         <label>Existing Medications</label>
