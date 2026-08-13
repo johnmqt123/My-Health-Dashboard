@@ -685,6 +685,15 @@ function medicationDraftHasValue(medicationName) {
     });
 }
 
+function confirmMedicationDraftRemove(medicationName) {
+    const label = String(medicationName || "medication").trim() || "medication";
+    return window.confirm(
+        "Remove Medication?\n\nAre you sure you want to remove " +
+        label +
+        " from this schedule?"
+    );
+}
+
 function syncMedicationDraftsToEditor() {
     const list = document.getElementById("currentMedicationList");
     if (!list) {
@@ -721,6 +730,10 @@ function syncMedicationDraftsToEditor() {
         removeButton.className = "medication-draft-remove-btn";
         removeButton.textContent = "Remove";
         removeButton.addEventListener("click", function () {
+            if (!confirmMedicationDraftRemove(medicationEditorDraftMedications[index])) {
+                return;
+            }
+
             medicationEditorDraftMedications.splice(index, 1);
             syncMedicationDraftsToEditor();
         });
