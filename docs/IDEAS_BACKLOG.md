@@ -1147,3 +1147,374 @@ Conceptually:
 Consider whether the Quick Links list should automatically become scrollable only after it exceeds a certain height, allowing short lists to remain fully visible without an unnecessary scrollbar or nested scrolling area.
 
 Do not implement until the Quick Links list has grown enough through actual use to determine an appropriate height and scrolling behavior.
+
+## Dashboard History — Standardize Open/Close Scroll Behavior
+
+### Goal
+
+Standardize the History / Hide History behavior across all Dashboard sections so that users experience the same navigation pattern throughout the application.
+
+### Current Behavior
+
+History sections currently behave differently when History is opened and when Hide History is tapped:
+
+- Nutrition — Hide History returns the user to the History button area.
+- Weight — Hide History returns the user to the History button area.
+- Daily Diary — Hide History currently returns the user to the History button area.
+- Exercise — Hide History returns the user to the top/near-top of the entire Exercise card.
+- Blood Pressure — Hide History returns the user to the top/near-top of the entire Blood Pressure card.
+
+### Desired Future Behavior
+
+Establish one consistent Dashboard-wide History interaction pattern.
+
+Preferred behavior:
+
+1. Tap History:
+   - History expands.
+   - The History control remains visible.
+   - The beginning of the History content is visible.
+
+2. Tap Hide History:
+   - History collapses.
+   - The viewport returns to the top of the entire parent Dashboard card, preferably positioned so the complete card is visible when practical.
+
+This should apply consistently to:
+
+- Nutrition
+- Weight
+- Daily Diary
+- Exercise
+- Blood Pressure
+- Any future Dashboard section that includes History
+
+### Implementation Considerations
+
+- Inspect the existing Exercise and Blood Pressure implementations, since their current Hide History behavior appears closest to the desired final experience.
+- Do not blindly replace each section's implementation; preserve each section's existing functionality and data handling.
+- Prefer a shared helper/pattern if one can be introduced safely, but avoid changing global scrolling behavior unless thoroughly tested.
+- Maintain comfortable iPhone behavior and avoid unexpected jumps.
+- Verify both opening and closing History at a 390x844 viewport.
+- Verify that individual history-row expansion/editing behavior remains unchanged.
+
+### Priority
+
+Future UX consistency improvement. Not urgent.
+
+Do not implement until there is a good opportunity to address Dashboard History behavior as a single coordinated cleanup rather than changing individual sections one at a time.
+
+## Quick Links — Make Built-In Links User Configurable
+
+### Goal
+
+Make the Quick Links system consistently user-configurable rather than having some links controlled by the user and others hardwired into the application code.
+
+### Current Issue
+
+User-created Quick Links can already be:
+
+* Edited
+* Deleted
+* Added
+
+However, several existing Quick Links such as:
+
+* Weather
+* News
+* Calendar
+* Gmail
+
+appear to be hardwired into the application.
+
+Changing or removing these currently requires modifying application code rather than using the Profile & Links editor.
+
+### Desired Future Behavior
+
+Ordinary Quick Links should be treated consistently.
+
+The user should be able to:
+
+* Add a Quick Link.
+* Edit a Quick Link.
+* Delete a Quick Link.
+* Re-add a previously deleted Quick Link if desired.
+
+The existing hardwired links should therefore be converted into normal user-configurable Quick Links where practical.
+
+For example, if the user does not want Weather or News displayed, they should be able to delete them from the Quick Links editor without changing application code.
+
+If they later want them again, they should be able to add them back through the normal Quick Link interface.
+
+### Special Integrated Functions
+
+Some links may represent application functionality rather than simple external URLs.
+
+For example:
+
+* Reminders
+* Future integrated health/application functions
+
+These should NOT simply be removed or converted without first determining the appropriate design.
+
+For these specialized functions, determine whether they should:
+
+* Remain as dedicated application buttons.
+* Become configurable Quick Links backed by an internal application action.
+* Be managed through another appropriate mechanism.
+
+### Design Principle
+
+Avoid having two different classes of Quick Links where some are user-managed and others secretly require code changes.
+
+Where technically practical, the Quick Links editor should be the single place where the user manages the links that appear in the Quick Links section.
+
+### Future Considerations
+
+Coordinate this work with the existing backlog item:
+
+**Quick Links — Constrained Scrollable List**
+
+As the number of configurable Quick Links grows, the Quick Links section may eventually need its own constrained scrolling area while keeping the Profile & Links editor button fixed and accessible.
+
+### Priority
+
+Future UX/architecture improvement.
+
+Do not implement until there is an opportunity to address the Quick Links system as a coordinated improvement rather than making isolated changes.
+
+## Daily Diary — Redesign Entry Workflow and Fix Historical Editing State
+
+### Goal
+
+Improve the Daily Diary workflow so the Dashboard remains compact and easy to scan while providing a dedicated, comfortable editing area for the current day's diary.
+
+Also fix the existing bug where editing a historical diary entry leaves that historical text in the main Diary editor after saving.
+
+---
+
+### BUG — Historical Entry Persists in Today's Editor
+
+#### Current Behavior
+
+When the user:
+
+1. Opens Daily Diary History.
+2. Selects a historical entry from a previous date.
+3. Expands/views the entry.
+4. Taps Edit Entry.
+5. Adds or changes text.
+6. Saves the historical entry.
+7. Closes History.
+
+The edited historical entry remains loaded in the main Diary editor.
+
+This makes it appear that the historical entry is now the current day's diary entry.
+
+#### Desired Behavior
+
+A historical entry must remain associated with its original date.
+
+After saving a historical entry:
+
+* The historical record is updated for its original date.
+* The main "today" Diary editor must NOT be populated with the historical entry.
+* Today's entry should remain today's entry.
+* If today's entry exists, it should remain unchanged.
+* If today's entry does not exist, the editor should remain empty for today.
+* Closing History should return the user to the normal Daily Diary state without accidentally changing the active date.
+
+The application should clearly distinguish:
+
+```
+Today's Diary
+```
+
+from:
+
+```
+Editing a Historical Diary Entry
+```
+
+Do not create duplicate entries.
+
+Do not change the existing one-entry-per-day storage model.
+
+---
+
+# FUTURE UX REDESIGN — DAILY DIARY
+
+### Design Goal
+
+Make the Dashboard Daily Diary card compact and make the actual diary editor a dedicated larger editing/viewing experience.
+
+The Dashboard should provide a quick summary and entry point rather than permanently displaying a large text editor.
+
+### Proposed Dashboard Design
+
+The Daily Diary card should remain relatively small.
+
+Conceptually:
+
+```
+Daily Diary
+
+August 13, 2026
+
+[ Today's diary preview... ]
+
+[ Open Today's Diary ]
+
+[ History ]
+```
+
+The exact wording and layout can be determined during implementation.
+
+The goal is to keep the Dashboard compact while making it obvious how to enter or edit today's diary.
+
+### Dedicated Diary Editor
+
+When the user taps the button to open today's Diary:
+
+* Open a dedicated larger Diary editing view/modal/page.
+* Clearly display the current date.
+* Provide a substantially larger text area.
+* Allow comfortable entry of several sentences or multiple paragraphs.
+* Support iPhone keyboard and voice dictation comfortably.
+* Provide an obvious Save action.
+* Provide an obvious Close/Cancel action.
+* Keep the underlying Dashboard stationary.
+* Return the user to the Dashboard when finished.
+
+The dedicated editor should be designed for writing rather than merely displaying a small text field.
+
+### Today's Diary Workflow
+
+Preferred workflow:
+
+```
+Dashboard
+    ↓
+Daily Diary card
+    ↓
+Open Today's Diary
+    ↓
+Large dedicated editor
+    ↓
+Write / edit
+    ↓
+Save
+    ↓
+Close / return to Dashboard
+```
+
+The Dashboard card can then show a concise preview of today's entry.
+
+### Historical Diary Workflow
+
+Historical entries should remain separate from today's editing workflow.
+
+Preferred workflow:
+
+```
+Dashboard
+    ↓
+History
+    ↓
+Historical entry preview
+    ↓
+Tap entry
+    ↓
+View complete entry
+    ↓
+Edit Entry if desired
+    ↓
+Save historical date
+    ↓
+Return to History
+```
+
+Editing a historical entry must never change the active/current today's Diary editor.
+
+### Long Entries
+
+Do not impose an arbitrary character limit.
+
+The dedicated editor should allow:
+
+* Short entries.
+* Normal two- or three-sentence entries.
+* Multiple paragraphs.
+* Long entries when desired.
+
+The complete entry must be preserved.
+
+The Dashboard should use a compact preview when an entry is long.
+
+### History
+
+Preserve the existing useful History features:
+
+* Newest-first ordering.
+* Month/year grouping.
+* Expandable history rows.
+* Full historical entry viewing.
+* Explicit Edit Entry action.
+* One entry per calendar day.
+
+### Data Model
+
+Preserve the existing:
+
+* `dailyDiaryEntries` storage.
+* Date + text record structure.
+* One-entry-per-day architecture.
+* Local date normalization.
+* Existing localStorage persistence.
+
+Do not create a second Diary storage model simply to support the new editor.
+
+### Important State Management Requirement
+
+Clearly separate these states:
+
+1. Viewing today's Diary.
+2. Editing today's Diary.
+3. Viewing a historical Diary entry.
+4. Editing a historical Diary entry.
+
+The active date must always be explicit.
+
+Saving a historical entry must update only that historical date.
+
+Opening/closing History must not accidentally leave a historical date as the active date for today's editor.
+
+### Dashboard Placement
+
+Keep Daily Diary directly below Weight and above Exercise.
+
+The Dashboard order remains:
+
+```
+Weight
+Daily Diary
+Exercise
+```
+
+### Future Enhancements
+
+Keep these as separate future ideas rather than implementing them as part of this redesign:
+
+* Search Diary History.
+* Date picker/calendar navigation.
+* Automatic weather information.
+* Automatic activity information.
+* Other health-data connections.
+* Long-entry Read More presentation improvements.
+
+### Priority
+
+This should be treated as a planned Daily Diary UX revision rather than an emergency feature change.
+
+The historical-entry state bug should be fixed as part of the redesign.
+
+Before implementation, review the current Diary code and existing behavior carefully so the redesign does not disturb the established storage model or other Dashboard sections.

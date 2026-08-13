@@ -1858,8 +1858,42 @@ button:active,
     margin: 0;
 }
 
-#medicationEditArea .add-medication-row {
-    margin-top: 2px;
+#medicationEditArea .medication-add-medication-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: end;
+}
+
+#medicationEditArea .medication-current-list-block {
+    display: grid;
+    gap: 6px;
+}
+
+#medicationEditArea .medication-current-list {
+    display: grid;
+    gap: 8px;
+}
+
+#medicationEditArea .medication-draft-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+}
+
+#medicationEditArea .medication-draft-empty {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.92rem;
+}
+
+#medicationEditArea .medication-draft-input {
+    min-width: 0;
+}
+
+#medicationEditArea .medication-draft-remove-btn {
+    min-width: 88px;
 }
 
 #medicationEditArea .grid-action-cell {
@@ -1894,9 +1928,15 @@ button:active,
 
 @media (max-width: 640px) {
     #medicationEditArea .medication-edit-grid,
+    #medicationEditArea .medication-add-medication-row,
+    #medicationEditArea .medication-draft-row,
     #medicationEditArea .medication-editor-secondary-actions,
     #medicationEditArea .compact-actions {
         grid-template-columns: 1fr;
+    }
+
+    #medicationEditArea .medication-draft-remove-btn {
+        width: 100%;
     }
 }
 

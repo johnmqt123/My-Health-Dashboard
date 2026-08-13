@@ -74,6 +74,8 @@ let asNeededMedicationHistory =
 let medicationEditorLockedScrollTop = 0;
 let medicationEditorReturnScrollSnapshot = null;
 let activeScheduleNotesEventId = "";
+let activeMedicationEditorGroupId = "";
+let medicationEditorDraftMedications = [];
 
 function getDefaultDateTimeValue() {
     const now = new Date();
@@ -615,6 +617,8 @@ function closeMedicationEditor() {
     setMedicationScheduleListVisibility(true);
     setAddScheduleControlsVisibility(true);
     restoreMedicationEditorReturnScrollSnapshot();
+    activeMedicationEditorGroupId = "";
+    medicationEditorDraftMedications = [];
 }
 
 function getMedicationEditorScrollContainer() {
@@ -656,6 +660,124 @@ function scrollMedicationEditorIntoView(targetElement) {
             });
         }
     });
+}
+
+function normalizeMedicationDraftItems(items) {
+    if (!Array.isArray(items)) {
+        return [];
+    }
+
+    return items.map(function (item) {
+        return String(item || "").trim();
+    }).filter(function (item) {
+        return !!item;
+    });
+}
+
+function medicationDraftHasValue(medicationName) {
+    const normalized = String(medicationName || "").trim().toLowerCase();
+    if (!normalized) {
+        return false;
+    }
+
+    return medicationEditorDraftMedications.some(function (item) {
+        return String(item || "").trim().toLowerCase() === normalized;
+    });
+}
+
+function syncMedicationDraftsToEditor() {
+    const list = document.getElementById("currentMedicationList");
+    if (!list) {
+        return;
+    }
+
+    medicationEditorDraftMedications = normalizeMedicationDraftItems(medicationEditorDraftMedications);
+    list.innerHTML = "";
+
+    if (!medicationEditorDraftMedications.length) {
+        const emptyState = document.createElement("p");
+        emptyState.className = "medication-draft-empty";
+        emptyState.textContent = "No medications added yet.";
+        list.appendChild(emptyState);
+        return;
+    }
+
+    medicationEditorDraftMedications.forEach(function (medicationName, index) {
+        const row = document.createElement("div");
+        row.className = "medication-draft-row";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "medication-edit-input medication-draft-input";
+        input.value = medicationName;
+        input.setAttribute("aria-label", "Medication " + (index + 1));
+
+        input.addEventListener("input", function () {
+            medicationEditorDraftMedications[index] = input.value;
+        });
+
+        const removeButton = document.createElement("button");
+        removeButton.type = "button";
+        removeButton.className = "medication-draft-remove-btn";
+        removeButton.textContent = "Remove";
+        removeButton.addEventListener("click", function () {
+            medicationEditorDraftMedications.splice(index, 1);
+            syncMedicationDraftsToEditor();
+        });
+
+        row.appendChild(input);
+        row.appendChild(removeButton);
+        list.appendChild(row);
+    });
+}
+
+function addMedicationDraftFromInput() {
+    const input = document.getElementById("newMedicationInput");
+    if (!input) {
+        return false;
+    }
+
+    const medicationName = input.value.trim();
+    if (!medicationName) {
+        return false;
+    }
+
+    if (medicationDraftHasValue(medicationName)) {
+        input.value = "";
+        return false;
+    }
+
+    medicationEditorDraftMedications.push(medicationName);
+    input.value = "";
+    syncMedicationDraftsToEditor();
+    return true;
+}
+
+function commitMedicationDraftsToGroup(group) {
+    if (!group) {
+        return;
+    }
+
+    const normalizedDrafts = normalizeMedicationDraftItems(medicationEditorDraftMedications);
+    const pendingInput = document.getElementById("newMedicationInput");
+    const pendingMedication = pendingInput ? pendingInput.value.trim() : "";
+
+    if (pendingMedication) {
+        const isDuplicate = normalizedDrafts.some(function (item) {
+            return item.toLowerCase() === pendingMedication.toLowerCase();
+        });
+
+        if (!isDuplicate) {
+            normalizedDrafts.push(pendingMedication);
+        }
+
+        if (pendingInput) {
+            pendingInput.value = "";
+        }
+    }
+
+    group.medications = normalizeMedicationDraftItems(normalizedDrafts);
+    medicationEditorDraftMedications = group.medications.slice();
 }
 
 function showNotesEditor(group) {
@@ -711,6 +833,11 @@ function showMedicationEditor(group) {
         ? window.medicationScheduleCompat.parseClockTimeTo24Hour(group && group.time ? group.time : "")
         : (group && group.time ? group.time : "");
 
+    activeMedicationEditorGroupId = group && group.id ? group.id : "";
+    medicationEditorDraftMedications = Array.isArray(group && group.medications)
+        ? group.medications.slice()
+        : [];
+
     medicationEditArea.innerHTML = `
 <div class="medication-edit-card">
     <h4>Editing ${groupName}</h4>
@@ -726,17 +853,15 @@ function showMedicationEditor(group) {
         </div>
     </div>
 
-    <label for="editMedicationInput">Medications</label>
-    <textarea id="editMedicationInput" rows="3" class="medication-edit-input">${group.medications.join(", ")}</textarea>
+    <label for="newMedicationInput">New Medication</label>
+    <div class="medication-add-medication-row">
+        <input type="text" id="newMedicationInput" class="medication-edit-input" autocomplete="off">
+        <button id="addMedicationBtn" type="button">Add Medication</button>
+    </div>
 
-    <div class="medication-edit-grid add-medication-row">
-        <div>
-            <label for="newMedicationInput">New Medication</label>
-            <input type="text" id="newMedicationInput" class="medication-edit-input">
-        </div>
-        <div class="grid-action-cell">
-            <button id="addMedicationBtn" type="button">Add Medication</button>
-        </div>
+    <div class="medication-current-list-block">
+        <label>Existing Medications</label>
+        <div id="currentMedicationList" class="medication-current-list" aria-live="polite"></div>
     </div>
 
     <div class="medication-editor-secondary-actions">
@@ -764,6 +889,8 @@ function showMedicationEditor(group) {
     if (editScheduleEventTimeInput) {
         editScheduleEventTimeInput.value = groupTime;
     }
+
+    syncMedicationDraftsToEditor();
 
     function registerKeyboardVisibilityFocus(inputElement) {
         if (!inputElement) {
@@ -801,35 +928,31 @@ function showMedicationEditor(group) {
 
     document.getElementById("addMedicationBtn")
         .addEventListener("click", function () {
-
-            const newMedication =
-                document.getElementById("newMedicationInput")
-                    .value
-                    .trim();
-
-            if (newMedication === "") {
-
+            if (!addMedicationDraftFromInput()) {
                 alert("Please enter a medication.");
-                return;
-
             }
 
-            const editMedicationInput = document.getElementById("editMedicationInput");
-            const medications = editMedicationInput
-                .value
-                .split(",")
-                .map(item => item.trim())
-                .filter(function (item) {
-                    return item;
-                });
-
-            medications.push(newMedication);
-
-            editMedicationInput.value = medications.join(", ");
-
-            document.getElementById("newMedicationInput").value = "";
+            const newMedicationInput = document.getElementById("newMedicationInput");
+            if (newMedicationInput) {
+                newMedicationInput.focus();
+            }
 
         });
+
+    const newMedicationInput = document.getElementById("newMedicationInput");
+    if (newMedicationInput) {
+        newMedicationInput.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter") {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (!addMedicationDraftFromInput()) {
+                alert("Please enter a medication.");
+            }
+        });
+    }
 
     document.getElementById("openNotesEditorBtn")
         .addEventListener("click", function () {
@@ -900,14 +1023,7 @@ function showMedicationEditor(group) {
             group.name = updatedName;
             group.time = normalizedTime;
 
-            group.medications =
-                document.getElementById("editMedicationInput")
-                    .value
-                    .split(",")
-                    .map(item => item.trim())
-                    .filter(function (item) {
-                        return item;
-                    });
+            commitMedicationDraftsToGroup(group);
 
             saveMedicationSchedule();
 
