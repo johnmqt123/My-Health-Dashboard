@@ -785,6 +785,11 @@ function addMedicationDraftFromInput() {
     setMedicationEditorStatusMessage(
         "✓ " + medicationName + " added. Tap Save to keep this change."
     );
+
+    if (typeof input.blur === "function") {
+        input.blur();
+    }
+
     return true;
 }
 
@@ -968,11 +973,6 @@ function showMedicationEditor(group) {
         .addEventListener("click", function () {
             if (!addMedicationDraftFromInput()) {
                 alert("Please enter a medication.");
-            }
-
-            const newMedicationInput = document.getElementById("newMedicationInput");
-            if (newMedicationInput) {
-                newMedicationInput.focus();
             }
 
         });
