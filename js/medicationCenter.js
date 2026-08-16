@@ -1242,7 +1242,7 @@ function showMedicationEditor(group) {
         .addEventListener("click", function () {
             const scheduleName = group && group.name ? group.name : "this schedule";
             const confirmDelete = window.confirm(
-                "Delete the entire medication schedule \"" + scheduleName + "\"? This will remove its medications and schedule notes."
+                "Delete the entire medication schedule \"" + scheduleName + "\"? This will remove its medications, schedule notes, today's logged status, and associated medication history."
             );
 
             if (!confirmDelete) {
