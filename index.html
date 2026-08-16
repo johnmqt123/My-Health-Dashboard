@@ -262,6 +262,24 @@
     <button id="logAsNeededMedicationButton">Log As-Needed Medication</button>
     <button id="addAsNeededMedicationButton" type="button">Add Medication</button>
     <div id="asNeededMedicationContent" style="display: none;">
+        <div id="asNeededAvailableMedicationsManager" class="as-needed-manager">
+            <h3>Available As-Needed Medications</h3>
+            <div id="asNeededAvailableMedicationList" class="as-needed-available-list">No medications added yet.</div>
+
+            <label for="newAsNeededMedicationInput">New As-Needed Medication</label>
+            <div class="as-needed-add-row">
+                <input
+                    id="newAsNeededMedicationInput"
+                    type="text"
+                    class="as-needed-add-input"
+                    autocomplete="off"
+                    maxlength="80"
+                    placeholder="Enter medication name"
+                >
+                <button id="saveAsNeededAvailableMedicationBtn" type="button">Add Medication</button>
+            </div>
+            <p id="asNeededAvailableMedicationStatus" class="as-needed-status" aria-live="polite"></p>
+        </div>
         <div id="asNeededLastTakenDisplay">No as-needed medications logged yet.</div>
     </div>
 </div>
@@ -283,8 +301,6 @@
 
         <label for="asNeededMedicationChoice">Medication</label>
         <select id="asNeededMedicationChoice">
-            <option value="Tylenol">Tylenol</option>
-            <option value="ALA">ALA (Alpha-Lipoic Acid)</option>
             <option value="custom">Other / custom medication</option>
         </select>
 

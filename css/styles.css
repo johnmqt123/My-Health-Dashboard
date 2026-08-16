@@ -1162,6 +1162,66 @@ header p {
     cursor: default;
 }
 
+#asNeededMedicationContent .as-needed-manager {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    margin-bottom: 12px;
+}
+
+#asNeededMedicationContent .as-needed-manager h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+#asNeededMedicationContent .as-needed-available-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#asNeededMedicationContent .as-needed-empty {
+    margin: 0;
+    color: var(--muted);
+}
+
+#asNeededMedicationContent .as-needed-available-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+#asNeededMedicationContent .as-needed-available-name {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#asNeededMedicationContent .as-needed-add-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+}
+
+#asNeededMedicationContent .as-needed-add-input {
+    width: 100%;
+}
+
+#asNeededMedicationContent .as-needed-status {
+    margin: 8px 0 0;
+    min-height: 1.2em;
+    font-size: 0.9rem;
+    color: #065f46;
+}
+
+#asNeededMedicationContent .as-needed-status.error {
+    color: #9f1239;
+}
+
 #addAsNeededMedicationButton {
     background: #f8fafc;
     color: var(--text);
@@ -1195,6 +1255,20 @@ header p {
     border-radius: 10px;
     white-space: nowrap;
     align-self: center;
+}
+
+#asNeededMedicationContent .as-needed-available-remove-btn {
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+    align-self: center;
+}
+
+@media (max-width: 480px) {
+    #asNeededMedicationContent .as-needed-add-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 #asNeededMedicationContent .as-needed-disclosure {

@@ -1631,3 +1631,103 @@ Future Daily Diary enhancement.
 Do not implement until the user has had sufficient time to use the current Diary V2 in normal daily use.
 
 The basic text-search version should remain intentionally simple when eventually implemented.
+
+## What's Up Next — Unresolved Landing Position
+
+### Issue
+
+When the user taps a medication period from the Dashboard's "What's Up Next" section, the application does not consistently land at the desired location.
+
+For example, tapping Breakfast currently lands too low in the Breakfast card, with the user seeing:
+
+- Not Logged
+- Log Breakfast Medications
+
+while the Breakfast heading and scheduled time are above the viewport.
+
+The destination card correctly remains collapsed, but the landing position is still wrong.
+
+### Investigation Completed
+
+Multiple focused attempts have been made to correct the behavior:
+
+1. Direct navigation was changed to target the actual schedule heading.
+2. The heading was positioned using a deterministic top inset.
+3. Delayed settle/correction passes were added.
+4. Navigation-run IDs and timer cancellation were added to prevent stale navigation callbacks.
+5. Real click-path testing was performed in the development environment.
+6. GitHub Pages deployment was independently verified.
+7. The deployed `script.js` and `index.html` were confirmed to be byte-for-byte identical to the current committed files.
+8. The deployed JavaScript contains all of the latest navigation fixes.
+
+Despite this, real-world testing on both:
+
+- iPhone Safari
+- Desktop/laptop browser
+
+still shows the landing position too low.
+
+### Current Status
+
+Do NOT make additional blind adjustments to scroll offsets.
+
+The issue is considered an unresolved UI/navigation issue rather than a deployment or stale-code problem.
+
+The current implementation should remain unchanged until this issue is revisited.
+
+### Future Investigation
+
+When revisiting this issue, use a different diagnostic/implementation approach rather than another small `scrollTo()` offset adjustment.
+
+The next investigation should focus on the actual browser/runtime behavior and compare:
+
+- `window.scrollY`
+- `visualViewport.offsetTop`
+- `visualViewport.height`
+- Target heading `getBoundingClientRect().top`
+- Target card `getBoundingClientRect().top`
+- Final viewport position after all navigation and rendering has settled
+
+Prefer testing the actual deployed site on a real browser/device if possible.
+
+### Potential Future Approach
+
+Consider positioning the entire collapsed destination card rather than simply scrolling to the heading element.
+
+Possible approach:
+
+1. Open Medication Center.
+2. Identify the destination schedule card.
+3. Allow the card to finish rendering.
+4. Measure its actual rendered position.
+5. Position the collapsed card so its heading and scheduled time are visible near the top of the viewport.
+6. Do not automatically expand the card.
+7. Remove any temporary navigation state afterward.
+
+The user should ultimately see something like:
+
+    Breakfast
+    ~8:00 AM
+    ›
+
+with the card still collapsed.
+
+The user can then tap the Breakfast heading if they want to expand it.
+
+### Scope
+
+This remains a separate What's Up Next/navigation issue.
+
+Do not combine it with:
+
+- As-Needed Medication improvements
+- Zepbound
+- Daily Diary
+- Medication History
+- Other History landing behavior
+
+### Priority
+
+Deferred until a later focused investigation.
+
+Do not spend additional development time on this issue until it is intentionally revisited.
