@@ -230,7 +230,7 @@ function renderAsNeededAvailableMedicationList() {
         const removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.className = "history-action-btn delete as-needed-available-remove-btn";
-        removeButton.textContent = "Remove";
+        removeButton.textContent = "Remove from List";
         removeButton.setAttribute("data-medication", medicationName);
 
         row.appendChild(name);
@@ -443,7 +443,7 @@ function renderAsNeededMedicationHistory() {
 
         return "<div class=\"as-needed-entry\"><p><strong>" + medicationName + "</strong><br>Last Taken: " +
             formatDateTime(latest.dateTime) + " · " + tabletsText + noteText +
-            "</p><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete</button></div>";
+            "</p><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div>";
     }).join("");
 }
 
