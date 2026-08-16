@@ -1195,9 +1195,11 @@ header p {
 }
 
 #asNeededMedicationContent .as-needed-available-name {
-    flex: 1;
+    flex: 1 1 auto;
     min-width: 0;
-    overflow-wrap: anywhere;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: normal;
 }
 
 #asNeededMedicationContent .as-needed-add-row {
@@ -1258,6 +1260,8 @@ header p {
 }
 
 #asNeededMedicationContent .as-needed-available-remove-btn {
+    flex: 0 0 auto;
+    width: auto;
     min-height: 34px;
     padding: 6px 12px;
     border-radius: 8px;
