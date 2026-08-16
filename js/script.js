@@ -764,6 +764,17 @@ const medicationSectionConfig = {
     }
 };
 
+let medicationPeriodNavigationRunId = 0;
+let medicationPeriodSettleTimerIds = [];
+
+function clearMedicationPeriodSettleTimers() {
+    medicationPeriodSettleTimerIds.forEach(function (timerId) {
+        window.clearTimeout(timerId);
+    });
+
+    medicationPeriodSettleTimerIds = [];
+}
+
 function scrollMedicationCenterTo(targetElement, options) {
     const elementToScroll =
         targetElement || document.getElementById("medicationCenterSection");
@@ -800,6 +811,8 @@ function scrollMedicationCenterTo(targetElement, options) {
         });
     }
 
+    const isDirectPeriodNavigation = !!(targetElement && settleTargetId);
+
     if (!targetElement) {
         const sectionTop =
             window.pageYOffset + elementToScroll.getBoundingClientRect().top;
@@ -817,10 +830,21 @@ function scrollMedicationCenterTo(targetElement, options) {
     const minVisibleTop = 8;
     const maxVisibleTop = 120;
 
+    if (isDirectPeriodNavigation) {
+        clearMedicationPeriodSettleTimers();
+        medicationPeriodNavigationRunId += 1;
+    }
+
+    const activeRunId = medicationPeriodNavigationRunId;
+
     scrollTargetToTopInset(desiredTopInset);
 
     [80, 240, 520].forEach(function (delayMs) {
-        window.setTimeout(function () {
+        const timerId = window.setTimeout(function () {
+            if (activeRunId !== medicationPeriodNavigationRunId) {
+                return;
+            }
+
             const activeTarget = getCurrentTarget();
             if (!activeTarget) {
                 return;
@@ -831,6 +855,10 @@ function scrollMedicationCenterTo(targetElement, options) {
                 scrollTargetToTopInset(desiredTopInset);
             }
         }, delayMs);
+
+        if (isDirectPeriodNavigation) {
+            medicationPeriodSettleTimerIds.push(timerId);
+        }
     });
 }
 
@@ -1540,6 +1568,9 @@ medicationCenterCardHeading.addEventListener("click", function () {
 
     } else {
 
+        clearMedicationPeriodSettleTimers();
+        medicationPeriodNavigationRunId += 1;
+
         if (typeof window.closeMedicationManagementModal === "function") {
             window.closeMedicationManagementModal();
         }
@@ -1570,6 +1601,9 @@ if (summaryMedicationStatus) {
 }
 
 backToTop.addEventListener("click", function () {
+
+    clearMedicationPeriodSettleTimers();
+    medicationPeriodNavigationRunId += 1;
 
     if (typeof window.closeMedicationManagementModal === "function") {
         window.closeMedicationManagementModal();
