@@ -78,6 +78,56 @@ function getClockMinutes(value) {
     return (hours * 60) + minutes;
 }
 
+function getMedicationScheduleItemMinutes(item, fallbackTime) {
+    const normalizedTime = parseClockTimeTo24Hour(item && item.time) ||
+        parseClockTimeTo24Hour(item && item.clockTime) ||
+        parseClockTimeTo24Hour(item && item.scheduledTime) ||
+        parseClockTimeTo24Hour(fallbackTime) ||
+        "";
+
+    const minutes = getClockMinutes(normalizedTime);
+    return Number.isFinite(minutes) ? minutes : null;
+}
+
+function compareMedicationScheduleChronology(left, right) {
+    const leftMinutes = left && Number.isFinite(left.minutes) ? left.minutes : null;
+    const rightMinutes = right && Number.isFinite(right.minutes) ? right.minutes : null;
+
+    if (leftMinutes !== null && rightMinutes !== null) {
+        const timeDiff = leftMinutes - rightMinutes;
+        if (timeDiff !== 0) {
+            return timeDiff;
+        }
+    } else if (leftMinutes !== null) {
+        return -1;
+    } else if (rightMinutes !== null) {
+        return 1;
+    }
+
+    const leftIndex = Number.isFinite(Number(left && left.index)) ? Number(left.index) : 0;
+    const rightIndex = Number.isFinite(Number(right && right.index)) ? Number(right.index) : 0;
+
+    return leftIndex - rightIndex;
+}
+
+function sortMedicationScheduleItems(items, getMinutesForItem) {
+    if (!Array.isArray(items)) {
+        return [];
+    }
+
+    return items.map(function (item, index) {
+        return {
+            item: item,
+            index: index,
+            minutes: typeof getMinutesForItem === "function"
+                ? getMinutesForItem(item, index)
+                : null
+        };
+    }).sort(compareMedicationScheduleChronology).map(function (entry) {
+        return entry.item;
+    });
+}
+
 function getTrimmedString(value) {
     if (value === undefined || value === null) {
         return "";
@@ -200,7 +250,7 @@ function normalizeMedicationScheduleEvents(rawSchedule) {
     const source = Array.isArray(rawSchedule) ? rawSchedule : [];
     const usedIds = new Set();
 
-    const normalized = source.map(function (entry, index) {
+    let normalized = source.map(function (entry, index) {
         const raw = entry && typeof entry === "object" ? entry : {};
         const legacyLabel = getTrimmedString(raw.time);
         const legacyId = inferLegacyEventId(raw.id || raw.name || legacyLabel);
@@ -247,27 +297,8 @@ function normalizeMedicationScheduleEvents(rawSchedule) {
         return normalizedEntry;
     });
 
-    normalized.sort(function (a, b) {
-        const minutesA = getClockMinutes(a.time);
-        const minutesB = getClockMinutes(b.time);
-
-        if (minutesA !== null && minutesB !== null) {
-            const timeDiff = minutesA - minutesB;
-            if (timeDiff !== 0) {
-                return timeDiff;
-            }
-        } else if (minutesA !== null) {
-            return -1;
-        } else if (minutesB !== null) {
-            return 1;
-        }
-
-        const orderDiff = Number(a.order) - Number(b.order);
-        if (orderDiff !== 0) {
-            return orderDiff;
-        }
-
-        return a.name.localeCompare(b.name);
+    normalized = sortMedicationScheduleItems(normalized, function (entry) {
+        return getMedicationScheduleItemMinutes(entry, entry.time);
     });
 
     return normalized.map(function (entry, index) {
@@ -373,6 +404,9 @@ window.medicationScheduleCompat = {
     getMedicationActionButtonLabel: getMedicationActionButtonLabel,
     isMedicationPeriodLoggedToday: isMedicationPeriodLoggedToday,
     confirmMedicationPeriodUnlog: confirmMedicationPeriodUnlog,
+    getMedicationScheduleItemMinutes: getMedicationScheduleItemMinutes,
+    compareMedicationScheduleChronology: compareMedicationScheduleChronology,
+    sortMedicationScheduleItems: sortMedicationScheduleItems,
     getMedicationHistoryPeriod: getMedicationHistoryPeriod,
     parseClockTimeTo24Hour: parseClockTimeTo24Hour,
     formatClockTimeLabel: formatClockTimeLabel
@@ -646,9 +680,32 @@ function ensureMedicationListNotesRowInteraction(slotConfig) {
 }
 
 function renderMedicationScheduleCards() {
-    Object.keys(medicationCardSlots).forEach(function (legacyKey) {
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+    const asNeededCard = document.getElementById("asNeededMedicationCard");
+    const cardContainer = asNeededCard && asNeededCard.parentNode
+        ? asNeededCard.parentNode
+        : (medicationCenterSection ? medicationCenterSection.querySelector(".briefing") : null);
+
+    const orderedSlots = Object.keys(medicationCardSlots).map(function (legacyKey, index) {
         const slotConfig = medicationCardSlots[legacyKey];
         const eventData = getMedicationEventForLegacyKey(legacyKey);
+
+        return {
+            legacyKey: legacyKey,
+            slotConfig: slotConfig,
+            eventData: eventData,
+            index: index,
+            minutes: getMedicationScheduleItemMinutes(
+                eventData,
+                eventData && eventData.time ? eventData.time : slotConfig.defaultTime
+            )
+        };
+    }).sort(compareMedicationScheduleChronology);
+
+    orderedSlots.forEach(function (slotEntry) {
+        const legacyKey = slotEntry.legacyKey;
+        const slotConfig = slotEntry.slotConfig;
+        const eventData = slotEntry.eventData;
         const cardElement = slotConfig.cardId
             ? document.getElementById(slotConfig.cardId)
             : null;
@@ -673,6 +730,10 @@ function renderMedicationScheduleCards() {
             : null;
         if (button) {
             button.textContent = getMedicationActionButtonLabel(legacyKey);
+        }
+
+        if (cardElement && cardContainer && asNeededCard) {
+            cardContainer.insertBefore(cardElement, asNeededCard);
         }
     });
 }
@@ -1033,19 +1094,13 @@ function updateAtAGlanceStatus() {
                     key: defaults.id,
                     label: eventData && eventData.name ? eventData.name : defaults.summaryLabel,
                     minutes: Number.isFinite(minutes) ? minutes : 9999,
-                    order: Number.isFinite(orderValue) ? orderValue : index + 1
+                    index: index
                 };
             })
             .filter(function (period) {
                 return !!period;
             })
-            .sort(function (a, b) {
-                const timeDiff = a.minutes - b.minutes;
-                if (timeDiff !== 0) {
-                    return timeDiff;
-                }
-                return a.order - b.order;
-            });
+            .sort(compareMedicationScheduleChronology);
 
         if (!medicationPeriods.length) {
             summaryMedicationStatus.textContent = "No medication schedules configured.";

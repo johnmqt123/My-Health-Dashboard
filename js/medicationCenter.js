@@ -23,13 +23,6 @@ const scheduleNotesModal =
 
 const scheduleNotesModalTitle =
     document.getElementById("scheduleNotesModalTitle");
-
-const scheduleNotesModalInput =
-    document.getElementById("scheduleNotesModalInput");
-
-const saveScheduleNotesModalBtn =
-    document.getElementById("saveScheduleNotesModalBtn");
-
 const closeScheduleNotesModalBtn =
     document.getElementById("closeScheduleNotesModalBtn");
 
@@ -711,7 +704,15 @@ function buildMedicationList() {
         medicationEditor.appendChild(empty);
     }
 
-    personalMedicationSchedule.forEach(function (group) {
+    const sortedSchedule = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.sortMedicationScheduleItems === "function"
+        ? window.medicationScheduleCompat.sortMedicationScheduleItems(personalMedicationSchedule, function (group) {
+            return window.medicationScheduleCompat.getMedicationScheduleItemMinutes
+                ? window.medicationScheduleCompat.getMedicationScheduleItemMinutes(group, group && group.time)
+                : null;
+        })
+        : personalMedicationSchedule.slice();
+
+    sortedSchedule.forEach(function (group) {
 
         const groupName = group && group.name ? group.name : (group && group.time ? group.time : "Schedule");
 
