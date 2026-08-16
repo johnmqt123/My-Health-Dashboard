@@ -764,7 +764,7 @@ const medicationSectionConfig = {
     }
 };
 
-function scrollMedicationCenterTo(targetElement) {
+function scrollMedicationCenterTo(targetElement, options) {
     const elementToScroll =
         targetElement || document.getElementById("medicationCenterSection");
 
@@ -772,19 +772,69 @@ function scrollMedicationCenterTo(targetElement) {
         return;
     }
 
-    // Keep a small top inset so tapped controls are not flush/clipped at the viewport edge on mobile.
-    const elementTop =
-        window.pageYOffset + elementToScroll.getBoundingClientRect().top;
-    const targetTop = Math.max(0, elementTop - 12);
-    const behavior = targetElement ? "auto" : "smooth";
+    const settleTargetId = options && options.settleTargetId
+        ? options.settleTargetId
+        : "";
 
-    window.scrollTo({
-        top: targetTop,
-        behavior: behavior
+    function getCurrentTarget() {
+        if (settleTargetId) {
+            return document.getElementById(settleTargetId);
+        }
+
+        return elementToScroll;
+    }
+
+    function scrollTargetToTopInset(topInset) {
+        const activeTarget = getCurrentTarget();
+        if (!activeTarget) {
+            return;
+        }
+
+        const elementTop =
+            window.pageYOffset + activeTarget.getBoundingClientRect().top;
+        const targetTop = Math.max(0, elementTop - topInset);
+
+        window.scrollTo({
+            top: targetTop,
+            behavior: "auto"
+        });
+    }
+
+    if (!targetElement) {
+        const sectionTop =
+            window.pageYOffset + elementToScroll.getBoundingClientRect().top;
+        const sectionTargetTop = Math.max(0, sectionTop - 12);
+
+        window.scrollTo({
+            top: sectionTargetTop,
+            behavior: "smooth"
+        });
+        return;
+    }
+
+    // Direct period navigation must settle with the schedule heading visible.
+    const desiredTopInset = 18;
+    const minVisibleTop = 8;
+    const maxVisibleTop = 120;
+
+    scrollTargetToTopInset(desiredTopInset);
+
+    [80, 240, 520].forEach(function (delayMs) {
+        window.setTimeout(function () {
+            const activeTarget = getCurrentTarget();
+            if (!activeTarget) {
+                return;
+            }
+
+            const currentTop = activeTarget.getBoundingClientRect().top;
+            if (currentTop < minVisibleTop || currentTop > maxVisibleTop) {
+                scrollTargetToTopInset(desiredTopInset);
+            }
+        }, delayMs);
     });
 }
 
-function openMedicationCenter(targetElement) {
+function openMedicationCenter(targetElement, options) {
     const medicationCenterSection =
         document.getElementById("medicationCenterSection");
 
@@ -804,7 +854,7 @@ function openMedicationCenter(targetElement) {
             "💊 Medication Center ▲";
     }
 
-    scrollMedicationCenterTo(targetElement);
+    scrollMedicationCenterTo(targetElement, options);
 }
 
 function openMedicationCenterForPeriod(periodKey) {
@@ -821,7 +871,9 @@ function openMedicationCenterForPeriod(periodKey) {
         ? document.getElementById(config.cardId)
         : null;
 
-    openMedicationCenter(headingTarget || fallbackCardTarget);
+    openMedicationCenter(headingTarget || fallbackCardTarget, {
+        settleTargetId: config.headingId || config.cardId || ""
+    });
 }
 
 let todayTasks =
