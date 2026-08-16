@@ -1518,3 +1518,116 @@ This should be treated as a planned Daily Diary UX revision rather than an emerg
 The historical-entry state bug should be fixed as part of the redesign.
 
 Before implementation, review the current Diary code and existing behavior carefully so the redesign does not disturb the established storage model or other Dashboard sections.
+
+## Daily Diary — Search History
+
+### Goal
+
+Add a search function to Daily Diary History so the user can quickly find past diary entries by words or phrases.
+
+### Desired Behavior
+
+Add a clearly visible Search Diary control within the Diary History area.
+
+Conceptually:
+
+    Diary History
+
+    [ 🔍 Search diary... ]
+
+The user can enter a word or phrase such as:
+
+- golf
+- vacation
+- doctor
+- snow
+- family
+- Christmas
+
+The search should return matching diary entries, preferably newest-first.
+
+### Search Results
+
+Each matching result should show:
+
+- Date
+- Concise preview containing the matching text
+
+Example:
+
+    August 12, 2026
+    "...played golf in the afternoon..."
+
+    July 28, 2026
+    "...another beautiful day for golf..."
+
+Tapping a result should allow the user to view the complete diary entry using the existing History view behavior.
+
+An Edit Entry action should remain available when appropriate.
+
+### Search Scope
+
+Initial version should search the diary entry text.
+
+The search should be:
+
+- Case-insensitive.
+- Able to match words or phrases.
+- Fast enough for a large collection of locally stored diary entries.
+- Performed entirely against the existing local Daily Diary data.
+
+No external search service or server-side database is needed.
+
+### Date Searching
+
+Consider supporting dates/year/month searches in a future enhancement.
+
+Examples:
+
+- 2026
+- August
+- August 2026
+- 08/12/2026
+
+This does not need to be part of Version 1 unless it is simple to implement naturally.
+
+### Data Model
+
+Do not change the existing:
+
+- `dailyDiaryEntries` storage key.
+- Date + text record structure.
+- One-entry-per-day model.
+- Local date normalization.
+- localStorage persistence.
+
+Search should operate directly against the existing Diary data.
+
+### User Experience
+
+Search should not interfere with the existing Diary workflows:
+
+- Today's Diary remains separate.
+- Historical entries remain view-first.
+- Historical editing remains explicitly initiated through Edit Entry.
+- Search results must not accidentally populate Today's Diary.
+- Clearing the search should restore the normal History list.
+
+### Future Enhancements
+
+Potential future improvements:
+
+- Search by date.
+- Search by date range.
+- Search by multiple terms.
+- Highlight matching words in results.
+- Filters by year/month.
+- A "No matching entries found" state.
+
+### Priority
+
+Future Daily Diary enhancement.
+
+Do not implement until the user has had sufficient time to use the current Diary V2 in normal daily use.
+
+The basic text-search version should remain intentionally simple when eventually implemented.

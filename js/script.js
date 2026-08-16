@@ -743,19 +743,24 @@ const summaryMedicationStatus =
 
 const medicationSectionConfig = {
     wakeUp: {
-        cardId: "medCard"
+        cardId: "medCard",
+        headingId: "wakeUpHeading"
     },
     breakfast: {
-        cardId: "breakfastCard"
+        cardId: "breakfastCard",
+        headingId: "breakfastHeading"
     },
     midday: {
-        cardId: "middayCard"
+        cardId: "middayCard",
+        headingId: "middayHeading"
     },
     dinner: {
-        cardId: "dinnerCard"
+        cardId: "dinnerCard",
+        headingId: "dinnerHeading"
     },
     evening: {
-        cardId: "eveningCard"
+        cardId: "eveningCard",
+        headingId: "eveningHeading"
     }
 };
 
@@ -767,16 +772,15 @@ function scrollMedicationCenterTo(targetElement) {
         return;
     }
 
-    requestAnimationFrame(function () {
-        // Keep a small top inset so tapped controls are not flush/clipped at the viewport edge on mobile.
-        const elementTop =
-            window.pageYOffset + elementToScroll.getBoundingClientRect().top;
-        const targetTop = Math.max(0, elementTop - 12);
+    // Keep a small top inset so tapped controls are not flush/clipped at the viewport edge on mobile.
+    const elementTop =
+        window.pageYOffset + elementToScroll.getBoundingClientRect().top;
+    const targetTop = Math.max(0, elementTop - 12);
+    const behavior = targetElement ? "auto" : "smooth";
 
-        window.scrollTo({
-            top: targetTop,
-            behavior: "smooth"
-        });
+    window.scrollTo({
+        top: targetTop,
+        behavior: behavior
     });
 }
 
@@ -810,7 +814,14 @@ function openMedicationCenterForPeriod(periodKey) {
         return;
     }
 
-    openMedicationCenter(document.getElementById(config.cardId));
+    const headingTarget = config.headingId
+        ? document.getElementById(config.headingId)
+        : null;
+    const fallbackCardTarget = config.cardId
+        ? document.getElementById(config.cardId)
+        : null;
+
+    openMedicationCenter(headingTarget || fallbackCardTarget);
 }
 
 let todayTasks =
