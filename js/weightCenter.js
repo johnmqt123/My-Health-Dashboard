@@ -142,6 +142,7 @@
 
     const weightButton = document.getElementById("weightButton");
     const weightDisplay = document.getElementById("weightDisplay");
+    const weightCard = document.getElementById("weightCard");
     const summaryWeight = document.getElementById("summaryWeight");
     const weightHistoryButton = document.getElementById("weightHistoryButton");
     const weightHistorySection = document.getElementById("weightHistorySection");
@@ -517,6 +518,19 @@
         if (weightHistorySection.style.display === "block") {
             weightHistorySection.style.display = "none";
             weightHistoryButton.textContent = "📊 History";
+
+            if (typeof window.scrollMedicationCenterTo === "function" && weightCard) {
+                window.scrollMedicationCenterTo(weightCard);
+                return;
+            }
+
+            if (weightCard) {
+                weightCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+
             return;
         }
 

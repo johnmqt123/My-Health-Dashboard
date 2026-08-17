@@ -10,6 +10,7 @@
 
     const exerciseButton = document.getElementById("exerciseButton");
     const exerciseDisplay = document.getElementById("exerciseDisplay");
+    const exerciseCard = document.getElementById("exerciseCard");
     const exerciseHistoryButton = document.getElementById("exerciseHistoryButton");
     const exerciseHistorySection = document.getElementById("exerciseHistorySection");
     const exerciseHistoryDisplay = document.getElementById("exerciseHistoryDisplay");
@@ -590,6 +591,19 @@
                 if (exerciseHistorySection.style.display === "block") {
                     exerciseHistorySection.style.display = "none";
                     exerciseHistoryButton.textContent = "📊 History";
+
+                    if (typeof window.scrollMedicationCenterTo === "function" && exerciseCard) {
+                        window.scrollMedicationCenterTo(exerciseCard);
+                        return;
+                    }
+
+                    if (exerciseCard) {
+                        exerciseCard.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }
+
                     return;
                 }
 

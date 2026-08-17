@@ -26,6 +26,7 @@
     const bpTimeInput = document.getElementById("bpTimeInput");
     const bpNoteInput = document.getElementById("bpNoteInput");
 
+    const bpCard = document.getElementById("bpCard");
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
@@ -398,6 +399,19 @@
         if (bpHistorySection.style.display === "block") {
             bpHistorySection.style.display = "none";
             bpHistoryButton.textContent = "📊 History";
+
+            if (typeof window.scrollMedicationCenterTo === "function" && bpCard) {
+                window.scrollMedicationCenterTo(bpCard);
+                return;
+            }
+
+            if (bpCard) {
+                bpCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+            }
+
             return;
         }
 

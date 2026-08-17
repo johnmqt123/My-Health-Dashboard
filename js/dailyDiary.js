@@ -3,6 +3,7 @@
 
     let diaryEntries = loadData(DIARY_STORAGE_KEY, []);
 
+    const dailyDiaryCard = document.getElementById("dailyDiaryCard");
     const dailyDiaryCurrentDate = document.getElementById("dailyDiaryCurrentDate");
     const dailyDiaryTodayPreview = document.getElementById("dailyDiaryTodayPreview");
     const dailyDiaryOpenTodayButton = document.getElementById("dailyDiaryOpenTodayButton");
@@ -390,6 +391,18 @@
         dailyDiaryHistorySection.style.display = "none";
         dailyDiaryHistoryButton.textContent = "📊 History";
         dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
+
+        if (typeof window.scrollMedicationCenterTo === "function" && dailyDiaryCard) {
+            window.scrollMedicationCenterTo(dailyDiaryCard);
+            return;
+        }
+
+        if (dailyDiaryCard) {
+            dailyDiaryCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
     }
 
     function initDailyDiaryCenter() {

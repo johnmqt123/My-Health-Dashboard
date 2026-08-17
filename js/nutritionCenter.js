@@ -2410,6 +2410,19 @@
                 if (nutritionHistorySection.style.display === "block") {
                     nutritionHistorySection.style.display = "none";
                     nutritionHistoryButton.textContent = "📊 History";
+
+                    if (typeof window.scrollMedicationCenterTo === "function" && nutritionCard) {
+                        window.scrollMedicationCenterTo(nutritionCard);
+                        return;
+                    }
+
+                    if (nutritionCard) {
+                        nutritionCard.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start"
+                        });
+                    }
+
                     return;
                 }
 
