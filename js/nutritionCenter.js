@@ -1976,8 +1976,8 @@
 
                 return '<div class="nutrition-day-detail-entry">' +
                     '<button type="button" class="nutrition-day-detail-toggle" aria-expanded="' + (isExpanded ? "true" : "false") + '" data-entry-id="' + escapeHtml(entry.id) + '">' +
-                        '<span class="nutrition-day-detail-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>" +
                         '<span class="nutrition-day-detail-description">' + escapeHtml(entry.description) + "</span>" +
+                        '<span class="nutrition-day-detail-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>" +
                     "</button>" +
                     '<div class="nutrition-day-detail-body' + (isExpanded ? " is-expanded" : "") + '"' + (isExpanded ? "" : ' hidden') + '>' +
                         '<div class="nutrition-day-detail-macros">' +
