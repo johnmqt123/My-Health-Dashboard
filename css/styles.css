@@ -1173,8 +1173,8 @@ header p {
     margin-top: 8px;
 }
 
-.history-entry-action,
-.history-action-btn {
+button.history-entry-action,
+button.history-action-btn {
     width: auto;
     min-height: 34px;
     padding: 6px 12px;
