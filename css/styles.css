@@ -1190,16 +1190,24 @@ header p {
 
 .history-entry-action.edit,
 .history-action-btn.edit {
-    background: #e0f2fe;
-    border-color: #7dd3fc;
-    color: #075985;
+    background: #1f4e79;
+    color: #ffffff;
 }
 
 .history-entry-action.delete,
 .history-action-btn.delete {
-    background: #fff1f2;
-    border-color: #fecdd3;
-    color: #9f1239;
+    background: #b91c1c;
+    color: #ffffff;
+}
+
+.history-entry-action.edit:hover,
+.history-action-btn.edit:hover {
+    background: #163f5f;
+}
+
+.history-entry-action.delete:hover,
+.history-action-btn.delete:hover {
+    background: #991b1b;
 }
 
 .history-text-strong {
