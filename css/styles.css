@@ -998,6 +998,10 @@ header p {
     padding: 8px 0 2px 24px;
 }
 
+.nutrition-day-detail-body[hidden] {
+    display: none !important;
+}
+
 .nutrition-day-detail-macros {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
