@@ -67,6 +67,9 @@
     let nutritionFoodKeyboardDismissPending = false;
     let nutritionFoodKeyboardRecentlyFocused = false;
     let nutritionFoodLastViewportHeight = null;
+    let activeNutritionEntryId = null;
+    let expandedNutritionEntryId = null;
+    let nutritionEntryIdCounter = 0;
 
     const nutritionFoodInputs = [
         nutritionDescriptionInput,
@@ -786,6 +789,16 @@
         return Number.isInteger(rounded) ? rounded : rounded;
     }
 
+    function createNutritionEntryId() {
+        nutritionEntryIdCounter += 1;
+
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+            return window.crypto.randomUUID();
+        }
+
+        return "nutrition-entry-" + Date.now() + "-" + nutritionEntryIdCounter;
+    }
+
     function normalizeSavedNutritionHistory(rawHistory) {
         if (!Array.isArray(rawHistory)) {
             return [];
@@ -799,6 +812,7 @@
                 }
 
                 const savedEntry = {
+                    id: normalizedEntry.id || createNutritionEntryId(),
                     description: normalizedEntry.description,
                     calories: roundNutritionValue(normalizedEntry.calories),
                     protein: roundNutritionValue(normalizedEntry.protein),
@@ -832,6 +846,7 @@
             parseDateFromHistoryEntry(parent);
 
         return {
+            id: source.id || source.entryId || "",
             dayKey: toDayKey(parsedDate),
             fallbackDateLabel: source.date || parent.date || "",
             description: normalizeFoodDescription(source),
@@ -1951,6 +1966,7 @@
 
         const entryHtml = dayData.entries
             .map(function (entry) {
+                const isExpanded = entry.id === expandedNutritionEntryId;
                 const mealHtml = entry.meal
                     ? '<div class="nutrition-day-detail-notes"><span class="nutrition-day-detail-label">Meal</span><span>' + escapeHtml(entry.meal) + "</span></div>"
                     : "";
@@ -1959,15 +1975,24 @@
                     : "";
 
                 return '<div class="nutrition-day-detail-entry">' +
-                    '<div class="nutrition-day-detail-description">' + escapeHtml(entry.description) + "</div>" +
-                    '<div class="nutrition-day-detail-macros">' +
-                        '<span>' + escapeHtml(String(entry.calories)) + " Kcal</span>" +
-                        '<span>' + escapeHtml(String(entry.protein)) + " g Protein</span>" +
-                        '<span>' + escapeHtml(String(entry.carbs)) + " g Carbohydrates</span>" +
-                        '<span>' + escapeHtml(String(entry.fat)) + " g Fat</span>" +
+                    '<button type="button" class="nutrition-day-detail-toggle" aria-expanded="' + (isExpanded ? "true" : "false") + '" data-entry-id="' + escapeHtml(entry.id) + '">' +
+                        '<span class="nutrition-day-detail-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>" +
+                        '<span class="nutrition-day-detail-description">' + escapeHtml(entry.description) + "</span>" +
+                    "</button>" +
+                    '<div class="nutrition-day-detail-body' + (isExpanded ? " is-expanded" : "") + '"' + (isExpanded ? "" : ' hidden') + '>' +
+                        '<div class="nutrition-day-detail-macros">' +
+                            '<span>' + escapeHtml(String(entry.calories)) + " Kcal</span>" +
+                            '<span>' + escapeHtml(String(entry.protein)) + " g Protein</span>" +
+                            '<span>' + escapeHtml(String(entry.carbs)) + " g Carbohydrates</span>" +
+                            '<span>' + escapeHtml(String(entry.fat)) + " g Fat</span>" +
+                        "</div>" +
+                        mealHtml +
+                        notesHtml +
+                        '<div class="nutrition-day-detail-actions">' +
+                            '<button type="button" class="nutrition-entry-edit-button history-entry-action edit" data-entry-id="' + escapeHtml(entry.id) + '">Edit</button>' +
+                            '<button type="button" class="nutrition-entry-delete-button history-entry-action delete" data-entry-id="' + escapeHtml(entry.id) + '">Delete</button>' +
+                        "</div>" +
                     "</div>" +
-                    mealHtml +
-                    notesHtml +
                 "</div>";
             })
             .join("");
@@ -1992,6 +2017,7 @@
         }
 
         activeNutritionDayKey = dayKey;
+        expandedNutritionEntryId = null;
         renderNutritionDayDetail(dayData);
         if (nutritionDayDetailTitle) {
             nutritionDayDetailTitle.textContent = getDisplayDayLabel(dayData);
@@ -2041,6 +2067,21 @@
         if (nutritionFatInput) nutritionFatInput.value = "";
         if (nutritionDateInput) nutritionDateInput.value = getCurrentDateInputValue();
         if (nutritionNoteInput) nutritionNoteInput.value = "";
+    }
+
+    function populateNutritionForm(entry) {
+        if (!entry) {
+            return;
+        }
+
+        if (nutritionDescriptionInput) nutritionDescriptionInput.value = entry.description || "";
+        if (nutritionMealInput) nutritionMealInput.value = entry.meal || "";
+        if (nutritionCaloriesInput) nutritionCaloriesInput.value = entry.calories === undefined ? "" : entry.calories;
+        if (nutritionProteinInput) nutritionProteinInput.value = entry.protein === undefined ? "" : entry.protein;
+        if (nutritionCarbsInput) nutritionCarbsInput.value = entry.carbs === undefined ? "" : entry.carbs;
+        if (nutritionFatInput) nutritionFatInput.value = entry.fat === undefined ? "" : entry.fat;
+        if (nutritionDateInput) nutritionDateInput.value = entry.dayKey || getCurrentDateInputValue();
+        if (nutritionNoteInput) nutritionNoteInput.value = entry.notes || "";
     }
 
     function shouldAutofocusNutritionDescription() {
@@ -2176,7 +2217,12 @@
             return;
         }
 
+        activeNutritionEntryId = null;
         resetNutritionForm();
+        const title = nutritionLogModal.querySelector("h2");
+        if (title) {
+            title.textContent = "Log Food";
+        }
         nutritionLogModal.style.display = "flex";
         resetNutritionLogScrollToTop();
         clearNutritionDismissPending();
@@ -2192,6 +2238,30 @@
         }
     }
 
+    function openNutritionEntryEditor(entryId) {
+        const entry = nutritionHistory.find(function (historyEntry) {
+            return historyEntry.id === entryId;
+        });
+
+        if (!entry || !nutritionLogModal) {
+            return;
+        }
+
+        closeNutritionDayDetailModal();
+        activeNutritionEntryId = entryId;
+        populateNutritionForm(normalizeFoodEntry(entry, null));
+        const title = nutritionLogModal.querySelector("h2");
+        if (title) {
+            title.textContent = "Edit Food Entry";
+        }
+        nutritionLogModal.style.display = "flex";
+        resetNutritionLogScrollToTop();
+        clearNutritionDismissPending();
+        nutritionFoodKeyboardRecentlyFocused = false;
+        nutritionFoodLastViewportHeight = getNutritionViewportHeight();
+        lockNutritionModalBackgroundScroll();
+    }
+
     function closeNutritionLogModal() {
         if (!nutritionLogModal) {
             return;
@@ -2203,6 +2273,7 @@
         nutritionLogModal.style.display = "none";
         resetNutritionLogScrollToTop();
         unlockNutritionModalBackgroundScroll();
+        activeNutritionEntryId = null;
     }
 
     function createNutritionEntryFromForm() {
@@ -2252,10 +2323,60 @@
     }
 
     function addNutritionEntry(entry) {
+        entry.id = entry.id || createNutritionEntryId();
         nutritionHistory.push(entry);
         nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
         rebuildNutritionTodayFromHistory();
         saveNutritionData();
+    }
+
+    function updateNutritionEntry(entry) {
+        const entryIndex = nutritionHistory.findIndex(function (historyEntry) {
+            return historyEntry.id === activeNutritionEntryId;
+        });
+
+        if (entryIndex === -1) {
+            return false;
+        }
+
+        entry.id = activeNutritionEntryId;
+        entry.time = nutritionHistory[entryIndex].time || entry.time;
+        nutritionHistory[entryIndex] = entry;
+        nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
+        rebuildNutritionTodayFromHistory();
+        saveNutritionData();
+        return true;
+    }
+
+    function deleteNutritionEntry(entryId) {
+        const entryIndex = nutritionHistory.findIndex(function (entry) {
+            return entry.id === entryId;
+        });
+
+        if (entryIndex === -1) {
+            return;
+        }
+
+        const entry = nutritionHistory[entryIndex];
+        const description = entry.description || "this food entry";
+        if (!window.confirm("Delete this food entry?\n\nThis will remove \"" + description + "\" from your nutrition log.")) {
+            return;
+        }
+
+        nutritionHistory.splice(entryIndex, 1);
+        nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
+        rebuildNutritionTodayFromHistory();
+        saveNutritionData();
+        refreshNutritionData();
+
+        if (activeNutritionDayKey) {
+            const dayData = findNutritionDayByKey(activeNutritionDayKey);
+            if (dayData) {
+                renderNutritionDayDetail(dayData);
+            } else {
+                closeNutritionDayDetailModal();
+            }
+        }
     }
 
     function renderTodaySummary() {
@@ -2379,7 +2500,12 @@
                     return;
                 }
 
-                addNutritionEntry(entry);
+                const isEditing = !!activeNutritionEntryId;
+                if (isEditing) {
+                    updateNutritionEntry(entry);
+                } else {
+                    addNutritionEntry(entry);
+                }
                 closeNutritionLogModal();
                 resetNutritionForm();
                 refreshNutritionData();
@@ -2583,6 +2709,40 @@
         if (nutritionDayDetailCloseBtn) {
             nutritionDayDetailCloseBtn.addEventListener("click", function () {
                 closeNutritionDayDetailModal();
+            });
+        }
+
+        if (nutritionDayDetailContent) {
+            nutritionDayDetailContent.addEventListener("click", function (event) {
+                const editButton = event.target.closest(".nutrition-entry-edit-button");
+                if (editButton) {
+                    const entryId = editButton.getAttribute("data-entry-id");
+                    if (entryId) {
+                        openNutritionEntryEditor(entryId);
+                    }
+                    return;
+                }
+
+                const toggle = event.target.closest(".nutrition-day-detail-toggle");
+                if (toggle) {
+                    const entryId = toggle.getAttribute("data-entry-id");
+                    if (entryId) {
+                        expandedNutritionEntryId = expandedNutritionEntryId === entryId ? null : entryId;
+                        const dayData = findNutritionDayByKey(activeNutritionDayKey);
+                        if (dayData) {
+                            renderNutritionDayDetail(dayData);
+                        }
+                    }
+                    return;
+                }
+
+                const deleteButton = event.target.closest(".nutrition-entry-delete-button");
+                if (deleteButton) {
+                    const entryId = deleteButton.getAttribute("data-entry-id");
+                    if (entryId) {
+                        deleteNutritionEntry(entryId);
+                    }
+                }
             });
         }
 

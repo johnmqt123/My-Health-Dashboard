@@ -949,13 +949,53 @@ header p {
     padding: 8px 10px;
     background: #f8fafc;
     display: grid;
-    gap: 6px;
+    gap: 0;
+}
+
+.nutrition-day-detail-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 36px;
+    margin: 0;
+    padding: 2px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    box-shadow: none;
+    text-align: left;
+}
+
+.nutrition-day-detail-toggle:hover,
+.nutrition-day-detail-toggle:active {
+    background: transparent;
+    transform: none;
+    box-shadow: none;
+}
+
+.nutrition-day-detail-chevron {
+    flex: 0 0 16px;
+    color: #64748b;
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
 }
 
 .nutrition-day-detail-description {
+    min-width: 0;
+    overflow-wrap: anywhere;
     font-size: 0.96rem;
     font-weight: 700;
     color: var(--text);
+}
+
+.nutrition-day-detail-body {
+    display: grid;
+    gap: 6px;
+    padding: 8px 0 2px 24px;
 }
 
 .nutrition-day-detail-macros {
@@ -972,6 +1012,13 @@ header p {
     gap: 8px;
     font-size: 0.9rem;
     color: var(--text);
+}
+
+.nutrition-day-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
 }
 
 .nutrition-day-detail-label {
