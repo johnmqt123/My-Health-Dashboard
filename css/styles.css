@@ -955,6 +955,7 @@ header p {
 .nutrition-day-detail-toggle {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 8px;
     width: 100%;
     min-height: 36px;
@@ -976,6 +977,7 @@ header p {
 }
 
 .nutrition-day-detail-chevron {
+    order: 2;
     flex: 0 0 16px;
     color: #64748b;
     font-size: 1.15rem;
@@ -985,6 +987,7 @@ header p {
 }
 
 .nutrition-day-detail-description {
+    order: 1;
     min-width: 0;
     overflow-wrap: anywhere;
     font-size: 0.96rem;
