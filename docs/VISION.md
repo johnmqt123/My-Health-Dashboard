@@ -1,6 +1,6 @@
 # Vision
 
-My Health Dashboard is intended to become my personal health assistant.
+John's Assistant is intended to become my personal health assistant.
 
 The long-term vision is to provide one place to manage:
 

@@ -1,4 +1,4 @@
-# My Health Dashboard Architecture
+# John's Assistant Architecture
 
 ## Purpose
 
@@ -8,7 +8,7 @@ This document describes how the application is organized and why it is structure
 
 # Project Structure
 
-My Health Dashboard
+John's Assistant
 
 - index.html
 - css/

@@ -2,7 +2,7 @@
 
 The application should minimize data entry while maximizing useful information. Whenever practical, the application should calculate values automatically instead of requiring the user to enter them manually.
 
-# My Health Dashboard
+# John's Assistant
 ## Ideas Backlog
 
 This file contains ideas for future versions of the project.

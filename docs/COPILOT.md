@@ -1,6 +1,6 @@
 # GitHub Copilot Prompt Library
 
-These prompts have been tested on the My Health Dashboard project.
+These prompts have been tested on John's Assistant.
 
 ---
 
@@ -68,7 +68,7 @@ Do not modify any files.
 
 # GitHub Copilot Instructions
 
-Project: My Health Dashboard
+Project: John's Assistant
 
 Coding Standards
 
