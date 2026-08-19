@@ -2269,6 +2269,14 @@ button:active,
     min-height: 0;
 }
 
+.quick-access-scroll {
+    max-height: 192px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+
 .quick-access-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2281,6 +2289,13 @@ button:active,
     font-size: 0.95rem;
     border-radius: 10px;
     width: 100%;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
 }
 
 .profile-quick-links-list {
@@ -2378,6 +2393,10 @@ button:active,
     .quick-access-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
+    }
+
+    .quick-access-scroll {
+        max-height: 184px;
     }
 
     .quick-access-button {
