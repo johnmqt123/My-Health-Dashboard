@@ -112,8 +112,11 @@
             <div id="dailyDiaryHistoryDisplay" class="history-display history-stack">No diary entries yet.</div>
         </div>
 
-        <div class="card" id="exerciseCard">
-    <h2>🚴 Exercise</h2>
+        <div class="card dashboard-card" id="exerciseCard">
+    <div class="dashboard-card-header">
+        <span class="dashboard-module-icon" aria-hidden="true">🚴</span>
+        <h2 class="dashboard-card-title">Exercise</h2>
+    </div>
 
     <h3>Today's Exercise</h3>
 
@@ -121,12 +124,14 @@
     No exercise logged today.
 </div>
 
-    <button id="exerciseButton">
-        Log Exercise
-    </button>
-    <button id="exerciseHistoryButton">
-    📊 History
-</button>
+    <div class="dashboard-actions">
+        <button id="exerciseButton" class="dashboard-action">
+            Log Exercise
+        </button>
+        <button id="exerciseHistoryButton" class="dashboard-action">
+            📊 History
+        </button>
+    </div>
 </div>
 <div class="summary-card history-section"
      id="exerciseHistorySection"
