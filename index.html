@@ -50,8 +50,19 @@
     <button id="editProfileHeightButton" type="button" style="margin-top: 10px;">👤 Profile &amp; Links Editor</button>
 </div>
 
-                <div class="card nutrition-center-card" id="nutritionCard">
-            <h2>🍽️ Nutrition</h2>
+                <div class="card nutrition-center-card dashboard-card" id="nutritionCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 12h16"></path>
+                        <path d="M6 12a6 6 0 0 0 12 0"></path>
+                        <path d="M12 6v2"></path>
+                        <path d="M9.5 7.5 11 9"></path>
+                        <path d="M14.5 7.5 13 9"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Nutrition</h2>
+            </div>
 
             <div class="nutrition-today-summary" id="nutritionTodaySummary">
                 <p><strong>Kcal:</strong> <span id="nutritionCaloriesValue">0</span></p>
@@ -60,9 +71,11 @@
                 <p><strong>Fat:</strong> <span id="nutritionFatValue">0 g</span></p>
             </div>
 
-            <button id="nutritionLogFoodButton" type="button">Log Food</button>
-            <button id="nutritionHistoryButton" type="button">📊 History</button>
-            <button id="nutritionGoalsReferenceButton" type="button">🎯 Nutrition Goals &amp; Reference</button>
+            <div class="dashboard-actions">
+                <button id="nutritionLogFoodButton" class="dashboard-action" type="button">Log Food</button>
+                <button id="nutritionHistoryButton" class="dashboard-action" type="button">📊 History</button>
+                <button id="nutritionGoalsReferenceButton" class="dashboard-action dashboard-action--full" type="button">🎯 Nutrition Goals &amp; Reference</button>
+            </div>
         </div>
 
         <div class="summary-card history-section" id="nutritionHistorySection" style="display: none;">

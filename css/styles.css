@@ -182,6 +182,10 @@ header p {
     line-height: 1.2;
 }
 
+.dashboard-action--full {
+    grid-column: 1 / -1;
+}
+
 .dashboard-action:hover {
     background: var(--dashboard-action-hover-background);
     color: var(--dashboard-action-text);
