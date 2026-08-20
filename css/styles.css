@@ -2390,10 +2390,24 @@ button:active,
 
 .quick-access-card {
     min-height: 0;
+    border: 1px solid var(--dashboard-card-border);
+    border-radius: var(--dashboard-card-radius);
+    box-shadow: var(--dashboard-card-elevation);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.quick-access-card:hover {
+    transform: none;
+    border-color: #c7d7e6;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
 }
 
 .quick-access-scroll {
     max-height: 192px;
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -2411,6 +2425,9 @@ button:active,
     padding: 8px 10px;
     font-size: 0.95rem;
     border-radius: 10px;
+    border: 1px solid var(--dashboard-primary-accent-border);
+    background: var(--dashboard-action-background);
+    color: var(--dashboard-primary-accent-text);
     width: 100%;
     line-height: 1.2;
     overflow: hidden;
@@ -2419,6 +2436,56 @@ button:active,
     -webkit-box-orient: vertical;
     line-clamp: 2;
     -webkit-line-clamp: 2;
+    box-shadow: none;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.quick-access-button:hover {
+    background: var(--dashboard-action-hover-background);
+    border-color: var(--accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: 0 2px 5px rgba(15, 23, 42, 0.08);
+}
+
+.quick-access-button:active {
+    background: var(--dashboard-action-active-background);
+    transform: none;
+    box-shadow: none;
+}
+
+.quick-access-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+#editProfileHeightButton {
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    border-radius: 10px;
+    background: var(--dashboard-neutral-accent-background);
+    color: var(--dashboard-neutral-accent-text);
+    box-shadow: none;
+    font-size: 0.95rem;
+    font-weight: 700;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+#editProfileHeightButton:hover {
+    background: #e8eef5;
+    border-color: #b8c7d6;
+    color: var(--text);
+    transform: none;
+    box-shadow: none;
+}
+
+#editProfileHeightButton:active {
+    background: #dde7f0;
+    transform: none;
+}
+
+#editProfileHeightButton:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
 }
 
 .profile-quick-links-list {
