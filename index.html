@@ -111,12 +111,25 @@
 
 </div>
 
-        <div class="card" id="dailyDiaryCard">
-            <h2>📖 Daily Diary</h2>
+        <div class="card dashboard-card" id="dailyDiaryCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="3" width="13" height="18" rx="2"></rect>
+                        <path d="M6 7H4v10a2 2 0 0 0 2 2"></path>
+                        <path d="M10 8h5"></path>
+                        <path d="M10 12h5"></path>
+                        <path d="M10 16h3"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Daily Diary</h2>
+            </div>
             <p id="dailyDiaryCurrentDate"></p>
             <p id="dailyDiaryTodayPreview" class="daily-diary-preview" aria-live="polite">No entry yet. Add today's diary entry.</p>
-            <button id="dailyDiaryOpenTodayButton" type="button">Open Today's Diary</button>
-            <button id="dailyDiaryHistoryButton" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
+            <div class="dashboard-actions">
+                <button id="dailyDiaryOpenTodayButton" class="dashboard-action" type="button">Open Today's Diary</button>
+                <button id="dailyDiaryHistoryButton" class="dashboard-action" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
+            </div>
         </div>
         <div class="summary-card history-section" id="dailyDiaryHistorySection" style="display: none;">
             <h2 class="history-section-header">📖 Diary History</h2>
