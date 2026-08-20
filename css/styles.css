@@ -17,19 +17,33 @@
     --dashboard-card-border: #dbe5ef;
     --dashboard-card-elevation: 0 2px 8px rgba(15, 23, 42, 0.08);
     --dashboard-card-radius: 14px;
-    --dashboard-card-padding: 16px;
-    --dashboard-card-gap: 12px;
+    --dashboard-card-padding: 12px;
+    --dashboard-card-gap: 8px;
     --dashboard-title-size: 1.1rem;
     --dashboard-title-weight: 750;
     --dashboard-title-icon-gap: 10px;
+    --dashboard-header-spacing: 8px;
+    --dashboard-actions-gap: 8px;
+    --dashboard-primary-accent: #1f4e79;
+    --dashboard-primary-accent-background: #e9f1f8;
+    --dashboard-primary-accent-border: #bfd0df;
+    --dashboard-primary-accent-text: #1f4e79;
+    --dashboard-neutral-accent: #64748b;
+    --dashboard-neutral-accent-background: #f1f5f9;
+    --dashboard-neutral-accent-border: #cbd5e1;
+    --dashboard-neutral-accent-text: #475569;
+    --dashboard-green-accent: #2f7d5a;
+    --dashboard-green-accent-background: #eaf5ef;
+    --dashboard-green-accent-border: #b9ddc8;
+    --dashboard-green-accent-text: #256448;
     --dashboard-action-background: #ffffff;
-    --dashboard-action-border: #bfd0df;
-    --dashboard-action-text: #1f4e79;
+    --dashboard-action-border: var(--dashboard-primary-accent-border);
+    --dashboard-action-text: var(--dashboard-primary-accent-text);
     --dashboard-action-hover-background: #f4f8fc;
     --dashboard-action-active-background: #e8f0f7;
     --dashboard-module-icon-size: 32px;
-    --dashboard-module-icon-background: #e9f1f8;
-    --dashboard-module-icon-color: #1f4e79;
+    --dashboard-module-icon-background: var(--dashboard-primary-accent-background);
+    --dashboard-module-icon-color: var(--dashboard-primary-accent-text);
 }
 
 * {
@@ -117,7 +131,7 @@ header p {
     display: flex;
     align-items: center;
     gap: var(--dashboard-title-icon-gap);
-    padding-bottom: 10px;
+    padding-bottom: var(--dashboard-header-spacing);
     border-bottom: 1px solid var(--dashboard-card-border);
 }
 
@@ -142,10 +156,16 @@ header p {
     line-height: 1;
 }
 
+.dashboard-card > h3 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
 .dashboard-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
+    gap: var(--dashboard-actions-gap);
 }
 
 .dashboard-action {
