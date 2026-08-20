@@ -45,18 +45,24 @@
     <h2>⚡ Quick Links</h2>
     <div class="quick-access-scroll">
     <div class="quick-access-grid">
-        <button type="button" class="quick-access-button" data-feature="Weather">Weather</button>
-        <button type="button" class="quick-access-button" data-feature="Calendar">Calendar</button>
-        <button type="button" class="quick-access-button" data-feature="Reminders">Reminders</button>
-        <button type="button" class="quick-access-button" data-feature="Gmail">Gmail</button>
-        <button type="button" class="quick-access-button" data-feature="News">News</button>
     </div>
     </div>
     <button id="editProfileHeightButton" type="button" style="margin-top: 10px;">👤 Profile &amp; Links Editor</button>
 </div>
 
-                <div class="card nutrition-center-card" id="nutritionCard">
-            <h2>🍽️ Today's Nutrition</h2>
+                <div class="card nutrition-center-card dashboard-card" id="nutritionCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 3v7"></path>
+                        <path d="M4 3v4a3 3 0 0 0 6 0V3"></path>
+                        <path d="M7 10v11"></path>
+                        <path d="M17 3v18"></path>
+                        <path d="M17 3c-2.2 2-3 4.8-3 8h3"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Nutrition</h2>
+            </div>
 
             <div class="nutrition-today-summary" id="nutritionTodaySummary">
                 <p><strong>Kcal:</strong> <span id="nutritionCaloriesValue">0</span></p>
@@ -65,9 +71,11 @@
                 <p><strong>Fat:</strong> <span id="nutritionFatValue">0 g</span></p>
             </div>
 
-            <button id="nutritionLogFoodButton" type="button">Log Food</button>
-            <button id="nutritionHistoryButton" type="button">📊 History</button>
-            <button id="nutritionGoalsReferenceButton" type="button">🎯 Nutrition Goals &amp; Reference</button>
+            <div class="dashboard-actions">
+                <button id="nutritionLogFoodButton" class="dashboard-action" type="button">Log Food</button>
+                <button id="nutritionHistoryButton" class="dashboard-action" type="button">📊 History</button>
+                <button id="nutritionGoalsReferenceButton" class="dashboard-action dashboard-action--full" type="button">🎯 Nutrition Goals &amp; Reference</button>
+            </div>
         </div>
 
         <div class="summary-card history-section" id="nutritionHistorySection" style="display: none;">
@@ -83,15 +91,26 @@
             <div id="nutritionGoalsReferenceContent" class="history-display history-stack"></div>
         </div>
 
-        <div class="card" id="weightCard">
-            <h2>⚖️ Weight</h2>
+        <div class="card dashboard-card" id="weightCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="4" y="3" width="16" height="18" rx="3"></rect>
+                        <path d="M8 10a4 4 0 0 1 8 0"></path>
+                        <path d="m12 10 2-2"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Weight</h2>
+            </div>
            <p id="weightDisplay">Last Weight: --</p>
-           <button id="weightButton">
-    Log Weight
-</button>
-<button id="weightHistoryButton">
-    📊 History
-</button>
+            <div class="dashboard-actions">
+                <button id="weightButton" class="dashboard-action">
+                    Log Weight
+                </button>
+                <button id="weightHistoryButton" class="dashboard-action">
+                    📊 History
+                </button>
+            </div>
         </div>
         <div class="summary-card history-section" id="weightHistorySection" style="display: none;">
 
@@ -105,20 +124,36 @@
 
 </div>
 
-        <div class="card" id="dailyDiaryCard">
-            <h2>📖 Daily Diary</h2>
+        <div class="card dashboard-card" id="dailyDiaryCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="6" y="3" width="13" height="18" rx="2"></rect>
+                        <path d="M6 7H4v10a2 2 0 0 0 2 2"></path>
+                        <path d="M10 8h5"></path>
+                        <path d="M10 12h5"></path>
+                        <path d="M10 16h3"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Daily Diary</h2>
+            </div>
             <p id="dailyDiaryCurrentDate"></p>
             <p id="dailyDiaryTodayPreview" class="daily-diary-preview" aria-live="polite">No entry yet. Add today's diary entry.</p>
-            <button id="dailyDiaryOpenTodayButton" type="button">Open Today's Diary</button>
-            <button id="dailyDiaryHistoryButton" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
+            <div class="dashboard-actions">
+                <button id="dailyDiaryOpenTodayButton" class="dashboard-action" type="button">Open Today's Diary</button>
+                <button id="dailyDiaryHistoryButton" class="dashboard-action" type="button" aria-controls="dailyDiaryHistorySection" aria-expanded="false">📊 History</button>
+            </div>
         </div>
         <div class="summary-card history-section" id="dailyDiaryHistorySection" style="display: none;">
             <h2 class="history-section-header">📖 Diary History</h2>
             <div id="dailyDiaryHistoryDisplay" class="history-display history-stack">No diary entries yet.</div>
         </div>
 
-        <div class="card" id="exerciseCard">
-    <h2>🚴 Exercise</h2>
+        <div class="card dashboard-card" id="exerciseCard">
+    <div class="dashboard-card-header">
+        <span class="dashboard-module-icon" aria-hidden="true">🚴</span>
+        <h2 class="dashboard-card-title">Exercise</h2>
+    </div>
 
     <h3>Today's Exercise</h3>
 
@@ -126,12 +161,14 @@
     No exercise logged today.
 </div>
 
-    <button id="exerciseButton">
-        Log Exercise
-    </button>
-    <button id="exerciseHistoryButton">
-    📊 History
-</button>
+    <div class="dashboard-actions">
+        <button id="exerciseButton" class="dashboard-action">
+            Log Exercise
+        </button>
+        <button id="exerciseHistoryButton" class="dashboard-action">
+            📊 History
+        </button>
+    </div>
 </div>
 <div class="summary-card history-section"
      id="exerciseHistorySection"
@@ -145,16 +182,26 @@
 
 </div>
 
-        <div class="card" id="bpCard">
-            <h2>❤️ Blood Pressure</h2>
+        <div class="card dashboard-card" id="bpCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.8 5.8a5.5 5.5 0 0 0-7.8 0L12 6.8l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 22l7.8-7.4 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
+                        <path d="M5.5 12h2l1.3-2.5 2.2 5 1.8-3h2.7"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Blood Pressure</h2>
+            </div>
             <p id="bpDisplay">Last Reading: -- / --</p>
             <p id="heartRateDisplay">Heart Rate: -- bpm</p>
-            <button id="bpButton">
-    Log Blood Pressure
-</button>
-<button id="bpHistoryButton">
-    📊 History
-</button>
+            <div class="dashboard-actions">
+                <button id="bpButton" class="dashboard-action">
+                    Log Blood Pressure
+                </button>
+                <button id="bpHistoryButton" class="dashboard-action">
+                    📊 History
+                </button>
+            </div>
         </div>
         <div class="summary-card history-section" id="bpHistorySection" style="display: none;">
 

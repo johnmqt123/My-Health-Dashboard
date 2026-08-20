@@ -929,10 +929,10 @@ function scrollMedicationCenterTo(targetElement, options) {
         return;
     }
 
-    // Direct period navigation must settle with the schedule heading visible.
-    const desiredTopInset = 18;
-    const minVisibleTop = 8;
-    const maxVisibleTop = 120;
+    // Keep the target heading below the sticky Medication Center header.
+    const desiredTopInset = 104;
+    const minVisibleTop = 92;
+    const maxVisibleTop = 216;
 
     if (isDirectPeriodNavigation) {
         clearMedicationPeriodSettleTimers();

@@ -1731,3 +1731,65 @@ Do not combine it with:
 Deferred until a later focused investigation.
 
 Do not spend additional development time on this issue until it is intentionally revisited.
+
+FUTURE UI IMPROVEMENT — DASHBOARD CARD DESIGN
+
+Redesign the dashboard module cards to improve visual hierarchy and readability.
+
+Modules affected include:
+- Nutrition
+- Weight
+- Exercise
+- Blood Pressure
+- Medication
+- Daily Diary
+- Other similar dashboard modules
+
+Goals:
+- Make each module title more visually prominent and easier to identify.
+- Reduce the visual dominance of the large dark-blue action buttons.
+- Arrange related action buttons side-by-side where appropriate instead of stacking full-width buttons.
+- Establish one consistent card/button design across the dashboard.
+- Consider subtle card or header styling to make each module easier to distinguish.
+- Keep the overall dashboard clean, cohesive, and mobile-friendly.
+
+Important:
+- Do NOT give each individual card a different background color.
+- Do NOT redesign individual cards independently; develop a consistent dashboard-wide pattern.
+- Preserve all existing functionality and navigation.
+
+This is a future UI/design project, not an immediate change.
+
+## Future UI Idea — Modern Dashboard Card Redesign
+
+Redesign the My Health Dashboard modules to give the app a cleaner, more modern, native-app appearance, especially on iPhone.
+
+### Current Issue
+The dashboard cards are currently dominated by large dark-blue, full-width action buttons. In some modules the buttons are stacked vertically, which makes the interface feel crowded and somewhat "cartoonish." The actual module titles, such as Nutrition, Weight, Daily Diary, Exercise, and Blood Pressure, don't have enough visual prominence.
+
+### Desired Direction
+Use a design similar to the recent iPhone mockups, particularly Options A and B.
+
+- Make each module title much more prominent.
+- Use a small, consistent icon beside each module title.
+- Give each module a cleaner card structure with more whitespace.
+- Reduce the visual dominance of the action buttons.
+- Arrange related action buttons side-by-side where practical instead of stacking them vertically.
+- Use smaller, cleaner buttons while keeping them easy to tap on an iPhone.
+- Consider a subtle, consistent card/header background treatment to help distinguish modules.
+- Do NOT give every module a different color.
+- Maintain a consistent overall blue/neutral visual language.
+- Preserve all existing functionality, navigation, data, and workflows.
+- Design primarily for comfortable iPhone use while maintaining a good desktop experience.
+
+### Examples
+Exercise: [Log Exercise] [History]
+
+Weight: [Log Weight] [History]
+
+Nutrition: [Log Food] [History] [Goals] [Reference]
+
+The goal is for the dashboard to feel more like a polished health app and less like a collection of large web-page buttons.
+
+### Implementation Approach
+Treat this as a future UI redesign project rather than a quick isolated CSS change. Review all dashboard modules together so the final design is consistent across the entire Home screen.

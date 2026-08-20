@@ -212,6 +212,8 @@ const userProfile = {
 
         profileQuickLinksList.innerHTML = links
             .map(function (link, index) {
+                const isFirstLink = index === 0;
+                const isLastLink = index === links.length - 1;
                 return '<div class="profile-quick-link-row" data-quick-link-index="' + index + '">' +
                     '<p class="profile-quick-link-name">' +
                         escapeHtml(link.name) +
@@ -220,6 +222,12 @@ const userProfile = {
                         escapeHtml(link.url) +
                     '</p>' +
                     '<div class="profile-quick-link-row-actions">' +
+                        '<button type="button" class="profile-quick-link-move-up"' +
+                            (isFirstLink ? ' disabled' : '') +
+                            '>Move Up</button>' +
+                        '<button type="button" class="profile-quick-link-move-down"' +
+                            (isLastLink ? ' disabled' : '') +
+                            '>Move Down</button>' +
                         '<button type="button" class="profile-quick-link-edit">Edit</button>' +
                         '<button type="button" class="profile-quick-link-delete">Delete</button>' +
                     '</div>' +
@@ -414,6 +422,24 @@ const userProfile = {
         clearQuickLinkEditor();
     }
 
+    function moveProfileQuickLink(index, direction) {
+        const profile = loadPersonalProfile();
+        const links = getNormalizedQuickLinks(profile);
+        const targetIndex = index + direction;
+        if (index < 0 || index >= links.length || targetIndex < 0 || targetIndex >= links.length) {
+            return;
+        }
+
+        const movedLink = links[index];
+        links[index] = links[targetIndex];
+        links[targetIndex] = movedLink;
+
+        savePersonalProfile(saveQuickLinksToProfile(profile, links));
+        renderProfileQuickLinksList();
+        renderDashboardQuickLinks(profile);
+        clearQuickLinkEditor();
+    }
+
     function initPersonalProfile() {
         if (!profileHeightDisplay) {
             return;
@@ -462,6 +488,16 @@ const userProfile = {
 
                 const index = Number(row.getAttribute("data-quick-link-index"));
                 if (!Number.isInteger(index) || index < 0) {
+                    return;
+                }
+
+                if (event.target.closest(".profile-quick-link-move-up")) {
+                    moveProfileQuickLink(index, -1);
+                    return;
+                }
+
+                if (event.target.closest(".profile-quick-link-move-down")) {
+                    moveProfileQuickLink(index, 1);
                     return;
                 }
 
