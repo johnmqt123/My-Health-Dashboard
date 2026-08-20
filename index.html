@@ -156,16 +156,26 @@
 
 </div>
 
-        <div class="card" id="bpCard">
-            <h2>❤️ Blood Pressure</h2>
+        <div class="card dashboard-card" id="bpCard">
+            <div class="dashboard-card-header">
+                <span class="dashboard-module-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.8 5.8a5.5 5.5 0 0 0-7.8 0L12 6.8l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 22l7.8-7.4 1-1a5.5 5.5 0 0 0 0-7.8Z"></path>
+                        <path d="M5.5 12h2l1.3-2.5 2.2 5 1.8-3h2.7"></path>
+                    </svg>
+                </span>
+                <h2 class="dashboard-card-title">Blood Pressure</h2>
+            </div>
             <p id="bpDisplay">Last Reading: -- / --</p>
             <p id="heartRateDisplay">Heart Rate: -- bpm</p>
-            <button id="bpButton">
-    Log Blood Pressure
-</button>
-<button id="bpHistoryButton">
-    📊 History
-</button>
+            <div class="dashboard-actions">
+                <button id="bpButton" class="dashboard-action">
+                    Log Blood Pressure
+                </button>
+                <button id="bpHistoryButton" class="dashboard-action">
+                    📊 History
+                </button>
+            </div>
         </div>
         <div class="summary-card history-section" id="bpHistorySection" style="display: none;">
 
