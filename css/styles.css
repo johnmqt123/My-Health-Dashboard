@@ -397,7 +397,16 @@ header p {
 }
 
 .medication-center-card h2 {
+    margin: 0;
+    padding: 9px 10px;
+    border: 1px solid var(--card-accent-border);
+    border-radius: 10px 10px 0 0;
+    background: var(--card-accent-background);
     color: var(--card-accent-text);
+}
+
+.medication-center-card p {
+    color: var(--muted);
 }
 
 .summary-card {
@@ -431,18 +440,112 @@ header p {
     position: sticky;
     top: 0;
     z-index: 20;
-    background: var(--surface);
+    background: var(--dashboard-primary-accent-background);
     padding-bottom: 10px;
     margin-bottom: 2px;
+    border-bottom: 1px solid var(--dashboard-primary-accent-border);
     box-shadow: 0 1px 0 rgba(148, 163, 184, 0.35);
 }
 
 #medicationCenterSection .medication-center-sticky-header > h2 {
+    color: var(--dashboard-primary-accent-text);
     margin-bottom: 10px;
 }
 
 #medicationCenterSection .medication-center-sticky-header .feature-actions {
     margin-bottom: 0;
+}
+
+#medicationCenterSection #backToTop {
+    background: var(--dashboard-neutral-accent-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    box-shadow: none;
+}
+
+#medicationCenterSection #backToTop:hover,
+#medicationCenterSection #backToTop:active {
+    background: var(--dashboard-action-active-background);
+    border-color: var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#medicationCenterSection #backToTop:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+#medicationCenterSection #manageMedicationsBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+#medicationCenterSection #manageMedicationsBtn:hover,
+#medicationCenterSection #manageMedicationsBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#medicationCenterSection #manageMedicationsBtn:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+#medicationCenterSection .briefing > .card {
+    border-left: 4px solid var(--dashboard-primary-accent);
+}
+
+#medicationCenterSection .briefing > .card h2 {
+    margin: 0;
+    padding: 7px 9px;
+    border: 1px solid var(--dashboard-primary-accent-border);
+    border-radius: 10px 10px 0 0;
+    background: var(--dashboard-primary-accent-background);
+    color: var(--dashboard-primary-accent-text);
+}
+
+#medicationCenterSection .briefing > .card .approx-time {
+    color: var(--muted);
+}
+
+#medicationCenterSection #medStatus,
+#medicationCenterSection #breakfastStatus,
+#medicationCenterSection #middayStatus,
+#medicationCenterSection #dinnerStatus,
+#medicationCenterSection #eveningStatus {
+    padding: 7px 9px;
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    border-radius: 8px;
+    background: var(--dashboard-neutral-accent-background);
+    color: var(--muted);
+}
+
+#medicationCenterSection .briefing > .card > button {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+#medicationCenterSection .briefing > .card > button:hover,
+#medicationCenterSection .briefing > .card > button:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#medicationCenterSection .briefing > .card > button:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
 }
 
 /*
