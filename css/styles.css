@@ -78,6 +78,9 @@ header {
     padding: 25px;
     border-radius: var(--radius);
     margin-bottom: 30px;
+    border: 1px solid rgba(191, 208, 223, 0.8);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 header h1 {
@@ -85,8 +88,20 @@ header h1 {
     font-size: 2.2em;
 }
 
+#greeting {
+    font-weight: 750;
+    line-height: 1.15;
+    letter-spacing: 0;
+}
+
 header p {
     margin-top: 8px;
+}
+
+#today {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.95rem;
+    line-height: 1.3;
 }
 
 .briefing {
@@ -2697,16 +2712,26 @@ button:active,
     width: 70%;
     margin: 8px auto 12px;
     border: none;
-    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    border-top: 1px solid rgba(219, 229, 239, 0.42);
 }
 
 #atAGlanceHeading {
     margin: 14px 0 6px;
-    font-size: 1.35rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 1.15rem;
+    font-weight: 750;
+    line-height: 1.25;
 }
 
 #summaryBreakfastStatus {
-    margin: 0;
+    margin: 0 auto;
+    width: min(100%, 520px);
+    padding: 9px 12px;
+    border: 1px solid rgba(219, 229, 239, 0.3);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.12);
+    color: rgba(255, 255, 255, 0.96);
     line-height: 1.35;
 }
 
