@@ -332,6 +332,19 @@ header p {
     outline-color: var(--card-accent);
 }
 
+@media (hover: none) {
+    #nutritionCard .dashboard-action:hover,
+    #weightCard .dashboard-action:hover,
+    #dailyDiaryCard .dashboard-action:hover,
+    #exerciseCard .dashboard-action:hover,
+    #bpCard .dashboard-action:hover {
+        background: var(--card-accent-background);
+        border-color: var(--card-accent-border);
+        color: var(--card-accent-text);
+        transform: none;
+    }
+}
+
 #exerciseCard {
     --card-accent: #087f8c;
     --card-accent-background: #e7f6f7;
