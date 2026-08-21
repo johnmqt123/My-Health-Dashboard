@@ -525,6 +525,11 @@ header p {
     border-left: 4px solid var(--dashboard-primary-accent);
 }
 
+#medicationCenterSection .briefing > .card:hover,
+#medicationCenterSection .briefing > .card:active {
+    transform: none;
+}
+
 #medicationCenterSection .briefing > .card h2 {
     margin: 0;
     padding: 7px 9px;
