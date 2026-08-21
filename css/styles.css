@@ -343,6 +343,13 @@ header p {
         color: var(--card-accent-text);
         transform: none;
     }
+
+    #dailyDiaryCard .dashboard-action:active {
+        background: var(--card-accent-background);
+        border-color: var(--card-accent-border);
+        color: var(--card-accent-text);
+        transform: none;
+    }
 }
 
 #exerciseCard {
