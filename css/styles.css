@@ -1852,7 +1852,7 @@ header p {
 button.history-entry-action,
 button.history-action-btn {
     width: auto;
-    min-height: 34px;
+    min-height: 40px;
     padding: 6px 12px;
     border-radius: 8px;
     border: 1px solid #cbd5e1;
@@ -2003,7 +2003,7 @@ button.history-action-btn {
 #asNeededMedicationContent .as-needed-available-remove-btn {
     flex: 0 0 auto;
     width: auto;
-    min-height: 34px;
+    min-height: 40px;
     padding: 6px 12px;
     border-radius: 8px;
     white-space: nowrap;
