@@ -2533,6 +2533,120 @@ button:active,
     margin-bottom: 6px;
 }
 
+#zepboundModal {
+    --zepbound-history-accent: #5546a8;
+    --zepbound-history-background: #f0eefb;
+    --zepbound-history-border: #c9c3ec;
+    --zepbound-history-text: #44378b;
+}
+
+#zepboundModal #historyInjectionButton {
+    background: var(--zepbound-history-background);
+    border: 1px solid var(--zepbound-history-border);
+    color: var(--zepbound-history-text);
+    box-shadow: none;
+}
+
+#zepboundModal #historyInjectionButton:hover,
+#zepboundModal #historyInjectionButton:active {
+    background: var(--zepbound-history-border);
+    border-color: var(--zepbound-history-accent);
+    color: var(--zepbound-history-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#zepboundModal #historyInjectionButton:focus-visible {
+    outline: 2px solid var(--zepbound-history-accent);
+    outline-offset: 2px;
+}
+
+#zepboundModal #historyInjectionDisplay > div {
+    margin-bottom: 6px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 1px solid var(--dashboard-card-border) !important;
+}
+
+#zepboundModal #historyInjectionDisplay > div > p {
+    margin: 0 0 3px;
+    color: var(--text);
+    font-size: 0.92rem;
+    line-height: 1.3;
+}
+
+#zepboundModal #historyInjectionDisplay > div > .history-action-row {
+    gap: 6px;
+    margin-top: 6px;
+}
+
+#zepboundModal #historyInjectionDisplay .history-action-btn.edit {
+    min-height: 40px;
+    padding: 6px 10px;
+    border: 1px solid var(--zepbound-history-border);
+    border-radius: 8px;
+    background: var(--zepbound-history-background);
+    color: var(--zepbound-history-text);
+    box-shadow: none;
+}
+
+#zepboundModal #historyInjectionDisplay .history-action-btn.delete {
+    min-height: 40px;
+    padding: 6px 10px;
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+    background: #fff1f2;
+    color: #9f1239;
+    box-shadow: none;
+}
+
+#zepboundModal #historyInjectionDisplay .history-action-btn.edit:hover,
+#zepboundModal #historyInjectionDisplay .history-action-btn.edit:active {
+    background: var(--zepbound-history-border);
+    border-color: var(--zepbound-history-accent);
+    color: var(--zepbound-history-text);
+    transform: none;
+}
+
+#zepboundModal #historyInjectionDisplay .history-action-btn.delete:hover,
+#zepboundModal #historyInjectionDisplay .history-action-btn.delete:active {
+    background: #fecdd3;
+    border-color: #9f1239;
+    color: #9f1239;
+    transform: none;
+}
+
+#zepboundModal #historyInjectionDisplay .history-action-btn.edit:focus-visible,
+#zepboundModal #historyInjectionDisplay .history-action-btn.delete:focus-visible {
+    outline: 2px solid var(--zepbound-history-accent);
+    outline-offset: 2px;
+}
+
+@media (hover: none) {
+    #zepboundModal #historyInjectionButton:hover,
+    #zepboundModal #historyInjectionButton:active {
+        background: var(--zepbound-history-background);
+        border-color: var(--zepbound-history-border);
+        color: var(--zepbound-history-text);
+        transform: none;
+    }
+
+    #zepboundModal #historyInjectionDisplay .history-action-btn.edit:hover,
+    #zepboundModal #historyInjectionDisplay .history-action-btn.edit:active {
+        background: var(--zepbound-history-background);
+        border-color: var(--zepbound-history-border);
+        color: var(--zepbound-history-text);
+        transform: none;
+    }
+
+    #zepboundModal #historyInjectionDisplay .history-action-btn.delete:hover,
+    #zepboundModal #historyInjectionDisplay .history-action-btn.delete:active {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #9f1239;
+        transform: none;
+    }
+}
+
 #manageMedicationsPanel {
     display: grid;
     gap: 0;
