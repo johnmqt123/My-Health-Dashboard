@@ -206,7 +206,6 @@ header p {
     color: var(--dashboard-action-text);
     transform: none;
 }
-
 .dashboard-action:active {
     background: var(--dashboard-action-active-background);
     transform: none;
@@ -3574,4 +3573,173 @@ body.zepbound-modal-open {
     font-size: 1.05rem;
     font-weight: 700;
     flex: 0 0 auto;
+}
+
+/* Secondary modal actions: keep Save primary and Cancel/Close neutral. */
+#nutritionLogModal #saveNutritionBtn,
+#nutritionDailyGoalsModal #saveNutritionDailyGoalsBtn,
+#nutritionWeightLossPlanModal #saveNutritionWeightLossPlanBtn {
+    background: var(--dashboard-green-accent-background);
+    border: 1px solid var(--dashboard-green-accent-border);
+    color: var(--dashboard-green-accent-text);
+    box-shadow: none;
+}
+
+#weightModal #saveWeightBtn,
+#weightDetailModal #weightDetailEditBtn,
+#bpModal #saveBpBtn,
+#bpDetailModal #bpDetailEditBtn,
+#exerciseModal #saveExerciseBtn,
+#exerciseDetailModal #exerciseDetailEditBtn,
+#zepboundModal #logInjectionButton,
+#injectionModal #saveInjectionBtn,
+#manageMedicationsModal #saveMedicationBtn,
+#manageMedicationsModal #addMedicationBtn,
+#manageMedicationsModal #saveNotesBtn,
+#scheduleNotesModal #saveScheduleNotesModalBtn,
+#profileHeightModal #saveProfileHeightBtn,
+#profileHeightModal #saveProfileQuickLinkBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+#nutritionLogModal #cancelNutritionBtn,
+#nutritionDailyGoalsModal #cancelNutritionDailyGoalsBtn,
+#nutritionWeightLossPlanModal #cancelNutritionWeightLossPlanBtn,
+#weightModal #cancelWeightBtn,
+#weightDetailModal #weightDetailCloseBtn,
+#bpModal #cancelBpBtn,
+#bpDetailModal #bpDetailCloseBtn,
+#exerciseModal #cancelExerciseBtn,
+#exerciseDetailModal #exerciseDetailCloseBtn,
+#asNeededMedicationModal #cancelAsNeededMedicationBtn,
+#zepboundModal #closeZepboundModalBtn,
+#injectionModal #cancelInjectionBtn,
+#profileHeightModal #cancelProfileHeightBtn,
+#profileHeightModal #cancelProfileQuickLinkEditBtn,
+#scheduleNotesModal #closeScheduleNotesModalBtn,
+#manageMedicationsModal #closeManageMedicationsModalBtn,
+#manageMedicationsModal #closeNotesBtn,
+#manageMedicationsModal #cancelMedicationEditBtn,
+#nutritionDayDetailModal #nutritionDayDetailCloseBtn {
+    background: var(--dashboard-neutral-accent-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    box-shadow: none;
+}
+
+#asNeededMedicationModal #saveAsNeededMedicationBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+#dailyDiaryEditorModal #dailyDiaryEditorSaveButton {
+    background: #fff3e8;
+    border: 1px solid #f2c9a6;
+    color: #a9571d;
+    box-shadow: none;
+}
+
+#nutritionLogModal #saveNutritionBtn:hover,
+#nutritionLogModal #saveNutritionBtn:active,
+#nutritionDailyGoalsModal #saveNutritionDailyGoalsBtn:hover,
+#nutritionDailyGoalsModal #saveNutritionDailyGoalsBtn:active,
+#nutritionWeightLossPlanModal #saveNutritionWeightLossPlanBtn:hover,
+#nutritionWeightLossPlanModal #saveNutritionWeightLossPlanBtn:active {
+    background: var(--dashboard-green-accent-border);
+    border-color: var(--dashboard-green-accent);
+    color: var(--dashboard-green-accent-text);
+    transform: none;
+}
+
+#weightModal #saveWeightBtn:hover,
+#weightModal #saveWeightBtn:active,
+#weightDetailModal #weightDetailEditBtn:hover,
+#weightDetailModal #weightDetailEditBtn:active,
+#bpModal #saveBpBtn:hover,
+#bpModal #saveBpBtn:active,
+#bpDetailModal #bpDetailEditBtn:hover,
+#bpDetailModal #bpDetailEditBtn:active,
+#exerciseModal #saveExerciseBtn:hover,
+#exerciseModal #saveExerciseBtn:active,
+#exerciseDetailModal #exerciseDetailEditBtn:hover,
+#exerciseDetailModal #exerciseDetailEditBtn:active,
+#zepboundModal #logInjectionButton:hover,
+#zepboundModal #logInjectionButton:active,
+#injectionModal #saveInjectionBtn:hover,
+#injectionModal #saveInjectionBtn:active,
+#manageMedicationsModal #saveMedicationBtn:hover,
+#manageMedicationsModal #saveMedicationBtn:active,
+#manageMedicationsModal #addMedicationBtn:hover,
+#manageMedicationsModal #addMedicationBtn:active,
+#manageMedicationsModal #saveNotesBtn:hover,
+#manageMedicationsModal #saveNotesBtn:active,
+#scheduleNotesModal #saveScheduleNotesModalBtn:hover,
+#scheduleNotesModal #saveScheduleNotesModalBtn:active,
+#profileHeightModal #saveProfileHeightBtn:hover,
+#profileHeightModal #saveProfileHeightBtn:active,
+#profileHeightModal #saveProfileQuickLinkBtn:hover,
+#profileHeightModal #saveProfileQuickLinkBtn:active,
+#asNeededMedicationModal #saveAsNeededMedicationBtn:hover,
+#asNeededMedicationModal #saveAsNeededMedicationBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+}
+
+#dailyDiaryEditorModal #dailyDiaryEditorSaveButton:hover,
+#dailyDiaryEditorModal #dailyDiaryEditorSaveButton:active {
+    background: #f2c9a6;
+    border-color: #c46a24;
+    color: #a9571d;
+    transform: none;
+}
+
+#nutritionLogModal #cancelNutritionBtn:hover,
+#nutritionLogModal #cancelNutritionBtn:active,
+#nutritionDailyGoalsModal #cancelNutritionDailyGoalsBtn:hover,
+#nutritionDailyGoalsModal #cancelNutritionDailyGoalsBtn:active,
+#nutritionWeightLossPlanModal #cancelNutritionWeightLossPlanBtn:hover,
+#nutritionWeightLossPlanModal #cancelNutritionWeightLossPlanBtn:active,
+#weightModal #cancelWeightBtn:hover,
+#weightModal #cancelWeightBtn:active,
+#weightDetailModal #weightDetailCloseBtn:hover,
+#weightDetailModal #weightDetailCloseBtn:active,
+#bpModal #cancelBpBtn:hover,
+#bpModal #cancelBpBtn:active,
+#bpDetailModal #bpDetailCloseBtn:hover,
+#bpDetailModal #bpDetailCloseBtn:active,
+#exerciseModal #cancelExerciseBtn:hover,
+#exerciseModal #cancelExerciseBtn:active,
+#exerciseDetailModal #exerciseDetailCloseBtn:hover,
+#exerciseDetailModal #exerciseDetailCloseBtn:active,
+#asNeededMedicationModal #cancelAsNeededMedicationBtn:hover,
+#asNeededMedicationModal #cancelAsNeededMedicationBtn:active,
+#zepboundModal #closeZepboundModalBtn:hover,
+#zepboundModal #closeZepboundModalBtn:active,
+#injectionModal #cancelInjectionBtn:hover,
+#injectionModal #cancelInjectionBtn:active,
+#profileHeightModal #cancelProfileHeightBtn:hover,
+#profileHeightModal #cancelProfileHeightBtn:active,
+#profileHeightModal #cancelProfileQuickLinkEditBtn:hover,
+#profileHeightModal #cancelProfileQuickLinkEditBtn:active,
+#scheduleNotesModal #closeScheduleNotesModalBtn:hover,
+#scheduleNotesModal #closeScheduleNotesModalBtn:active,
+#manageMedicationsModal #closeManageMedicationsModalBtn:hover,
+#manageMedicationsModal #closeManageMedicationsModalBtn:active,
+#manageMedicationsModal #closeNotesBtn:hover,
+#manageMedicationsModal #closeNotesBtn:active,
+#manageMedicationsModal #cancelMedicationEditBtn:hover,
+#manageMedicationsModal #cancelMedicationEditBtn:active,
+#nutritionDayDetailModal #nutritionDayDetailCloseBtn:hover,
+#nutritionDayDetailModal #nutritionDayDetailCloseBtn:active {
+    background: var(--dashboard-neutral-accent-border);
+    border-color: var(--dashboard-neutral-accent);
+    color: var(--dashboard-neutral-accent-text);
+    transform: none;
 }
