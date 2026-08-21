@@ -222,6 +222,66 @@ header p {
     opacity: 0.55;
 }
 
+#nutritionCard,
+#exerciseCard {
+    border-left: 3px solid var(--dashboard-green-accent);
+}
+
+#nutritionCard .dashboard-card-header,
+#exerciseCard .dashboard-card-header {
+    border-bottom-color: var(--dashboard-green-accent-border);
+}
+
+#nutritionCard .dashboard-module-icon,
+#exerciseCard .dashboard-module-icon {
+    background: var(--dashboard-green-accent-background);
+    color: var(--dashboard-green-accent-text);
+}
+
+#nutritionCard .dashboard-action:hover,
+#exerciseCard .dashboard-action:hover {
+    background: var(--dashboard-green-accent-background);
+    border-color: var(--dashboard-green-accent-border);
+    color: var(--dashboard-green-accent-text);
+}
+
+#nutritionCard .dashboard-action:active,
+#exerciseCard .dashboard-action:active {
+    background: var(--dashboard-green-accent-background);
+    border-color: var(--dashboard-green-accent-border);
+    color: var(--dashboard-green-accent-text);
+}
+
+#weightCard,
+#bpCard {
+    border-left: 3px solid var(--dashboard-neutral-accent);
+}
+
+#weightCard .dashboard-card-header,
+#bpCard .dashboard-card-header {
+    border-bottom-color: var(--dashboard-neutral-accent-border);
+}
+
+#weightCard .dashboard-module-icon,
+#bpCard .dashboard-module-icon {
+    background: var(--dashboard-neutral-accent-background);
+    color: var(--dashboard-neutral-accent-text);
+}
+
+#weightCard .dashboard-action:hover,
+#bpCard .dashboard-action:hover {
+    background: var(--dashboard-neutral-accent-background);
+    border-color: var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+}
+
+#weightCard .dashboard-action:active,
+#bpCard .dashboard-action:active {
+    background: var(--dashboard-neutral-accent-background);
+    border-color: var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+}
+
 .summary-card {
     border-left: 6px solid var(--primary);
     padding: 20px;
