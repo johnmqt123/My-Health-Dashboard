@@ -2575,6 +2575,7 @@ button:active,
 }
 
 #zepboundModal #historyInjectionDisplay > div > .history-action-row {
+    justify-content: flex-end;
     gap: 6px;
     margin-top: 6px;
 }
