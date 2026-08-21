@@ -3731,25 +3731,75 @@ body.zepbound-modal-open {
 
 #stationaryBikeBtn,
 #ebikeRideBtn {
-    background: #f8fafc;
-    color: var(--text);
-    border: 2px solid #cbd5e1;
+    --exercise-accent: #087f8c;
+    --exercise-accent-background: #e7f6f7;
+    --exercise-accent-border: #abdfe2;
+    --exercise-accent-text: #076875;
+    background: var(--exercise-accent-background);
+    color: var(--exercise-accent-text);
+    border: 2px solid var(--exercise-accent-border);
     box-shadow: none;
     transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
 }
 
+#stationaryBikeBtn:hover,
+#ebikeRideBtn:hover,
+#stationaryBikeBtn:active,
+#ebikeRideBtn:active {
+    background: var(--exercise-accent-border);
+    border-color: var(--exercise-accent);
+    color: var(--exercise-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#stationaryBikeBtn:focus-visible,
+#ebikeRideBtn:focus-visible {
+    outline: 2px solid var(--exercise-accent);
+    outline-offset: 2px;
+}
+
 #stationaryBikeBtn.selected,
 #ebikeRideBtn.selected {
-    background: #e0f2fe;
-    border-color: var(--accent);
-    color: var(--primary);
-    box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.15);
+    background: var(--exercise-accent-border);
+    border-color: var(--exercise-accent);
+    color: var(--exercise-accent-text);
+    box-shadow: 0 0 0 2px var(--exercise-accent-background);
     font-weight: 700;
 }
 
 #stationaryBikeBtn.selected::before,
 #ebikeRideBtn.selected::before {
     content: "✓ ";
+}
+
+@media (hover: none) {
+    #stationaryBikeBtn:hover,
+    #stationaryBikeBtn:active,
+    #ebikeRideBtn:hover,
+    #ebikeRideBtn:active {
+        transform: none;
+    }
+
+    #stationaryBikeBtn:not(.selected):hover,
+    #stationaryBikeBtn:not(.selected):active,
+    #ebikeRideBtn:not(.selected):hover,
+    #ebikeRideBtn:not(.selected):active {
+        background: var(--exercise-accent-background);
+        border-color: var(--exercise-accent-border);
+        color: var(--exercise-accent-text);
+        box-shadow: none;
+    }
+
+    #stationaryBikeBtn.selected:hover,
+    #stationaryBikeBtn.selected:active,
+    #ebikeRideBtn.selected:hover,
+    #ebikeRideBtn.selected:active {
+        background: var(--exercise-accent-border);
+        border-color: var(--exercise-accent);
+        color: var(--exercise-accent-text);
+        box-shadow: 0 0 0 2px var(--exercise-accent-background);
+    }
 }
 
 @media (max-width: 768px) {
