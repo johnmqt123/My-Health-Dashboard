@@ -4046,6 +4046,66 @@ body.zepbound-modal-open {
     outline-offset: 2px;
 }
 
+#scheduleNotesModal #saveScheduleNotesModalBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 2px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    font-weight: 700;
+    box-shadow: none;
+}
+
+#scheduleNotesModal #closeScheduleNotesModalBtn {
+    background: var(--dashboard-action-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    font-weight: 600;
+    box-shadow: none;
+}
+
+#scheduleNotesModal #saveScheduleNotesModalBtn:hover,
+#scheduleNotesModal #saveScheduleNotesModalBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+}
+
+#scheduleNotesModal #closeScheduleNotesModalBtn:hover,
+#scheduleNotesModal #closeScheduleNotesModalBtn:active {
+    background: var(--dashboard-neutral-accent-background);
+    border-color: var(--dashboard-neutral-accent);
+    color: var(--dashboard-neutral-accent-text);
+    transform: none;
+}
+
+#scheduleNotesModal #saveScheduleNotesModalBtn:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+#scheduleNotesModal #closeScheduleNotesModalBtn:focus-visible {
+    outline: 2px solid var(--dashboard-neutral-accent);
+    outline-offset: 2px;
+}
+
+@media (hover: none) {
+    #scheduleNotesModal #saveScheduleNotesModalBtn:hover,
+    #scheduleNotesModal #saveScheduleNotesModalBtn:active {
+        background: var(--dashboard-primary-accent-background);
+        border-color: var(--dashboard-primary-accent-border);
+        color: var(--dashboard-primary-accent-text);
+        transform: none;
+    }
+
+    #scheduleNotesModal #closeScheduleNotesModalBtn:hover,
+    #scheduleNotesModal #closeScheduleNotesModalBtn:active {
+        background: var(--dashboard-action-background);
+        border-color: var(--dashboard-neutral-accent-border);
+        color: var(--dashboard-neutral-accent-text);
+        transform: none;
+    }
+}
+
 @media (hover: none) {
     #profileHeightModal #saveProfileQuickLinkBtn:hover,
     #profileHeightModal #saveProfileQuickLinkBtn:active {
