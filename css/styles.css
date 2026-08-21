@@ -224,80 +224,180 @@ header p {
 
 #nutritionCard,
 #exerciseCard {
-    border-left: 4px solid var(--dashboard-green-accent);
+    --card-accent: var(--dashboard-green-accent);
+    --card-accent-background: var(--dashboard-green-accent-background);
+    --card-accent-border: var(--dashboard-green-accent-border);
+    --card-accent-text: var(--dashboard-green-accent-text);
+    border-left: 4px solid var(--card-accent);
 }
 
 #nutritionCard .dashboard-card-header,
 #exerciseCard .dashboard-card-header {
-    background: var(--dashboard-green-accent-background);
-    border: 1px solid var(--dashboard-green-accent-border);
+    background: var(--card-accent-background);
+    border: 1px solid var(--card-accent-border);
     border-radius: 10px 10px 0 0;
-    border-bottom-color: var(--dashboard-green-accent-border);
+    border-bottom-color: var(--card-accent-border);
 }
 
 #nutritionCard .dashboard-card-title,
 #exerciseCard .dashboard-card-title {
-    color: var(--dashboard-green-accent-text);
+    color: var(--card-accent-text);
 }
 
 #nutritionCard .dashboard-module-icon,
 #exerciseCard .dashboard-module-icon {
-    background: var(--dashboard-green-accent-background);
-    border: 2px solid var(--dashboard-green-accent-border);
-    color: var(--dashboard-green-accent-text);
+    background: var(--card-accent-background);
+    border: 2px solid var(--card-accent-border);
+    color: var(--card-accent-text);
+}
+
+#nutritionCard .dashboard-action,
+#exerciseCard .dashboard-action {
+    background: var(--card-accent-background);
+    border-color: var(--card-accent-border);
+    color: var(--card-accent-text);
 }
 
 #nutritionCard .dashboard-action:hover,
 #exerciseCard .dashboard-action:hover {
-    background: var(--dashboard-green-accent-background);
-    border-color: var(--dashboard-green-accent-border);
-    color: var(--dashboard-green-accent-text);
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
 }
 
 #nutritionCard .dashboard-action:active,
 #exerciseCard .dashboard-action:active {
-    background: var(--dashboard-green-accent-background);
-    border-color: var(--dashboard-green-accent-border);
-    color: var(--dashboard-green-accent-text);
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
+}
+
+#nutritionCard .dashboard-action:focus-visible,
+#exerciseCard .dashboard-action:focus-visible {
+    outline-color: var(--card-accent);
 }
 
 #weightCard,
 #bpCard {
-    border-left: 4px solid var(--dashboard-neutral-accent);
+    --card-accent: #5546a8;
+    --card-accent-background: #f0eefb;
+    --card-accent-border: #c9c3ec;
+    --card-accent-text: #44378b;
+    border-left: 4px solid var(--card-accent);
 }
 
 #weightCard .dashboard-card-header,
 #bpCard .dashboard-card-header {
-    background: var(--dashboard-neutral-accent-background);
-    border: 1px solid var(--dashboard-neutral-accent-border);
+    background: var(--card-accent-background);
+    border: 1px solid var(--card-accent-border);
     border-radius: 10px 10px 0 0;
-    border-bottom-color: var(--dashboard-neutral-accent-border);
+    border-bottom-color: var(--card-accent-border);
 }
 
 #weightCard .dashboard-card-title,
 #bpCard .dashboard-card-title {
-    color: var(--dashboard-neutral-accent-text);
+    color: var(--card-accent-text);
 }
 
 #weightCard .dashboard-module-icon,
 #bpCard .dashboard-module-icon {
-    background: var(--dashboard-neutral-accent-background);
-    border: 2px solid var(--dashboard-neutral-accent-border);
-    color: var(--dashboard-neutral-accent-text);
+    background: var(--card-accent-background);
+    border: 2px solid var(--card-accent-border);
+    color: var(--card-accent-text);
+}
+
+#weightCard .dashboard-action,
+#bpCard .dashboard-action {
+    background: var(--card-accent-background);
+    border-color: var(--card-accent-border);
+    color: var(--card-accent-text);
 }
 
 #weightCard .dashboard-action:hover,
 #bpCard .dashboard-action:hover {
-    background: var(--dashboard-neutral-accent-background);
-    border-color: var(--dashboard-neutral-accent-border);
-    color: var(--dashboard-neutral-accent-text);
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
 }
 
 #weightCard .dashboard-action:active,
 #bpCard .dashboard-action:active {
-    background: var(--dashboard-neutral-accent-background);
-    border-color: var(--dashboard-neutral-accent-border);
-    color: var(--dashboard-neutral-accent-text);
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
+}
+
+#weightCard .dashboard-action:focus-visible,
+#bpCard .dashboard-action:focus-visible {
+    outline-color: var(--card-accent);
+}
+
+#exerciseCard {
+    --card-accent: #087f8c;
+    --card-accent-background: #e7f6f7;
+    --card-accent-border: #abdfe2;
+    --card-accent-text: #076875;
+}
+
+#bpCard {
+    --card-accent: #c45151;
+    --card-accent-background: #fceeee;
+    --card-accent-border: #efc1c1;
+    --card-accent-text: #a43e3e;
+}
+
+#dailyDiaryCard {
+    --card-accent: #c46a24;
+    --card-accent-background: #fff3e8;
+    --card-accent-border: #f2c9a6;
+    --card-accent-text: #a9571d;
+    border-left: 4px solid var(--card-accent);
+}
+
+#dailyDiaryCard .dashboard-card-header {
+    background: var(--card-accent-background);
+    border: 1px solid var(--card-accent-border);
+    border-radius: 10px 10px 0 0;
+    border-bottom-color: var(--card-accent-border);
+}
+
+#dailyDiaryCard .dashboard-card-title {
+    color: var(--card-accent-text);
+}
+
+#dailyDiaryCard .dashboard-module-icon {
+    background: var(--card-accent-background);
+    border: 2px solid var(--card-accent-border);
+    color: var(--card-accent-text);
+}
+
+#dailyDiaryCard .dashboard-action {
+    background: var(--card-accent-background);
+    border-color: var(--card-accent-border);
+    color: var(--card-accent-text);
+}
+
+#dailyDiaryCard .dashboard-action:hover,
+#dailyDiaryCard .dashboard-action:active {
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
+}
+
+#dailyDiaryCard .dashboard-action:focus-visible {
+    outline-color: var(--card-accent);
+}
+
+.medication-center-card {
+    --card-accent: var(--dashboard-primary-accent);
+    --card-accent-background: var(--dashboard-primary-accent-background);
+    --card-accent-border: var(--dashboard-primary-accent-border);
+    --card-accent-text: var(--dashboard-primary-accent-text);
+    border-left: 4px solid var(--card-accent);
+}
+
+.medication-center-card h2 {
+    color: var(--card-accent-text);
 }
 
 .summary-card {
