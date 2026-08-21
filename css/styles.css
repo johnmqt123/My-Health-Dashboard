@@ -603,6 +603,129 @@ header p {
     gap: 12px;
 }
 
+#nutritionHistorySection,
+#nutritionGoalsReferenceSection,
+#weightHistorySection,
+#dailyDiaryHistorySection,
+#exerciseHistorySection,
+#bpHistorySection {
+    border: 1px solid var(--dashboard-card-border);
+    border-left: 2px solid var(--archive-accent, var(--dashboard-card-border));
+    border-radius: var(--dashboard-card-radius);
+    box-shadow: var(--dashboard-card-elevation);
+}
+
+#nutritionHistorySection,
+#nutritionGoalsReferenceSection {
+    --archive-accent: var(--dashboard-green-accent);
+    --archive-accent-border: var(--dashboard-green-accent-border);
+    --archive-accent-text: var(--dashboard-green-accent-text);
+}
+
+#weightHistorySection {
+    --archive-accent: #5546a8;
+    --archive-accent-border: #c9c3ec;
+    --archive-accent-text: #44378b;
+}
+
+#dailyDiaryHistorySection {
+    --archive-accent: #c46a24;
+    --archive-accent-border: #f2c9a6;
+    --archive-accent-text: #a9571d;
+}
+
+#exerciseHistorySection {
+    --archive-accent: #087f8c;
+    --archive-accent-border: #abdfe2;
+    --archive-accent-text: #076875;
+}
+
+#bpHistorySection {
+    --archive-accent: #c45151;
+    --archive-accent-border: #efc1c1;
+    --archive-accent-text: #a43e3e;
+}
+
+#nutritionHistorySection .history-section-header,
+#nutritionGoalsReferenceSection .history-section-header,
+#weightHistorySection .history-section-header,
+#dailyDiaryHistorySection .history-section-header,
+#exerciseHistorySection .history-section-header,
+#bpHistorySection .history-section-header {
+    margin: 0;
+    padding: 0 0 8px 10px;
+    border-bottom: 1px solid var(--dashboard-card-border);
+    border-left: 3px solid var(--archive-accent);
+    color: var(--text);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: left;
+}
+
+#nutritionHistorySection .history-section-header,
+#nutritionGoalsReferenceSection .history-section-header,
+#weightHistorySection .history-section-header,
+#dailyDiaryHistorySection .history-section-header,
+#exerciseHistorySection .history-section-header,
+#bpHistorySection .history-section-header {
+    border-bottom-color: var(--archive-accent-border);
+}
+
+#nutritionHistorySection .nutrition-month-header,
+#nutritionGoalsReferenceSection .nutrition-goals-heading,
+#weightHistorySection .weight-month-header,
+#dailyDiaryHistorySection .diary-month-header,
+#exerciseHistorySection .exercise-month-header,
+#bpHistorySection .bp-month-header {
+    color: var(--archive-accent-text);
+}
+
+#nutritionHistorySection .nutrition-history-row,
+#weightHistorySection .weight-history-row,
+#exerciseHistorySection .exercise-history-row,
+#bpHistorySection .bp-history-row {
+    border-left: 2px solid var(--archive-accent-border);
+}
+
+#dailyDiaryHistorySection .diary-history-item {
+    border-left: 2px solid var(--archive-accent-border);
+}
+
+#nutritionHistorySection .nutrition-history-date,
+#weightHistorySection .weight-history-value,
+#exerciseHistorySection .exercise-history-reading,
+#bpHistorySection .bp-history-reading,
+#dailyDiaryHistorySection .diary-history-date {
+    color: var(--archive-accent-text);
+}
+
+#nutritionGoalsReferenceSection .nutrition-goals-block {
+    border-color: var(--dashboard-card-border);
+    box-shadow: none;
+}
+
+#nutritionGoalsReferenceSection .nutrition-goals-milestone-head,
+#nutritionGoalsReferenceSection .nutrition-projection-head {
+    color: var(--archive-accent-text);
+    border-bottom: 1px solid var(--archive-accent-border);
+}
+
+#nutritionGoalsReferenceSection .nutrition-goals-edit-button {
+    border: 1px solid var(--archive-accent-border);
+    background: var(--dashboard-action-background);
+    color: var(--archive-accent-text);
+    box-shadow: none;
+}
+
+#nutritionGoalsReferenceSection .nutrition-goals-edit-button:hover,
+#nutritionGoalsReferenceSection .nutrition-goals-edit-button:active {
+    background: var(--dashboard-green-accent-background);
+    border-color: var(--archive-accent);
+    color: var(--archive-accent-text);
+    transform: none;
+}
+
 #weightHistoryDisplay.weight-history-list {
     gap: 6px;
 }
