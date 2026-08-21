@@ -344,12 +344,6 @@ header p {
         transform: none;
     }
 
-    #dailyDiaryCard .dashboard-action:active {
-        background: var(--card-accent-background);
-        border-color: var(--card-accent-border);
-        color: var(--card-accent-text);
-        transform: none;
-    }
 }
 
 #exerciseCard {
@@ -406,6 +400,16 @@ header p {
 
 #dailyDiaryCard .dashboard-action:focus-visible {
     outline-color: var(--card-accent);
+}
+
+@media (hover: none) {
+    #dailyDiaryCard .dashboard-action:hover,
+    #dailyDiaryCard .dashboard-action:active {
+        background: var(--card-accent-background);
+        border-color: var(--card-accent-border);
+        color: var(--card-accent-text);
+        transform: none;
+    }
 }
 
 .medication-center-card {
