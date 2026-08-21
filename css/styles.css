@@ -1798,7 +1798,11 @@ header p {
 #bpDetailDeleteBtn,
 #deleteExerciseBtn,
 #exerciseDetailDeleteBtn {
-    background: #b91c1c;
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    font-weight: 600;
+    box-shadow: none;
 }
 
 #deleteWeightBtn:hover,
@@ -1807,7 +1811,55 @@ header p {
 #bpDetailDeleteBtn:hover,
 #deleteExerciseBtn:hover,
 #exerciseDetailDeleteBtn:hover {
-    background: #991b1b;
+    background: #fecdd3;
+    border-color: #9f1239;
+    color: #9f1239;
+    transform: none;
+    box-shadow: none;
+}
+
+#deleteWeightBtn:active,
+#weightDetailDeleteBtn:active,
+#deleteBpBtn:active,
+#bpDetailDeleteBtn:active,
+#deleteExerciseBtn:active,
+#exerciseDetailDeleteBtn:active {
+    background: #fecdd3;
+    border-color: #9f1239;
+    color: #9f1239;
+    transform: none;
+    box-shadow: none;
+}
+
+#deleteWeightBtn:focus-visible,
+#weightDetailDeleteBtn:focus-visible,
+#deleteBpBtn:focus-visible,
+#bpDetailDeleteBtn:focus-visible,
+#deleteExerciseBtn:focus-visible,
+#exerciseDetailDeleteBtn:focus-visible {
+    outline: 2px solid #9f1239;
+    outline-offset: 2px;
+}
+
+@media (hover: none) {
+    #deleteWeightBtn:hover,
+    #weightDetailDeleteBtn:hover,
+    #deleteBpBtn:hover,
+    #bpDetailDeleteBtn:hover,
+    #deleteExerciseBtn:hover,
+    #exerciseDetailDeleteBtn:hover,
+    #deleteWeightBtn:active,
+    #weightDetailDeleteBtn:active,
+    #deleteBpBtn:active,
+    #bpDetailDeleteBtn:active,
+    #deleteExerciseBtn:active,
+    #exerciseDetailDeleteBtn:active {
+        background: #fff1f2;
+        border-color: #fecdd3;
+        color: #9f1239;
+        transform: none;
+        box-shadow: none;
+    }
 }
 
 .history-entry {
