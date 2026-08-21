@@ -2913,6 +2913,35 @@ button:active,
 
 #medicationEditArea .medication-draft-remove-btn {
     min-width: 88px;
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+    font-weight: 600;
+}
+
+#medicationEditArea .medication-draft-remove-btn:hover,
+#medicationEditArea .medication-draft-remove-btn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#medicationEditArea .medication-draft-remove-btn:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+@media (hover: none) {
+    #medicationEditArea .medication-draft-remove-btn:hover,
+    #medicationEditArea .medication-draft-remove-btn:active {
+        background: var(--dashboard-primary-accent-background);
+        border-color: var(--dashboard-primary-accent-border);
+        color: var(--dashboard-primary-accent-text);
+        transform: none;
+    }
 }
 
 #medicationEditArea .grid-action-cell {
