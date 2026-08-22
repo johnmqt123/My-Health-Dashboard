@@ -12,6 +12,12 @@ function initZepboundCenter() {
         });
     }
 
+    const injectionMedicationDefinition = typeof getMedicationDefinition === "function"
+        ? getMedicationDefinition(injectionCompatibilityConfig.medicationName)
+        : { name: injectionCompatibilityConfig.medicationName };
+    const injectionMedicationName = injectionMedicationDefinition.name ||
+        injectionCompatibilityConfig.medicationName;
+
     function getInjectionCompatibilityConfig() {
         return injectionCompatibilityConfig;
     }
@@ -33,6 +39,38 @@ function initZepboundCenter() {
     const doseSelect = document.getElementById("doseSelect");
     const siteSelect = document.getElementById("siteSelect");
     const injectionNotesInput = document.getElementById("injectionNotes");
+    const zepboundMedicationCard = document.getElementById("zepboundMedicationCard");
+
+    if (zepboundMedicationCard) {
+        const cardHeading = zepboundMedicationCard.querySelector("h2");
+        const cardDescription = zepboundMedicationCard.querySelector("p");
+        const cardButton = document.getElementById("openZepboundModalBtn");
+
+        if (cardHeading) {
+            cardHeading.textContent = "💉 " + injectionMedicationName;
+        }
+
+        if (cardDescription) {
+            cardDescription.textContent = "Track injections, doses, rotation sites, and injection notes.";
+        }
+
+        if (cardButton) {
+            cardButton.textContent = "Open " + injectionMedicationName;
+        }
+    }
+
+    if (zepboundModal) {
+        const modalHeading = zepboundModal.querySelector(".zepbound-modal-header h2");
+        const modalDescription = zepboundModal.querySelector(".zepbound-modal-body > p");
+
+        if (modalHeading) {
+            modalHeading.textContent = "💉 " + injectionMedicationName + " Center";
+        }
+
+        if (modalDescription) {
+            modalDescription.textContent = "Record each " + injectionMedicationName + " injection.";
+        }
+    }
 
     function loadZepboundLegacyHistory() {
         return loadInjectionHistory(getInjectionCompatibilityConfig().legacyStorageKey, []);
