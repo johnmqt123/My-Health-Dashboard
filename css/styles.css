@@ -2611,8 +2611,8 @@ button:active,
 
 .zepbound-modal-header {
     display: grid;
-    gap: 10px;
-    margin-bottom: 12px;
+    gap: 6px;
+    margin-bottom: 8px;
 }
 
 .zepbound-modal-header h2 {
@@ -2625,7 +2625,7 @@ button:active,
 
 .zepbound-modal-body {
     display: grid;
-    gap: 10px;
+    gap: 6px;
 }
 
 #zepboundModal #historyInjectionSection,
