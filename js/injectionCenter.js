@@ -2,8 +2,17 @@ function createInjectionController(configuration) {
     const options = configuration || {};
     const elements = options.elements || {};
     const helpers = options.helpers || {};
+    const lifecycle = options.lifecycle || {};
+    const historyClasses = Object.assign({
+        entry: "injection-history-entry",
+        content: "injection-history-content",
+        actions: "injection-history-actions",
+        editButton: "injection-history-edit-btn",
+        deleteButton: "injection-history-delete-btn"
+    }, options.historyClasses || {});
     const medicationName = String(options.medicationName || "").trim();
     const route = options.route || "oral";
+    const requireDeleteConfirmation = options.requireDeleteConfirmation !== false;
 
     let history = [];
     let editingEntryIndex = null;
@@ -61,17 +70,17 @@ function createInjectionController(configuration) {
             const isSelected = selectedHistoryIndex !== null && selectedHistoryIndex === originalIndex;
 
             return `
-                <div class="injection-history-entry ${isSelected ? "is-selected" : ""}" data-index="${originalIndex}" tabindex="0" role="button" aria-expanded="${isSelected ? "true" : "false"}">
-                    <div class="injection-history-content">
+                <div class="${historyClasses.entry} ${isSelected ? "is-selected" : ""}" data-index="${originalIndex}" tabindex="0" role="button" aria-expanded="${isSelected ? "true" : "false"}">
+                    <div class="${historyClasses.content}">
                         <p><strong>Date:</strong> ${entry.date || ""}</p>
                         <p><strong>Time:</strong> ${entry.time || ""}</p>
                         <p><strong>Dose:</strong> ${entry.dose || ""}</p>
                         <p><strong>Site:</strong> ${entry.site || ""}</p>
                         ${notesMarkup}
                     </div>
-                    <div class="history-action-row injection-history-actions" aria-hidden="${isSelected ? "false" : "true"}">
-                        <button type="button" class="history-action-btn edit injection-history-edit-btn" data-index="${originalIndex}">Edit</button>
-                        <button type="button" class="history-action-btn delete injection-history-delete-btn" data-index="${originalIndex}">Delete</button>
+                    <div class="history-action-row ${historyClasses.actions}" aria-hidden="${isSelected ? "false" : "true"}">
+                        <button type="button" class="history-action-btn edit ${historyClasses.editButton}" data-index="${originalIndex}">Edit</button>
+                        <button type="button" class="history-action-btn delete ${historyClasses.deleteButton}" data-index="${originalIndex}">Delete</button>
                     </div>
                 </div>
             `;
@@ -147,6 +156,10 @@ function createInjectionController(configuration) {
             return;
         }
 
+        if (typeof lifecycle.onOpen === "function") {
+            lifecycle.onOpen();
+        }
+
         elements.centerModal.style.display = options.centerOpenDisplay || "flex";
         if (elements.centerContent) {
             elements.centerContent.scrollTop = 0;
@@ -159,6 +172,10 @@ function createInjectionController(configuration) {
             return;
         }
 
+        if (typeof lifecycle.onClose === "function") {
+            lifecycle.onClose();
+        }
+
         elements.centerModal.style.display = options.centerClosedDisplay || "none";
 
         if (elements.historySection) {
@@ -169,18 +186,30 @@ function createInjectionController(configuration) {
             elements.historyButton.textContent = options.historyButtonLabel || "History";
         }
 
+        closeEntryModal();
+    }
+
+    function openEntryModal() {
+        if (typeof lifecycle.onEntryOpen === "function") {
+            lifecycle.onEntryOpen();
+        }
+
         if (elements.entryModal) {
-            elements.entryModal.style.display = "none";
+            elements.entryModal.style.display = options.entryOpenDisplay || "block";
+        }
+    }
+
+    function closeEntryModal() {
+        if (typeof lifecycle.onEntryClose === "function") {
+            lifecycle.onEntryClose();
+        }
+
+        if (elements.entryModal) {
+            elements.entryModal.style.display = options.entryClosedDisplay || "none";
         }
 
         clearFields();
         editingEntryIndex = null;
-    }
-
-    function openEntryModal() {
-        if (elements.entryModal) {
-            elements.entryModal.style.display = options.entryOpenDisplay || "block";
-        }
     }
 
     function readEntry() {
@@ -203,17 +232,17 @@ function createInjectionController(configuration) {
         }
 
         options.saveHistory(history);
-        if (elements.entryModal) {
-            elements.entryModal.style.display = "none";
-        }
-        clearFields();
-        editingEntryIndex = null;
+        closeEntryModal();
         renderLatestInjection();
         renderHistory();
     }
 
     function deleteEntry(index) {
-        if (typeof options.confirmDelete === "function" && !options.confirmDelete()) {
+        if (requireDeleteConfirmation && typeof options.confirmDelete !== "function") {
+            return;
+        }
+
+        if (requireDeleteConfirmation && !options.confirmDelete()) {
             return;
         }
 
@@ -225,9 +254,9 @@ function createInjectionController(configuration) {
     }
 
     function handleHistoryClick(event) {
-        const editButton = event.target.closest(".injection-history-edit-btn");
-        const deleteButton = event.target.closest(".injection-history-delete-btn");
-        const historyEntry = event.target.closest(".injection-history-entry");
+        const editButton = event.target.closest("." + historyClasses.editButton);
+        const deleteButton = event.target.closest("." + historyClasses.deleteButton);
+        const historyEntry = event.target.closest("." + historyClasses.entry);
 
         if (editButton) {
             populateForEdit(Number(editButton.getAttribute("data-index")));
@@ -245,7 +274,7 @@ function createInjectionController(configuration) {
     }
 
     function handleHistoryKeydown(event) {
-        const historyEntry = event.target.closest(".injection-history-entry");
+        const historyEntry = event.target.closest("." + historyClasses.entry);
         if (!historyEntry) {
             return;
         }
@@ -298,17 +327,19 @@ function createInjectionController(configuration) {
 
         if (elements.cancelButton) {
             elements.cancelButton.addEventListener("click", function () {
-                if (elements.entryModal) {
-                    elements.entryModal.style.display = "none";
-                }
-                clearFields();
-                editingEntryIndex = null;
+                closeEntryModal();
             });
         }
 
         if (elements.historyDisplay) {
             elements.historyDisplay.addEventListener("click", handleHistoryClick);
             elements.historyDisplay.addEventListener("keydown", handleHistoryKeydown);
+        }
+
+        if (elements.centerModal && typeof lifecycle.onCenterTouchMove === "function") {
+            elements.centerModal.addEventListener("touchmove", lifecycle.onCenterTouchMove, {
+                passive: false
+            });
         }
 
         initialized = true;
