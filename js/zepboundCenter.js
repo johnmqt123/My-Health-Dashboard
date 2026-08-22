@@ -5,6 +5,55 @@ function initZepboundCenter() {
         route: "injection"
     };
 
+    const zepboundMedicationCard = document.getElementById("zepboundMedicationCard");
+
+    function hasConfiguredZepboundMedication() {
+        const schedule = Array.isArray(personalMedicationSchedule)
+            ? personalMedicationSchedule
+            : [];
+        const expectedName = injectionCompatibilityConfig.medicationName.toLowerCase();
+
+        return schedule.some(function (group) {
+            return Array.isArray(group && group.medications) &&
+                group.medications.some(function (medicationName) {
+                    return String(medicationName || "").trim().toLowerCase() === expectedName;
+                });
+        });
+    }
+
+    function hasLegacyZepboundHistory() {
+        const rawHistory = localStorage.getItem(injectionCompatibilityConfig.legacyStorageKey);
+        if (!rawHistory) {
+            return false;
+        }
+
+        let parsedHistory;
+        try {
+            parsedHistory = JSON.parse(rawHistory);
+        } catch (error) {
+            return false;
+        }
+
+        return Array.isArray(parsedHistory) && parsedHistory.some(function (entry) {
+            return entry && typeof entry === "object" && !Array.isArray(entry);
+        });
+    }
+
+    const shouldShowZepbound = hasConfiguredZepboundMedication() ||
+        hasLegacyZepboundHistory();
+
+    if (!shouldShowZepbound) {
+        if (zepboundMedicationCard) {
+            zepboundMedicationCard.style.display = "none";
+        }
+
+        return;
+    }
+
+    if (zepboundMedicationCard) {
+        zepboundMedicationCard.style.display = "";
+    }
+
     if (typeof registerMedicationDefinition === "function") {
         registerMedicationDefinition({
             name: injectionCompatibilityConfig.medicationName,
@@ -39,8 +88,6 @@ function initZepboundCenter() {
     const doseSelect = document.getElementById("doseSelect");
     const siteSelect = document.getElementById("siteSelect");
     const injectionNotesInput = document.getElementById("injectionNotes");
-    const zepboundMedicationCard = document.getElementById("zepboundMedicationCard");
-
     if (zepboundMedicationCard) {
         const cardHeading = zepboundMedicationCard.querySelector("h2");
         const cardDescription = zepboundMedicationCard.querySelector("p");
