@@ -80,132 +80,13 @@ function initZepboundCenter() {
         return saveInjectionHistory(getInjectionCompatibilityConfig().legacyStorageKey, historyArray);
     }
 
-    let history = loadZepboundLegacyHistory();
-    let editingEntryIndex = null;
-    let selectedHistoryIndex = null;
     let zepboundLockedScrollTop = 0;
-
-    function renderLatestInjection() {
-        if (!injectionLogDisplay) {
-            return;
-        }
-
-        if (!history.length) {
-            injectionLogDisplay.innerHTML = "";
-            return;
-        }
-
-        const latest = history[history.length - 1];
-        injectionLogDisplay.innerHTML = `
-            <h3>Last Injection</h3>
-            <p><strong>Date:</strong> ${latest.date}</p>
-            <p><strong>Time:</strong> ${latest.time}</p>
-            <p><strong>Dose:</strong> ${latest.dose}</p>
-            <p><strong>Site:</strong> ${latest.site}</p>
-        `;
-    }
-
-    function clearModalFields() {
-        if (injectionDateInput) {
-            injectionDateInput.value = "";
-        }
-
-        if (injectionTimeInput) {
-            injectionTimeInput.value = "";
-        }
-
-        if (doseSelect) {
-            doseSelect.value = "2.5 mg";
-        }
-
-        if (siteSelect) {
-            siteSelect.value = "Left Abdomen";
-        }
-
-        if (injectionNotesInput) {
-            injectionNotesInput.value = "";
-        }
-    }
-
-    function setSelectedHistoryEntry(index) {
-        selectedHistoryIndex = index === selectedHistoryIndex ? null : index;
-        renderHistory();
-    }
-
-    function renderHistory() {
-        if (!historyInjectionSection || !historyInjectionDisplay) {
-            return;
-        }
-
-        const reversedHistory = [...history].reverse();
-
-        if (!reversedHistory.length) {
-            historyInjectionDisplay.innerHTML = "<p>No injection history yet.</p>";
-            selectedHistoryIndex = null;
-            return;
-        }
-
-        historyInjectionDisplay.innerHTML = reversedHistory.map(function (entry, index) {
-            const notesMarkup = entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : "";
-            const originalIndex = history.length - 1 - index;
-            const isSelected = selectedHistoryIndex !== null && selectedHistoryIndex === originalIndex;
-            return `
-                <div class="zepbound-history-entry ${isSelected ? "is-selected" : ""}" data-index="${originalIndex}" tabindex="0" role="button" aria-expanded="${isSelected ? "true" : "false"}">
-                    <div class="zepbound-history-content">
-                        <p><strong>Date:</strong> ${entry.date}</p>
-                        <p><strong>Time:</strong> ${entry.time}</p>
-                        <p><strong>Dose:</strong> ${entry.dose}</p>
-                        <p><strong>Site:</strong> ${entry.site}</p>
-                        ${notesMarkup}
-                    </div>
-                    <div class="history-action-row zepbound-history-actions" aria-hidden="${isSelected ? "false" : "true"}">
-                        <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
-                        <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
-                    </div>
-                </div>
-            `;
-        }).join("");
-    }
 
     function lockZepboundModalBackgroundScroll() {
         zepboundLockedScrollTop = window.scrollY || window.pageYOffset || 0;
         document.documentElement.classList.add("zepbound-modal-open");
         document.body.classList.add("zepbound-modal-open");
         document.body.style.top = "-" + zepboundLockedScrollTop + "px";
-    }
-
-    function populateModalForEdit(index) {
-        const entry = history[index];
-
-        if (!entry) {
-            return;
-        }
-
-        editingEntryIndex = index;
-
-        if (injectionDateInput) {
-            injectionDateInput.value = entry.date || "";
-        }
-
-        if (injectionTimeInput) {
-            injectionTimeInput.value = entry.time || "";
-        }
-
-        if (doseSelect) {
-            doseSelect.value = entry.dose || "2.5 mg";
-        }
-
-        if (siteSelect) {
-            siteSelect.value = entry.site || "Left Abdomen";
-        }
-
-        if (injectionNotesInput) {
-            injectionNotesInput.value = entry.notes || "";
-        }
-
-        if (injectionModal) {
-            injectionModal.style.display = "block";
-        }
     }
 
     function unlockZepboundModalBackgroundScroll() {
@@ -224,6 +105,8 @@ function initZepboundCenter() {
             confirmDelete: confirmHistoryDelete,
             defaultDose: "2.5 mg",
             defaultSite: "Left Abdomen",
+            historyButtonLabel: "📊 History",
+            hideHistoryButtonLabel: "Hide History",
             elements: {
                 openButton: openZepboundModalBtn,
                 closeButton: closeZepboundModalBtn,
@@ -271,185 +154,24 @@ function initZepboundCenter() {
         };
     }
 
-    window.createZepboundInjectionProvider = createZepboundInjectionProvider;
+    const providerConfiguration = createZepboundInjectionProvider();
+    const injectionController = typeof createInjectionController === "function"
+        ? createInjectionController(providerConfiguration)
+        : null;
 
-    function resetZepboundModalScrollToTop() {
-        if (!zepboundModalContent) {
-            return;
-        }
-
-        zepboundModalContent.scrollTop = 0;
-    }
-
-    function isZepboundModalOpen() {
-        return !!(zepboundModal && zepboundModal.style.display === "flex");
-    }
-
-    function openZepboundModal() {
-        if (!zepboundModal) {
-            return;
-        }
-
-        zepboundModal.style.display = "flex";
-        resetZepboundModalScrollToTop();
-        lockZepboundModalBackgroundScroll();
-        renderLatestInjection();
-    }
-
-    function closeZepboundModal() {
-        if (!zepboundModal || !isZepboundModalOpen()) {
-            return;
-        }
-
-        zepboundModal.style.display = "none";
-
-        if (historyInjectionSection) {
-            historyInjectionSection.style.display = "none";
-        }
-
-        if (historyInjectionButton) {
-            historyInjectionButton.textContent = "📊 History";
-        }
-
-        if (injectionModal) {
-            injectionModal.style.display = "none";
-        }
-
-        clearModalFields();
-        editingEntryIndex = null;
-        unlockZepboundModalBackgroundScroll();
-    }
-
-    if (!openZepboundModalBtn || !zepboundModal || !closeZepboundModalBtn) {
+    if (!injectionController || !injectionController.initialize()) {
         return;
     }
 
-    renderLatestInjection();
+    window.createZepboundInjectionProvider = createZepboundInjectionProvider;
+    window.closeZepboundModal = function () {
+        if (!zepboundModal || zepboundModal.style.display !== "flex") {
+            return;
+        }
 
-    openZepboundModalBtn.addEventListener("click", function () {
-        openZepboundModal();
-    });
-
-    closeZepboundModalBtn.addEventListener("click", function () {
-        closeZepboundModal();
-    });
-
-    if (logInjectionButton && injectionModal) {
-        logInjectionButton.addEventListener("click", function () {
-            injectionModal.style.display = "block";
-        });
-    }
-
-    if (historyInjectionButton && historyInjectionSection && historyInjectionDisplay) {
-        historyInjectionButton.addEventListener("click", function () {
-            const isHidden = historyInjectionSection.style.display === "none";
-            historyInjectionSection.style.display = isHidden ? "block" : "none";
-            historyInjectionButton.textContent = isHidden ? "Hide History" : "📊 History";
-
-            if (isHidden) {
-                renderHistory();
-            }
-        });
-    }
-
-    if (saveInjectionBtn && injectionModal) {
-        saveInjectionBtn.addEventListener("click", function () {
-            const rawEntry = {
-                date: injectionDateInput ? injectionDateInput.value : "",
-                time: injectionTimeInput ? injectionTimeInput.value : "",
-                dose: doseSelect ? doseSelect.value : "",
-                site: siteSelect ? siteSelect.value : "",
-                notes: injectionNotesInput ? injectionNotesInput.value : ""
-            };
-            const injectionEntry = createInjectionEntry(rawEntry);
-
-            if (editingEntryIndex !== null && history[editingEntryIndex]) {
-                history = updateInjectionEntry(history, editingEntryIndex, injectionEntry);
-            } else {
-                history.push(injectionEntry);
-            }
-
-            saveZepboundLegacyHistory(history);
-            injectionModal.style.display = "none";
-            clearModalFields();
-            editingEntryIndex = null;
-            renderLatestInjection();
-
-            if (historyInjectionSection && historyInjectionSection.style.display === "block") {
-                renderHistory();
-            }
-        });
-    }
-
-    if (cancelInjectionBtn && injectionModal) {
-        cancelInjectionBtn.addEventListener("click", function () {
-            injectionModal.style.display = "none";
-            clearModalFields();
-            editingEntryIndex = null;
-        });
-    }
-
-    if (historyInjectionDisplay) {
-        historyInjectionDisplay.addEventListener("click", function (event) {
-            const editButton = event.target.closest(".history-edit-btn");
-            const deleteButton = event.target.closest(".history-delete-btn");
-            const historyEntry = event.target.closest(".zepbound-history-entry");
-
-            if (editButton) {
-                const index = Number(editButton.getAttribute("data-index"));
-                populateModalForEdit(index);
-                return;
-            }
-
-            if (deleteButton) {
-                const index = Number(deleteButton.getAttribute("data-index"));
-                if (confirmHistoryDelete()) {
-                    history = deleteInjectionEntry(history, index);
-                    saveZepboundLegacyHistory(history);
-                    selectedHistoryIndex = null;
-                    renderHistory();
-                    renderLatestInjection();
-                }
-                return;
-            }
-
-            if (historyEntry) {
-                const index = Number(historyEntry.getAttribute("data-index"));
-                setSelectedHistoryEntry(index);
-            }
-        });
-
-        historyInjectionDisplay.addEventListener("keydown", function (event) {
-            const historyEntry = event.target.closest(".zepbound-history-entry");
-            if (!historyEntry) {
-                return;
-            }
-
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                const index = Number(historyEntry.getAttribute("data-index"));
-                setSelectedHistoryEntry(index);
-            }
-        });
-    }
-
-    if (zepboundModal) {
-        zepboundModal.addEventListener("touchmove", function (event) {
-            if (!zepboundModalContent) {
-                return;
-            }
-
-            if (!zepboundModalContent.contains(event.target)) {
-                event.preventDefault();
-            }
-        }, {
-            passive: false
-        });
-    }
-
-    window.closeZepboundModal = closeZepboundModal;
-    window.isZepboundModalOpen = isZepboundModalOpen;
-
-    renderLatestInjection();
-    renderHistory();
+        injectionController.close();
+    };
+    window.isZepboundModalOpen = function () {
+        return !!(zepboundModal && zepboundModal.style.display === "flex");
+    };
 }
