@@ -222,6 +222,17 @@ function initZepboundCenter() {
         window.medicationCenterCapabilities.openInjection = function () {
             injectionController.open();
         };
+
+        if (!hasConfiguredZepbound && hasLegacyHistory) {
+            window.medicationCenterCapabilities.getInjectionAccess = function () {
+                return {
+                    medicationName: injectionMedicationName,
+                    open: function () {
+                        injectionController.open();
+                    }
+                };
+            };
+        }
     }
     window.isZepboundModalOpen = function () {
         return !!(zepboundModal && zepboundModal.style.display === "flex");

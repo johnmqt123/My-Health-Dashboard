@@ -713,6 +713,15 @@ function buildMedicationList() {
         medicationEditor.appendChild(empty);
     }
 
+    const injectionAccess = window.medicationCenterCapabilities &&
+        typeof window.medicationCenterCapabilities.getInjectionAccess === "function"
+        ? window.medicationCenterCapabilities.getInjectionAccess()
+        : null;
+    const canOpenInjection = injectionAccess &&
+        typeof injectionAccess.open === "function" &&
+        typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
+        window.medicationCenterCapabilities.isInjectableMedication(injectionAccess.medicationName);
+
     const sortedSchedule = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.sortMedicationScheduleItems === "function"
         ? window.medicationScheduleCompat.sortMedicationScheduleItems(personalMedicationSchedule, function (group) {
             return window.medicationScheduleCompat.getMedicationScheduleItemMinutes
@@ -789,6 +798,40 @@ function buildMedicationList() {
         medicationEditor.appendChild(section);
 
     });
+
+    if (canOpenInjection) {
+        const injectionSection = document.createElement("section");
+        injectionSection.className = "medication-schedule-section";
+
+        const injectionTitle = document.createElement("h4");
+        injectionTitle.className = "medication-schedule-title";
+        injectionTitle.textContent = injectionAccess.medicationName;
+        injectionSection.appendChild(injectionTitle);
+
+        const injectionList = document.createElement("ul");
+        injectionList.className = "medication-schedule-list";
+
+        const injectionItem = document.createElement("li");
+        injectionItem.textContent = injectionAccess.medicationName;
+        injectionItem.tabIndex = 0;
+        injectionItem.setAttribute("role", "button");
+        injectionItem.setAttribute("aria-label", "Open injection tracking for " + injectionAccess.medicationName);
+        injectionItem.addEventListener("click", function () {
+            injectionAccess.open();
+        });
+        injectionItem.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            event.preventDefault();
+            injectionAccess.open();
+        });
+
+        injectionList.appendChild(injectionItem);
+        injectionSection.appendChild(injectionList);
+        medicationEditor.appendChild(injectionSection);
+    }
 
     const addTimeContainer = document.createElement("div");
     addTimeContainer.className = "add-medication-time-block";
