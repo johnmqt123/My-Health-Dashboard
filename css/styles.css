@@ -2723,8 +2723,11 @@ button:active,
 
 #zepboundModal #historyInjectionDisplay .zepbound-history-actions {
     display: none;
+    flex-direction: row;
+    flex-wrap: nowrap;
     justify-content: flex-end;
-    gap: 6px;
+    align-items: center;
+    gap: 8px;
     margin-top: 6px;
 }
 
