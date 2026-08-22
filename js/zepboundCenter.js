@@ -1,4 +1,5 @@
 function initZepboundCenter() {
+    const ZEPBOUND_LEGACY_HISTORY_KEY = "zepboundInjectionHistory";
     const openZepboundModalBtn = document.getElementById("openZepboundModalBtn");
     const zepboundModal = document.getElementById("zepboundModal");
     const zepboundModalContent = document.getElementById("zepboundModalContent");
@@ -16,7 +17,16 @@ function initZepboundCenter() {
     const doseSelect = document.getElementById("doseSelect");
     const siteSelect = document.getElementById("siteSelect");
     const injectionNotesInput = document.getElementById("injectionNotes");
-    let history = loadData("zepboundInjectionHistory", []);
+
+    function loadZepboundLegacyHistory() {
+        return loadInjectionHistory(ZEPBOUND_LEGACY_HISTORY_KEY, []);
+    }
+
+    function saveZepboundLegacyHistory(historyArray) {
+        return saveInjectionHistory(ZEPBOUND_LEGACY_HISTORY_KEY, historyArray);
+    }
+
+    let history = loadZepboundLegacyHistory();
     let editingEntryIndex = null;
     let selectedHistoryIndex = null;
     let zepboundLockedScrollTop = 0;
@@ -232,21 +242,22 @@ function initZepboundCenter() {
 
     if (saveInjectionBtn && injectionModal) {
         saveInjectionBtn.addEventListener("click", function () {
-            const injectionEntry = {
+            const rawEntry = {
                 date: injectionDateInput ? injectionDateInput.value : "",
                 time: injectionTimeInput ? injectionTimeInput.value : "",
                 dose: doseSelect ? doseSelect.value : "",
                 site: siteSelect ? siteSelect.value : "",
                 notes: injectionNotesInput ? injectionNotesInput.value : ""
             };
+            const injectionEntry = createInjectionEntry(rawEntry);
 
             if (editingEntryIndex !== null && history[editingEntryIndex]) {
-                history[editingEntryIndex] = injectionEntry;
+                history = updateInjectionEntry(history, editingEntryIndex, injectionEntry);
             } else {
                 history.push(injectionEntry);
             }
 
-            saveData("zepboundInjectionHistory", history);
+            saveZepboundLegacyHistory(history);
             injectionModal.style.display = "none";
             clearModalFields();
             editingEntryIndex = null;
@@ -281,8 +292,8 @@ function initZepboundCenter() {
             if (deleteButton) {
                 const index = Number(deleteButton.getAttribute("data-index"));
                 if (confirmHistoryDelete()) {
-                    history.splice(index, 1);
-                    saveData("zepboundInjectionHistory", history);
+                    history = deleteInjectionEntry(history, index);
+                    saveZepboundLegacyHistory(history);
                     selectedHistoryIndex = null;
                     renderHistory();
                     renderLatestInjection();

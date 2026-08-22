@@ -1793,3 +1793,6 @@ The goal is for the dashboard to feel more like a polished health app and less l
 
 ### Implementation Approach
 Treat this as a future UI redesign project rather than a quick isolated CSS change. Review all dashboard modules together so the final design is consistent across the entire Home screen.
+Idea: Make Medication Center expand in place
+
+Change Medication Center navigation so tapping the Medication Center chevron expands/collapses the section in its current position rather than jumping the user to the bottom of the application. Preserve the existing close/back-to-top functionality as a secondary navigation option. Audit the current implementation before changing it, and consider whether this should become the standard expandable-section pattern across the dashboard.
