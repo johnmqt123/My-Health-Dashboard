@@ -18,6 +18,7 @@ function initZepboundCenter() {
     const injectionNotesInput = document.getElementById("injectionNotes");
     let history = loadData("zepboundInjectionHistory", []);
     let editingEntryIndex = null;
+    let selectedHistoryIndex = null;
     let zepboundLockedScrollTop = 0;
 
     function renderLatestInjection() {
@@ -62,6 +63,11 @@ function initZepboundCenter() {
         }
     }
 
+    function setSelectedHistoryEntry(index) {
+        selectedHistoryIndex = index === selectedHistoryIndex ? null : index;
+        renderHistory();
+    }
+
     function renderHistory() {
         if (!historyInjectionSection || !historyInjectionDisplay) {
             return;
@@ -71,20 +77,24 @@ function initZepboundCenter() {
 
         if (!reversedHistory.length) {
             historyInjectionDisplay.innerHTML = "<p>No injection history yet.</p>";
+            selectedHistoryIndex = null;
             return;
         }
 
         historyInjectionDisplay.innerHTML = reversedHistory.map(function (entry, index) {
             const notesMarkup = entry.notes ? `<p><strong>Notes:</strong> ${entry.notes}</p>` : "";
             const originalIndex = history.length - 1 - index;
+            const isSelected = selectedHistoryIndex !== null && selectedHistoryIndex === originalIndex;
             return `
-                <div style="margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">
-                    <p><strong>Date:</strong> ${entry.date}</p>
-                    <p><strong>Time:</strong> ${entry.time}</p>
-                    <p><strong>Dose:</strong> ${entry.dose}</p>
-                    <p><strong>Site:</strong> ${entry.site}</p>
-                    ${notesMarkup}
-                    <div class="history-action-row">
+                <div class="zepbound-history-entry ${isSelected ? "is-selected" : ""}" data-index="${originalIndex}" tabindex="0" role="button" aria-expanded="${isSelected ? "true" : "false"}">
+                    <div class="zepbound-history-content">
+                        <p><strong>Date:</strong> ${entry.date}</p>
+                        <p><strong>Time:</strong> ${entry.time}</p>
+                        <p><strong>Dose:</strong> ${entry.dose}</p>
+                        <p><strong>Site:</strong> ${entry.site}</p>
+                        ${notesMarkup}
+                    </div>
+                    <div class="history-action-row zepbound-history-actions" aria-hidden="${isSelected ? "false" : "true"}">
                         <button type="button" class="history-action-btn edit history-edit-btn" data-index="${originalIndex}">Edit</button>
                         <button type="button" class="history-action-btn delete history-delete-btn" data-index="${originalIndex}">Delete</button>
                     </div>
@@ -260,6 +270,7 @@ function initZepboundCenter() {
         historyInjectionDisplay.addEventListener("click", function (event) {
             const editButton = event.target.closest(".history-edit-btn");
             const deleteButton = event.target.closest(".history-delete-btn");
+            const historyEntry = event.target.closest(".zepbound-history-entry");
 
             if (editButton) {
                 const index = Number(editButton.getAttribute("data-index"));
@@ -272,9 +283,29 @@ function initZepboundCenter() {
                 if (confirmHistoryDelete()) {
                     history.splice(index, 1);
                     saveData("zepboundInjectionHistory", history);
+                    selectedHistoryIndex = null;
                     renderHistory();
                     renderLatestInjection();
                 }
+                return;
+            }
+
+            if (historyEntry) {
+                const index = Number(historyEntry.getAttribute("data-index"));
+                setSelectedHistoryEntry(index);
+            }
+        });
+
+        historyInjectionDisplay.addEventListener("keydown", function (event) {
+            const historyEntry = event.target.closest(".zepbound-history-entry");
+            if (!historyEntry) {
+                return;
+            }
+
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                const index = Number(historyEntry.getAttribute("data-index"));
+                setSelectedHistoryEntry(index);
             }
         });
     }
