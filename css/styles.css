@@ -2670,14 +2670,32 @@ button:active,
 }
 
 #zepboundModal #historyInjectionDisplay .zepbound-history-entry {
+    position: relative;
     display: block;
     margin: 0 0 6px;
-    padding: 8px 10px 7px;
+    padding: 8px 32px 7px 10px;
     border: 1px solid var(--dashboard-card-border);
     border-radius: 10px;
     background: #fff;
     cursor: pointer;
     transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+
+#zepboundModal #historyInjectionDisplay .zepbound-history-entry::after {
+    content: "▸";
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    font-size: 1.35rem;
+    line-height: 1;
+    color: var(--zepbound-history-accent);
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+#zepboundModal #historyInjectionDisplay .zepbound-history-entry.is-selected::after {
+    content: "▾";
 }
 
 #zepboundModal #historyInjectionDisplay .zepbound-history-entry:focus-visible {
