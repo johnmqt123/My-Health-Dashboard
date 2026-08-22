@@ -215,6 +215,64 @@ function initZepboundCenter() {
         window.scrollTo(0, zepboundLockedScrollTop);
     }
 
+    function createZepboundInjectionProvider() {
+        return {
+            medicationName: injectionCompatibilityConfig.medicationName,
+            route: injectionCompatibilityConfig.route,
+            loadHistory: loadZepboundLegacyHistory,
+            saveHistory: saveZepboundLegacyHistory,
+            confirmDelete: confirmHistoryDelete,
+            defaultDose: "2.5 mg",
+            defaultSite: "Left Abdomen",
+            elements: {
+                openButton: openZepboundModalBtn,
+                closeButton: closeZepboundModalBtn,
+                centerModal: zepboundModal,
+                centerContent: zepboundModalContent,
+                logButton: logInjectionButton,
+                historyButton: historyInjectionButton,
+                historySection: historyInjectionSection,
+                historyDisplay: historyInjectionDisplay,
+                entryModal: injectionModal,
+                saveButton: saveInjectionBtn,
+                cancelButton: cancelInjectionBtn,
+                injectionLogDisplay: injectionLogDisplay,
+                dateInput: injectionDateInput,
+                timeInput: injectionTimeInput,
+                doseSelect: doseSelect,
+                siteSelect: siteSelect,
+                notesInput: injectionNotesInput
+            },
+            helpers: {
+                createInjectionEntry: createInjectionEntry,
+                updateInjectionEntry: updateInjectionEntry,
+                deleteInjectionEntry: deleteInjectionEntry
+            },
+            historyClasses: {
+                entry: "zepbound-history-entry",
+                content: "zepbound-history-content",
+                actions: "zepbound-history-actions",
+                editButton: "history-edit-btn",
+                deleteButton: "history-delete-btn"
+            },
+            lifecycle: {
+                onOpen: lockZepboundModalBackgroundScroll,
+                onClose: unlockZepboundModalBackgroundScroll,
+                onCenterTouchMove: function (event) {
+                    if (!zepboundModalContent) {
+                        return;
+                    }
+
+                    if (!zepboundModalContent.contains(event.target)) {
+                        event.preventDefault();
+                    }
+                }
+            }
+        };
+    }
+
+    window.createZepboundInjectionProvider = createZepboundInjectionProvider;
+
     function resetZepboundModalScrollToTop() {
         if (!zepboundModalContent) {
             return;
