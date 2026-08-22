@@ -2612,7 +2612,7 @@ button:active,
 .zepbound-modal-header {
     display: grid;
     gap: 6px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
 }
 
 .zepbound-modal-header h2 {
@@ -2625,7 +2625,7 @@ button:active,
 
 .zepbound-modal-body {
     display: grid;
-    gap: 6px;
+    gap: 4px;
 }
 
 .zepbound-modal-body > p {
