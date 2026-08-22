@@ -721,6 +721,8 @@ function buildMedicationList() {
         typeof injectionAccess.open === "function" &&
         typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
         window.medicationCenterCapabilities.isInjectableMedication(injectionAccess.medicationName);
+    const injectableMedications = [];
+    const injectableMedicationKeys = new Set();
 
     const sortedSchedule = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.sortMedicationScheduleItems === "function"
         ? window.medicationScheduleCompat.sortMedicationScheduleItems(personalMedicationSchedule, function (group) {
@@ -747,35 +749,27 @@ function buildMedicationList() {
 
         if (Array.isArray(group.medications) && group.medications.length) {
             group.medications.forEach(function (medicationName) {
-                const item = document.createElement("li");
-                item.textContent = medicationName;
-
                 const isInjectable = window.medicationCenterCapabilities &&
                     typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
                     window.medicationCenterCapabilities.isInjectableMedication(medicationName);
-                const openInjection = window.medicationCenterCapabilities &&
-                    typeof window.medicationCenterCapabilities.openInjection === "function"
-                    ? window.medicationCenterCapabilities.openInjection
-                    : null;
 
-                if (isInjectable && openInjection) {
-                    item.tabIndex = 0;
-                    item.setAttribute("role", "button");
-                    item.setAttribute("aria-label", "Open injection tracking for " + medicationName);
-
-                    item.addEventListener("click", function () {
-                        openInjection();
-                    });
-
-                    item.addEventListener("keydown", function (event) {
-                        if (event.key !== "Enter" && event.key !== " ") {
-                            return;
-                        }
-
-                        event.preventDefault();
-                        openInjection();
-                    });
+                if (isInjectable) {
+                    const medicationKey = String(medicationName || "").trim().toLowerCase();
+                    if (!injectableMedicationKeys.has(medicationKey)) {
+                        injectableMedicationKeys.add(medicationKey);
+                        injectableMedications.push({
+                            medicationName: medicationName,
+                            open: window.medicationCenterCapabilities &&
+                                typeof window.medicationCenterCapabilities.openInjection === "function"
+                                ? window.medicationCenterCapabilities.openInjection
+                                : null
+                        });
+                    }
+                    return;
                 }
+
+                const item = document.createElement("li");
+                item.textContent = medicationName;
 
                 list.appendChild(item);
             });
@@ -799,36 +793,53 @@ function buildMedicationList() {
 
     });
 
-    if (canOpenInjection) {
+    if (canOpenInjection && !injectableMedicationKeys.has(
+        String(injectionAccess.medicationName || "").trim().toLowerCase()
+    )) {
+        injectableMedicationKeys.add(
+            String(injectionAccess.medicationName || "").trim().toLowerCase()
+        );
+        injectableMedications.push({
+            medicationName: injectionAccess.medicationName,
+            open: injectionAccess.open
+        });
+    }
+
+    if (injectableMedications.length) {
         const injectionSection = document.createElement("section");
         injectionSection.className = "medication-schedule-section";
 
         const injectionTitle = document.createElement("h4");
         injectionTitle.className = "medication-schedule-title";
-        injectionTitle.textContent = injectionAccess.medicationName;
+        injectionTitle.textContent = "Injectable Medications";
         injectionSection.appendChild(injectionTitle);
 
         const injectionList = document.createElement("ul");
         injectionList.className = "medication-schedule-list";
 
-        const injectionItem = document.createElement("li");
-        injectionItem.textContent = injectionAccess.medicationName;
-        injectionItem.tabIndex = 0;
-        injectionItem.setAttribute("role", "button");
-        injectionItem.setAttribute("aria-label", "Open injection tracking for " + injectionAccess.medicationName);
-        injectionItem.addEventListener("click", function () {
-            injectionAccess.open();
-        });
-        injectionItem.addEventListener("keydown", function (event) {
-            if (event.key !== "Enter" && event.key !== " ") {
-                return;
+        injectableMedications.forEach(function (injectableMedication) {
+            const injectionItem = document.createElement("li");
+            injectionItem.textContent = injectableMedication.medicationName;
+
+            if (typeof injectableMedication.open === "function") {
+                injectionItem.tabIndex = 0;
+                injectionItem.setAttribute("role", "button");
+                injectionItem.setAttribute("aria-label", "Open injection tracking for " + injectableMedication.medicationName);
+                injectionItem.addEventListener("click", function () {
+                    injectableMedication.open();
+                });
+                injectionItem.addEventListener("keydown", function (event) {
+                    if (event.key !== "Enter" && event.key !== " ") {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    injectableMedication.open();
+                });
             }
 
-            event.preventDefault();
-            injectionAccess.open();
+            injectionList.appendChild(injectionItem);
         });
-
-        injectionList.appendChild(injectionItem);
         injectionSection.appendChild(injectionList);
         medicationEditor.appendChild(injectionSection);
     }
