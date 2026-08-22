@@ -1,5 +1,13 @@
 function initZepboundCenter() {
-    const ZEPBOUND_LEGACY_HISTORY_KEY = "zepboundInjectionHistory";
+    const injectionCompatibilityConfig = {
+        legacyStorageKey: "zepboundInjectionHistory",
+        medicationName: "Zepbound"
+    };
+
+    function getInjectionCompatibilityConfig() {
+        return injectionCompatibilityConfig;
+    }
+
     const openZepboundModalBtn = document.getElementById("openZepboundModalBtn");
     const zepboundModal = document.getElementById("zepboundModal");
     const zepboundModalContent = document.getElementById("zepboundModalContent");
@@ -19,11 +27,11 @@ function initZepboundCenter() {
     const injectionNotesInput = document.getElementById("injectionNotes");
 
     function loadZepboundLegacyHistory() {
-        return loadInjectionHistory(ZEPBOUND_LEGACY_HISTORY_KEY, []);
+        return loadInjectionHistory(getInjectionCompatibilityConfig().legacyStorageKey, []);
     }
 
     function saveZepboundLegacyHistory(historyArray) {
-        return saveInjectionHistory(ZEPBOUND_LEGACY_HISTORY_KEY, historyArray);
+        return saveInjectionHistory(getInjectionCompatibilityConfig().legacyStorageKey, historyArray);
     }
 
     let history = loadZepboundLegacyHistory();

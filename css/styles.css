@@ -2628,6 +2628,10 @@ button:active,
     gap: 6px;
 }
 
+.zepbound-modal-body > p {
+    margin: 0;
+}
+
 #zepboundModal #historyInjectionSection,
 #zepboundModal #historyInjectionDisplay {
     max-height: none;
