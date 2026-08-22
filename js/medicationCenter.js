@@ -90,6 +90,15 @@ let activeMedicationEditorGroupId = "";
 let medicationEditorDraftMedications = [];
 let medicationEditorStatusMessage = "";
 
+function isMedicationCenterMedicationInjectable(medicationName) {
+    return typeof isInjectableMedication === "function" &&
+        isInjectableMedication(medicationName);
+}
+
+window.medicationCenterCapabilities = {
+    isInjectableMedication: isMedicationCenterMedicationInjectable
+};
+
 function normalizeAsNeededMedicationName(name) {
     return String(name || "").replace(/\s+/g, " ").trim();
 }

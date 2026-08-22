@@ -1,8 +1,16 @@
 function initZepboundCenter() {
     const injectionCompatibilityConfig = {
         legacyStorageKey: "zepboundInjectionHistory",
-        medicationName: "Zepbound"
+        medicationName: "Zepbound",
+        route: "injection"
     };
+
+    if (typeof registerMedicationDefinition === "function") {
+        registerMedicationDefinition({
+            name: injectionCompatibilityConfig.medicationName,
+            route: injectionCompatibilityConfig.route
+        });
+    }
 
     function getInjectionCompatibilityConfig() {
         return injectionCompatibilityConfig;
