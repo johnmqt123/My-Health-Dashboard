@@ -44,9 +44,6 @@ function initZepboundCenter() {
     }
 
     if (window.medicationCenterCapabilities) {
-        window.medicationCenterCapabilities.getMedicationNameSuggestions = function () {
-            return [injectionCompatibilityConfig.medicationName];
-        };
         window.medicationCenterCapabilities.onMedicationConfigured = function (medicationName) {
             if (String(medicationName || "").trim().toLowerCase() ===
                 injectionCompatibilityConfig.medicationName.toLowerCase()) {

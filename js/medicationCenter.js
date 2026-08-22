@@ -1083,39 +1083,6 @@ function syncMedicationDraftsToEditor() {
     });
 }
 
-function addMedicationNameSuggestions(input) {
-    if (!input || !window.medicationCenterCapabilities ||
-        typeof window.medicationCenterCapabilities.getMedicationNameSuggestions !== "function") {
-        return;
-    }
-
-    const suggestions = window.medicationCenterCapabilities.getMedicationNameSuggestions();
-    if (!Array.isArray(suggestions) || !suggestions.length) {
-        return;
-    }
-
-    const datalist = document.createElement("datalist");
-    datalist.id = "medicationNameSuggestions";
-
-    suggestions.forEach(function (medicationName) {
-        const normalizedName = String(medicationName || "").trim();
-        if (!normalizedName) {
-            return;
-        }
-
-        const option = document.createElement("option");
-        option.value = normalizedName;
-        datalist.appendChild(option);
-    });
-
-    if (!datalist.options.length) {
-        return;
-    }
-
-    input.setAttribute("list", datalist.id);
-    input.parentElement.appendChild(datalist);
-}
-
 function addMedicationDraftFromInput() {
     const input = document.getElementById("newMedicationInput");
     if (!input) {
@@ -1339,8 +1306,6 @@ function showMedicationEditor(group) {
 
     const newMedicationInput = document.getElementById("newMedicationInput");
     if (newMedicationInput) {
-        addMedicationNameSuggestions(newMedicationInput);
-
         newMedicationInput.addEventListener("keydown", function (event) {
             if (event.key !== "Enter") {
                 return;
