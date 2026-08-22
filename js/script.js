@@ -618,12 +618,17 @@ function renderMedicationListForSlot(slotConfig, eventData) {
     const medications = eventData && Array.isArray(eventData.medications)
         ? eventData.medications
         : [];
+    const ordinaryMedications = medications.filter(function (medicationName) {
+        return !(window.medicationCenterCapabilities &&
+            typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
+            window.medicationCenterCapabilities.isInjectableMedication(medicationName));
+    });
     const notesText = eventData && eventData.notes
         ? String(eventData.notes)
         : "";
 
-    const medicationsMarkup = medications.length
-        ? "<ul><li>" + medications.join("</li><li>") + "</li></ul>"
+    const medicationsMarkup = ordinaryMedications.length
+        ? "<ul><li>" + ordinaryMedications.join("</li><li>") + "</li></ul>"
         : "<em>No medications configured.</em>";
 
     const notesMarkup =
@@ -736,6 +741,10 @@ function renderMedicationScheduleCards() {
             cardContainer.insertBefore(cardElement, asNeededCard);
         }
     });
+
+    if (typeof window.renderMainInjectableMedications === "function") {
+        window.renderMainInjectableMedications();
+    }
 }
 
 window.renderMedicationScheduleCards = renderMedicationScheduleCards;

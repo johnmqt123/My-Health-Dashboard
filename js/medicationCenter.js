@@ -356,6 +356,124 @@ function saveMedicationSchedule() {
     }
 }
 
+function renderMainInjectableMedications() {
+    const asNeededCard = document.getElementById("asNeededMedicationCard");
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+    const cardContainer = asNeededCard && asNeededCard.parentNode
+        ? asNeededCard.parentNode
+        : (medicationCenterSection ? medicationCenterSection.querySelector(".briefing") : null);
+
+    if (!cardContainer || !asNeededCard) {
+        return;
+    }
+
+    const existingSection = document.getElementById("mainInjectableMedicationsSection");
+    if (existingSection) {
+        existingSection.remove();
+    }
+
+    const capabilities = window.medicationCenterCapabilities || {};
+    const isInjectable = typeof capabilities.isInjectableMedication === "function"
+        ? capabilities.isInjectableMedication
+        : null;
+    const openInjection = typeof capabilities.openInjection === "function"
+        ? capabilities.openInjection
+        : null;
+    const injectableMedications = [];
+    const medicationKeys = new Set();
+    const schedule = typeof personalMedicationSchedule !== "undefined" &&
+        Array.isArray(personalMedicationSchedule)
+        ? personalMedicationSchedule
+        : [];
+
+    if (isInjectable) {
+        schedule.forEach(function (group) {
+            if (!Array.isArray(group && group.medications)) {
+                return;
+            }
+
+            group.medications.forEach(function (medicationName) {
+                if (!isInjectable(medicationName)) {
+                    return;
+                }
+
+                const normalizedName = String(medicationName || "").trim();
+                const medicationKey = normalizedName.toLowerCase();
+                if (!normalizedName || medicationKeys.has(medicationKey)) {
+                    return;
+                }
+
+                medicationKeys.add(medicationKey);
+                injectableMedications.push({
+                    medicationName: normalizedName,
+                    open: openInjection
+                });
+            });
+        });
+    }
+
+    const injectionAccess = capabilities.getInjectionAccess &&
+        typeof capabilities.getInjectionAccess === "function"
+        ? capabilities.getInjectionAccess()
+        : null;
+    if (injectionAccess && typeof injectionAccess.open === "function" &&
+        isInjectable && isInjectable(injectionAccess.medicationName)) {
+        const normalizedName = String(injectionAccess.medicationName || "").trim();
+        const medicationKey = normalizedName.toLowerCase();
+        if (normalizedName && !medicationKeys.has(medicationKey)) {
+            injectableMedications.push({
+                medicationName: normalizedName,
+                open: injectionAccess.open
+            });
+        }
+    }
+
+    if (!injectableMedications.length) {
+        return;
+    }
+
+    const section = document.createElement("section");
+    section.className = "medication-schedule-section";
+    section.id = "mainInjectableMedicationsSection";
+
+    const title = document.createElement("h4");
+    title.className = "medication-schedule-title";
+    title.textContent = "Injectable Medications";
+    section.appendChild(title);
+
+    const list = document.createElement("ul");
+    list.className = "medication-schedule-list";
+
+    injectableMedications.forEach(function (injectableMedication) {
+        const item = document.createElement("li");
+        item.textContent = injectableMedication.medicationName;
+
+        if (typeof injectableMedication.open === "function") {
+            item.tabIndex = 0;
+            item.setAttribute("role", "button");
+            item.setAttribute("aria-label", "Open injection tracking for " + injectableMedication.medicationName);
+            item.addEventListener("click", function () {
+                injectableMedication.open();
+            });
+            item.addEventListener("keydown", function (event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+
+                event.preventDefault();
+                injectableMedication.open();
+            });
+        }
+
+        list.appendChild(item);
+    });
+
+    section.appendChild(list);
+    cardContainer.insertBefore(section, asNeededCard);
+}
+
+window.renderMainInjectableMedications = renderMainInjectableMedications;
+
 function getMedicationScheduleGroupById(eventId) {
     if (!eventId || !Array.isArray(personalMedicationSchedule)) {
         return null;
