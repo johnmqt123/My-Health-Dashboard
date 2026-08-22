@@ -740,6 +740,34 @@ function buildMedicationList() {
             group.medications.forEach(function (medicationName) {
                 const item = document.createElement("li");
                 item.textContent = medicationName;
+
+                const isInjectable = window.medicationCenterCapabilities &&
+                    typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
+                    window.medicationCenterCapabilities.isInjectableMedication(medicationName);
+                const openInjection = window.medicationCenterCapabilities &&
+                    typeof window.medicationCenterCapabilities.openInjection === "function"
+                    ? window.medicationCenterCapabilities.openInjection
+                    : null;
+
+                if (isInjectable && openInjection) {
+                    item.tabIndex = 0;
+                    item.setAttribute("role", "button");
+                    item.setAttribute("aria-label", "Open injection tracking for " + medicationName);
+
+                    item.addEventListener("click", function () {
+                        openInjection();
+                    });
+
+                    item.addEventListener("keydown", function (event) {
+                        if (event.key !== "Enter" && event.key !== " ") {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        openInjection();
+                    });
+                }
+
                 list.appendChild(item);
             });
         } else {

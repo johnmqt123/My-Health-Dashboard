@@ -171,6 +171,11 @@ function initZepboundCenter() {
 
         injectionController.close();
     };
+    if (window.medicationCenterCapabilities) {
+        window.medicationCenterCapabilities.openInjection = function () {
+            injectionController.open();
+        };
+    }
     window.isZepboundModalOpen = function () {
         return !!(zepboundModal && zepboundModal.style.display === "flex");
     };

@@ -1796,3 +1796,28 @@ Treat this as a future UI redesign project rather than a quick isolated CSS chan
 Idea: Make Medication Center expand in place
 
 Change Medication Center navigation so tapping the Medication Center chevron expands/collapses the section in its current position rather than jumping the user to the bottom of the application. Preserve the existing close/back-to-top functionality as a secondary navigation option. Audit the current implementation before changing it, and consider whether this should become the standard expandable-section pattern across the dashboard.
+
+### Product Goal: Move Zepbound into Medication Center and remove the Zepbound default
+
+**Status:** Future work / deferred
+
+**Goal:** Complete the original Zepbound architecture objective without expanding the product into support for multiple injectable medications yet.
+
+#### 1. Move Zepbound into Medication Center
+- Make Medication Center the user-facing home for Zepbound.
+- The existing generic Injection Center/controller should provide the injection logging and history functionality behind that experience.
+- Preserve the existing Zepbound injection history and behavior during the transition.
+- Do not introduce support for additional injectable medications as part of this work.
+
+#### 2. New users should not see Zepbound by default
+- A new user with no configured medication should not see the word "Zepbound" anywhere in the application.
+- The application must not silently assume or display Zepbound when no medication has been configured.
+- Zepbound should appear only when it has been explicitly configured as the user's medication.
+- Existing Zepbound users and their local injection history must continue to work without data loss.
+
+**Acceptance criteria:**
+- Medication Center is the primary user-facing entry point for Zepbound.
+- Zepbound injection logging/history continues to work through the generic injection architecture.
+- A fresh installation/user sees no Zepbound-specific UI or default medication.
+- Existing Zepbound history remains readable and intact.
+- No support for additional injectable medications is required at this stage; that can be considered later as a separate product decision.
