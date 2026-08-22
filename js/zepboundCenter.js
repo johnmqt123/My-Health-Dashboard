@@ -1,4 +1,8 @@
 function initZepboundCenter() {
+    if (window.zepboundCenterInitialized) {
+        return;
+    }
+
     const injectionCompatibilityConfig = {
         legacyStorageKey: "zepboundInjectionHistory",
         medicationName: "Zepbound",
@@ -37,6 +41,18 @@ function initZepboundCenter() {
         return Array.isArray(parsedHistory) && parsedHistory.some(function (entry) {
             return entry && typeof entry === "object" && !Array.isArray(entry);
         });
+    }
+
+    if (window.medicationCenterCapabilities) {
+        window.medicationCenterCapabilities.getMedicationNameSuggestions = function () {
+            return [injectionCompatibilityConfig.medicationName];
+        };
+        window.medicationCenterCapabilities.onMedicationConfigured = function (medicationName) {
+            if (String(medicationName || "").trim().toLowerCase() ===
+                injectionCompatibilityConfig.medicationName.toLowerCase()) {
+                initZepboundCenter();
+            }
+        };
     }
 
     const hasConfiguredZepbound = hasConfiguredZepboundMedication();
@@ -210,6 +226,7 @@ function initZepboundCenter() {
         return;
     }
 
+    window.zepboundCenterInitialized = true;
     window.createZepboundInjectionProvider = createZepboundInjectionProvider;
     window.closeZepboundModal = function () {
         if (!zepboundModal || zepboundModal.style.display !== "flex") {
