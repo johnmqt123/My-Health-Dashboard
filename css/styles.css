@@ -2611,8 +2611,8 @@ button:active,
 
 .zepbound-modal-header {
     display: grid;
-    gap: 6px;
-    margin-bottom: 4px;
+    gap: 4px;
+    margin-bottom: 2px;
 }
 
 .zepbound-modal-header h2 {
@@ -2632,6 +2632,11 @@ button:active,
     margin: 0;
 }
 
+#zepboundModal #injectionLogDisplay {
+    display: grid;
+    gap: 2px;
+}
+
 #zepboundModal #historyInjectionSection,
 #zepboundModal #historyInjectionDisplay {
     max-height: none;
@@ -2641,8 +2646,12 @@ button:active,
 }
 
 #zepboundModal #injectionLogDisplay h3 {
-    margin-top: 8px;
-    margin-bottom: 6px;
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+
+#zepboundModal #injectionLogDisplay p {
+    margin: 0;
 }
 
 #zepboundModal {
