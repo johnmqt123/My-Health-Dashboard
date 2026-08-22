@@ -39,10 +39,10 @@ function initZepboundCenter() {
         });
     }
 
-    const shouldShowZepbound = hasConfiguredZepboundMedication() ||
-        hasLegacyZepboundHistory();
+    const hasConfiguredZepbound = hasConfiguredZepboundMedication();
+    const hasLegacyHistory = hasLegacyZepboundHistory();
 
-    if (!shouldShowZepbound) {
+    if (!hasConfiguredZepbound && !hasLegacyHistory) {
         if (zepboundMedicationCard) {
             zepboundMedicationCard.style.display = "none";
         }
@@ -50,7 +50,7 @@ function initZepboundCenter() {
         return;
     }
 
-    if (zepboundMedicationCard) {
+    if (zepboundMedicationCard && !hasConfiguredZepbound) {
         zepboundMedicationCard.style.display = "";
     }
 
