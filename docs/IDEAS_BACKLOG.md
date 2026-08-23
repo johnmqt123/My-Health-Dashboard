@@ -2391,3 +2391,210 @@ Reuse the existing generic capability path:
 
 ```js
 window.medicationCenterCapabilities.isInjectableMedication(medicationName)
+
+IDEA: Future Dashboard Card Redesign — Collapsible, Uniform Module Cards
+
+STATUS:
+Future idea — NOT approved for implementation yet.
+
+BACKGROUND:
+The current dashboard has become visually stronger as the color system has evolved, but the top of the application still feels less polished and less differentiated than the lower dashboard cards.
+
+The current top area contains:
+- Greeting / Welcome card
+- Medication Center entry card
+- Quick Links card
+
+These three currently share closely related blue treatments, which makes them visually read as a family. This is not necessarily wrong, but the distinction between the three surfaces is weaker than the deliberate color differentiation used farther down the application.
+
+A future dashboard redesign should consider making the overall dashboard more visually cohesive and polished without turning it into a "rainbow" of unrelated colors.
+
+REFERENCE MOCKUP:
+The generated mockup "Top-of-Dashboard Design Options" should be preserved as the primary visual reference for this idea.
+
+The mockup presents three possible directions:
+1. Stronger Header + neutral functional cards
+2. Color accents in Quick Links
+3. Soft Gradient Header + outlined Quick Links
+
+The first option is currently the most appealing overall direction because it creates clearer hierarchy without adding excessive color.
+
+IMPORTANT:
+Do not implement the mockup literally without reviewing the existing application first. The mockup is a design reference, not an implementation specification.
+
+FUTURE DESIGN DIRECTION — TOP OF DASHBOARD:
+Consider establishing this hierarchy:
+
+1. Greeting / Welcome
+   - Strongest visual anchor at the top.
+   - Clearly distinct from the cards immediately below it.
+   - Should feel intentional and welcoming rather than simply being another pale-blue card.
+
+2. Medication Center
+   - Primarily a clean, neutral/white navigation card.
+   - Should not simply look like a lighter version of the greeting card.
+   - Existing Medication Center functionality remains unchanged.
+   - The card remains a clear entry point.
+
+3. Quick Links
+   - Primarily a clean/neutral card rather than another large blue surface.
+   - Individual Quick Link buttons could carry restrained accent colors.
+   - Color should be useful for differentiation without becoming visually noisy.
+   - Existing Quick Link labels, destinations, ordering, handlers, and accessibility must be preserved.
+
+GENERAL VISUAL GOAL:
+Create a progression such as:
+
+Strong Greeting
+    ->
+Clean Navigation / Medication Center
+    ->
+Distinctive Quick Links
+    ->
+Color-coded health modules
+
+Rather than:
+
+Blue Greeting
+    ->
+Lighter Blue Medication Center
+    ->
+Even Lighter Blue Quick Links
+    ->
+Green / Purple / Teal / Red / Orange health modules
+
+FUTURE DASHBOARD CARD MODEL:
+Consider changing the individual health-module cards so they have a more uniform, compact appearance when collapsed.
+
+Potential modules include:
+- Nutrition
+- Weight
+- Exercise
+- Blood Pressure
+- Daily Diary
+- Other applicable dashboard modules
+
+COLLAPSED STATE:
+Each module could become a consistent navigation-style row/card containing:
+
+[icon] Module Name                         >
+
+The card would use:
+- consistent dimensions;
+- consistent typography;
+- consistent spacing;
+- consistent icon treatment;
+- a clear chevron/disclosure affordance;
+- the module's existing accent color in a restrained way.
+
+EXPANDED STATE:
+Tapping/clicking the module would expand that card and reveal its existing:
+- current information;
+- logging controls;
+- history controls;
+- goals/reference controls where applicable;
+- existing functionality.
+
+No underlying health-data behavior should need to change merely because the presentation changes.
+
+ALTERNATIVE — COMPACT SUMMARY STATE:
+Before choosing a fully collapsed model, consider a middle-ground approach.
+
+Instead of hiding all information, a collapsed card could show a one-line summary:
+
+Nutrition
+    0 / 1,700 kcal · 0 / 100 g protein                    >
+
+Weight
+    228 lb                                                   >
+
+Blood Pressure
+    122 / 74 · 55 bpm                                      >
+
+Exercise
+    Stationary Bike · 63 min                              >
+
+The card would still expand when tapped to reveal the complete existing module.
+
+ADVANTAGES OF THE COLLAPSIBLE MODEL:
+- Much shorter dashboard.
+- Less scrolling.
+- More uniform visual language.
+- Dashboard becomes easier to scan.
+- Individual modules feel like organized sections rather than separate mini-applications.
+- More closely resembles the polished mobile-navigation treatment shown in the mockup.
+- Creates a clearer distinction between dashboard navigation and detailed module content.
+
+TRADEOFFS:
+- Adds an additional tap to access detailed information.
+- Users cannot see all current module information at once.
+- Frequently used information may become less immediately visible.
+- Existing users may initially need to adjust to the interaction model.
+- Accessibility and keyboard behavior must be carefully preserved.
+- Mobile interaction needs particular attention because the iPhone is a primary use case.
+
+DESIGN DECISION REQUIRED BEFORE IMPLEMENTATION:
+Choose between:
+
+OPTION A — FULLY COLLAPSED:
+Module cards show only the module identity and chevron until opened.
+
+OPTION B — COMPACT SUMMARY:
+Module cards show the module identity plus a very small amount of useful current information, then expand to show the complete module.
+
+OPTION B is currently considered the more conservative and potentially more usable direction, but no decision has been made.
+
+SCOPE WARNING:
+This should be treated as a MEDIUM/LARGE future UI project, not a small styling change.
+
+Potentially affected files could include:
+- index.html
+- script.js
+- styles.css
+
+The exact files must be determined only after inspecting the existing implementation.
+
+DO NOT:
+- change medication data structures;
+- change storage;
+- change health-history formats;
+- change injection/Zepbound architecture;
+- introduce duplicate controllers;
+- alter existing logging/history functionality unnecessarily;
+- implement the mockup literally without first determining how the current application is structured.
+
+PRESERVATION REQUIREMENTS:
+Any future implementation must preserve:
+- existing data;
+- existing localStorage behavior;
+- existing logging functionality;
+- existing history functionality;
+- existing navigation;
+- existing accessibility;
+- existing mobile behavior;
+- existing module-specific colors where appropriate;
+- existing Medication Center and Injectable Medication functionality.
+
+CURRENT DECISION:
+Do NOT implement this redesign now.
+
+Continue with the current application and address the top-of-dashboard color hierarchy separately.
+
+The mockup is retained as inspiration/reference material for a future dashboard redesign.
+
+FUTURE VALIDATION:
+Any future implementation should be tested at minimum on:
+- desktop browser;
+- iPhone-sized viewport;
+- expanded and collapsed states;
+- keyboard interaction where applicable;
+- touch interaction;
+- long-page scrolling;
+- existing module functionality;
+- accessibility semantics;
+- no horizontal overflow.
+
+FINAL FUTURE STOP POINT:
+Do not continue into additional dashboard redesign work after the agreed card model and visual hierarchy have been implemented and validated.
+
+Create a separate follow-up idea for any additional redesign discovered afterward rather than expanding the scope of the original implementation.
