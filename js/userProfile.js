@@ -39,6 +39,8 @@ const userProfile = {
     const quickAccessGrid = document.querySelector(".quick-access-grid");
 
     let lockedScrollTop = 0;
+    let lockedBodyStyles = null;
+    let lockedHtmlOverflow = "";
     let personalProfileInitialized = false;
     let editingQuickLinkIndex = -1;
 
@@ -274,15 +276,36 @@ const userProfile = {
 
     function lockProfileHeightModalBackgroundScroll() {
         lockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        lockedBodyStyles = {
+            position: document.body.style.position,
+            top: document.body.style.top,
+            left: document.body.style.left,
+            right: document.body.style.right,
+            width: document.body.style.width
+        };
+        lockedHtmlOverflow = document.documentElement.style.overflow;
         document.documentElement.classList.add("profile-height-modal-open");
         document.body.classList.add("profile-height-modal-open");
+        document.documentElement.style.overflow = "hidden";
+        document.body.style.position = "fixed";
         document.body.style.top = "-" + lockedScrollTop + "px";
+        document.body.style.left = "0";
+        document.body.style.right = "0";
+        document.body.style.width = "100%";
     }
 
     function unlockProfileHeightModalBackgroundScroll() {
         document.documentElement.classList.remove("profile-height-modal-open");
         document.body.classList.remove("profile-height-modal-open");
-        document.body.style.top = "";
+        if (lockedBodyStyles) {
+            document.body.style.position = lockedBodyStyles.position;
+            document.body.style.top = lockedBodyStyles.top;
+            document.body.style.left = lockedBodyStyles.left;
+            document.body.style.right = lockedBodyStyles.right;
+            document.body.style.width = lockedBodyStyles.width;
+        }
+        document.documentElement.style.overflow = lockedHtmlOverflow;
+        lockedBodyStyles = null;
         window.scrollTo(0, lockedScrollTop);
     }
 
@@ -351,7 +374,7 @@ const userProfile = {
         lockProfileHeightModalBackgroundScroll();
 
         if (profileQuickLinkNameInput) {
-            profileQuickLinkNameInput.focus();
+            profileQuickLinkNameInput.focus({ preventScroll: true });
         }
     }
 

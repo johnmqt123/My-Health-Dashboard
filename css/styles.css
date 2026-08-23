@@ -3675,6 +3675,8 @@ button:active,
 
 .profile-quick-links-modal-content {
     text-align: left;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
 }
 
 .profile-quick-links-modal-content h2 {
