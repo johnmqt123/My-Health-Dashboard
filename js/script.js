@@ -1033,14 +1033,23 @@ function collapseMedicationCenter() {
         medicationCenterSection.style.display = "none";
     }
 
-    if (medicationCenterCardHeading) {
-        medicationCenterCardHeading.textContent =
-            "💊 Medication Center ▼";
-        medicationCenterCardHeading.focus();
-        medicationCenterCardHeading.scrollIntoView({
+    const medicationCenterEntryPoint = document.querySelector(".medication-center-card");
+
+    if (medicationCenterEntryPoint) {
+        medicationCenterEntryPoint.scrollIntoView({
             behavior: "smooth",
             block: "start"
         });
+    }
+
+    if (medicationCenterCardHeading) {
+        medicationCenterCardHeading.textContent =
+            "💊 Medication Center ▼";
+        try {
+            medicationCenterCardHeading.focus({ preventScroll: true });
+        } catch (error) {
+            medicationCenterCardHeading.focus();
+        }
     }
 }
 
