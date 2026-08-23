@@ -433,7 +433,7 @@ function renderMainInjectableMedications() {
     }
 
     const section = document.createElement("section");
-    section.className = "medication-schedule-section";
+    section.className = "medication-schedule-section main-injectable-medications-section";
     section.id = "mainInjectableMedicationsSection";
 
     const title = document.createElement("h4");
@@ -442,10 +442,11 @@ function renderMainInjectableMedications() {
     section.appendChild(title);
 
     const list = document.createElement("ul");
-    list.className = "medication-schedule-list";
+    list.className = "medication-schedule-list main-injectable-medications-list";
 
     injectableMedications.forEach(function (injectableMedication) {
         const item = document.createElement("li");
+        item.className = "main-injectable-medication-item";
         item.textContent = injectableMedication.medicationName;
 
         if (typeof injectableMedication.open === "function") {
@@ -831,17 +832,6 @@ function buildMedicationList() {
         medicationEditor.appendChild(empty);
     }
 
-    const injectionAccess = window.medicationCenterCapabilities &&
-        typeof window.medicationCenterCapabilities.getInjectionAccess === "function"
-        ? window.medicationCenterCapabilities.getInjectionAccess()
-        : null;
-    const canOpenInjection = injectionAccess &&
-        typeof injectionAccess.open === "function" &&
-        typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
-        window.medicationCenterCapabilities.isInjectableMedication(injectionAccess.medicationName);
-    const injectableMedications = [];
-    const injectableMedicationKeys = new Set();
-
     const sortedSchedule = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.sortMedicationScheduleItems === "function"
         ? window.medicationScheduleCompat.sortMedicationScheduleItems(personalMedicationSchedule, function (group) {
             return window.medicationScheduleCompat.getMedicationScheduleItemMinutes
@@ -867,25 +857,6 @@ function buildMedicationList() {
 
         if (Array.isArray(group.medications) && group.medications.length) {
             group.medications.forEach(function (medicationName) {
-                const isInjectable = window.medicationCenterCapabilities &&
-                    typeof window.medicationCenterCapabilities.isInjectableMedication === "function" &&
-                    window.medicationCenterCapabilities.isInjectableMedication(medicationName);
-
-                if (isInjectable) {
-                    const medicationKey = String(medicationName || "").trim().toLowerCase();
-                    if (!injectableMedicationKeys.has(medicationKey)) {
-                        injectableMedicationKeys.add(medicationKey);
-                        injectableMedications.push({
-                            medicationName: medicationName,
-                            open: window.medicationCenterCapabilities &&
-                                typeof window.medicationCenterCapabilities.openInjection === "function"
-                                ? window.medicationCenterCapabilities.openInjection
-                                : null
-                        });
-                    }
-                    return;
-                }
-
                 const item = document.createElement("li");
                 item.textContent = medicationName;
 
@@ -910,57 +881,6 @@ function buildMedicationList() {
         medicationEditor.appendChild(section);
 
     });
-
-    if (canOpenInjection && !injectableMedicationKeys.has(
-        String(injectionAccess.medicationName || "").trim().toLowerCase()
-    )) {
-        injectableMedicationKeys.add(
-            String(injectionAccess.medicationName || "").trim().toLowerCase()
-        );
-        injectableMedications.push({
-            medicationName: injectionAccess.medicationName,
-            open: injectionAccess.open
-        });
-    }
-
-    if (injectableMedications.length) {
-        const injectionSection = document.createElement("section");
-        injectionSection.className = "medication-schedule-section";
-
-        const injectionTitle = document.createElement("h4");
-        injectionTitle.className = "medication-schedule-title";
-        injectionTitle.textContent = "Injectable Medications";
-        injectionSection.appendChild(injectionTitle);
-
-        const injectionList = document.createElement("ul");
-        injectionList.className = "medication-schedule-list";
-
-        injectableMedications.forEach(function (injectableMedication) {
-            const injectionItem = document.createElement("li");
-            injectionItem.textContent = injectableMedication.medicationName;
-
-            if (typeof injectableMedication.open === "function") {
-                injectionItem.tabIndex = 0;
-                injectionItem.setAttribute("role", "button");
-                injectionItem.setAttribute("aria-label", "Open injection tracking for " + injectableMedication.medicationName);
-                injectionItem.addEventListener("click", function () {
-                    injectableMedication.open();
-                });
-                injectionItem.addEventListener("keydown", function (event) {
-                    if (event.key !== "Enter" && event.key !== " ") {
-                        return;
-                    }
-
-                    event.preventDefault();
-                    injectableMedication.open();
-                });
-            }
-
-            injectionList.appendChild(injectionItem);
-        });
-        injectionSection.appendChild(injectionList);
-        medicationEditor.appendChild(injectionSection);
-    }
 
     const addTimeContainer = document.createElement("div");
     addTimeContainer.className = "add-medication-time-block";

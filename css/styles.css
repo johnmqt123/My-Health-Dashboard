@@ -2863,6 +2863,59 @@ button:active,
     font-size: 0.97rem;
 }
 
+#medicationCenterSection .main-injectable-medications-section {
+    border: 2px solid var(--accent);
+    background: #eef6ff;
+    padding: 14px;
+}
+
+#medicationCenterSection .main-injectable-medications-section .medication-schedule-title {
+    font-size: 1.08rem;
+}
+
+#medicationCenterSection .main-injectable-medications-list {
+    padding: 0;
+    list-style: none;
+}
+
+#medicationCenterSection .main-injectable-medication-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    margin: 0;
+    padding: 10px 38px 10px 12px;
+    border: 1px solid #c7def7;
+    border-radius: 10px;
+    background: #fff;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#medicationCenterSection .main-injectable-medication-item::after {
+    content: "›";
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+#medicationCenterSection .main-injectable-medication-item:hover,
+#medicationCenterSection .main-injectable-medication-item:active {
+    background: #f8fbff;
+    border-color: var(--accent);
+}
+
+#medicationCenterSection .main-injectable-medication-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
 .medication-schedule-note {
     margin-top: 6px;
     color: var(--muted);

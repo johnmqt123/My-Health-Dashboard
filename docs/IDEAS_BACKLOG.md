@@ -1821,3 +1821,535 @@ Change Medication Center navigation so tapping the Medication Center chevron exp
 - A fresh installation/user sees no Zepbound-specific UI or default medication.
 - Existing Zepbound history remains readable and intact.
 - No support for additional injectable medications is required at this stage; that can be considered later as a separate product decision.
+
+## Injectable Medications — Final UI Cleanup
+
+### Current Status
+
+The injectable-medication functionality is working again and the shared injection controller/history architecture is intact.
+
+The current Medication Center now places an `Injectable Medications` section immediately above `As-Needed Medications`.
+
+The remaining work is primarily presentation and workflow cleanup. The functionality is close, but the current UI gives injectable medications too little visual prominence and creates some unnecessary duplication.
+
+### Current UI Problems
+
+The current Medication Center presentation has these issues:
+
+1. `Injectable Medications` appears directly above `As-Needed Medications`, which is the correct general location, but the section has substantially less visual weight than the other medication sections.
+
+2. The configured injectable medication currently appears as a simple bullet/list item. Although it is actionable, it does not visually communicate that it is a medication entry that can be tapped to open the injection experience.
+
+3. The user currently has to conceptually go through:
+   
+   `Injectable Medications -> Zepbound`
+
+   rather than seeing the injectable medication presented as a first-class medication entry.
+
+4. Injectable medications may still appear redundantly inside the `Manage Medications` medication list after they have been configured. The main Medication Center should become the normal access point for configured injectable medications without creating a confusing duplicate presentation.
+
+5. The injectable area should feel like a normal medication section, not like a secondary compatibility feature.
+
+### Desired Final Presentation
+
+The Medication Center should have this hierarchy:
+
+```text
+Scheduled Medications
+    ordinary scheduled medications
+
+Injectable Medications
+    configured injectable medications
+
+As-Needed Medications
+    existing PRN medications
+
+    ## Injectable Medications — Final UI and Workflow Cleanup
+
+### Current Status
+
+The injectable-medication functionality is working again and the existing shared injection controller, Zepbound compatibility provider, and legacy history architecture are intact.
+
+The current Medication Center now has an `Injectable Medications` section immediately above `As-Needed Medications`.
+
+The remaining work is primarily UI and workflow cleanup. The functionality is close, but the current presentation makes injectable medications feel secondary and introduces an extra navigation step.
+
+### Current UI Problems
+
+The current Medication Center has these issues:
+
+1. The `Injectable Medications` section is immediately above `As-Needed Medications`, which is the desired general location, but it has substantially less visual weight than the other medication sections.
+
+2. The configured injectable medication currently appears visually like a simple bullet/list item. Although it is actionable, it does not clearly communicate that the medication itself can be tapped to open the injection experience.
+
+3. The user currently has to conceptually navigate through:
+
+   `Injectable Medications -> Zepbound`
+
+   before reaching the injection functionality.
+
+   The desired behavior is that the injectable medication itself should be an obvious, directly actionable medication entry.
+
+4. The current design has introduced an additional conceptual "Injectable Medications" layer for the user. The user has expressed concern that this means an additional tap/navigation step compared with having Zepbound directly available as a medication.
+
+5. Zepbound may still appear in the `Manage Medications` area as a configured medication. This creates duplication between configuration and daily-use presentation.
+
+6. The user specifically observed that an injectable medication such as Zepbound can now appear in two places:
+   - under the injectable-medication area in the main Medication Center;
+   - inside Manage Medications.
+
+   The final design should make the distinction between configuration and daily use clear and should avoid unnecessary duplication.
+
+### Desired Medication Center Hierarchy
+
+The preferred main Medication Center hierarchy is:
+
+    Scheduled Medications
+        ordinary scheduled medications
+
+    Injectable Medications
+        configured injectable medications
+
+    As-Needed Medications
+        existing PRN medications
+
+The `Injectable Medications` section should remain immediately above `As-Needed Medications`.
+
+However, the section should visually feel like a first-class medication section rather than a small informational box.
+
+### Desired Injectable Medication Presentation
+
+When an injectable medication is configured, its actual medication name should appear directly in the Injectable Medications section.
+
+For example:
+
+    Injectable Medications
+
+        Zepbound   >
+
+The medication entry itself should be clearly tappable/actionable.
+
+The user should NOT have to tap a generic `Injectable Medications` heading/card first and then discover another control before reaching the injection experience.
+
+The preferred interaction is:
+
+    Medication Center
+        -> Injectable Medications
+            -> Zepbound
+
+where `Zepbound` is immediately presented as the actionable medication entry.
+
+The visual treatment should be consistent with the existing Medication Center medication surfaces.
+
+### Important UX Question: The Extra Injectable Layer
+
+The introduction of the generic `Injectable Medications` section creates an additional navigation concept that did not previously exist.
+
+The current implementation effectively adds:
+
+    Medication Center
+        -> Injectable Medications
+            -> Zepbound
+
+This may be acceptable as a generic architecture because future injectable medications could use the same section.
+
+However, the additional layer should not become an unnecessary burden for a user who has only one configured injectable medication.
+
+During the next cleanup phase, evaluate whether the section can remain a generic organizational heading while making the configured medication immediately prominent and actionable.
+
+Do NOT automatically remove the generic Injectable Medications concept without considering the broader goal of making injectable medications a generic part of the application.
+
+The goal is to balance:
+
+- generic injectable-medication support;
+- privacy and non-advertising of specific medications;
+- simple daily access;
+- minimal navigation;
+- consistency with the existing Medication Center design.
+
+### Configuration Workflow
+
+The existing Manage Medications editor remains the configuration surface.
+
+Users must still be able to manually enter and save an injectable medication through the existing medication workflow.
+
+The application must NOT unsolicitedly advertise Zepbound or another specific injectable medication to a new user.
+
+Do NOT restore the previously removed Zepbound suggestion/datalist mechanism.
+
+A new user should not see Zepbound merely because the application supports injectable medications.
+
+The existing free-text medication workflow should remain available.
+
+When a user independently enters and saves an injectable medication, the generic injectable capability path should recognize it and place it in the Injectable Medications area.
+
+### Manage Medications Duplication
+
+The current implementation leaves Zepbound visible in Manage Medications after it has been configured.
+
+This needs to be evaluated and cleaned up.
+
+The final workflow should clearly distinguish:
+
+    Manage Medications
+        = configure, edit, or remove medications
+
+    Medication Center
+        = daily access to medications and medication-specific actions
+
+A configured injectable medication should not unnecessarily appear as a duplicate daily-use entry in the ordinary scheduled-medication presentation.
+
+Users must still be able to configure, edit, and remove the medication.
+
+Do not remove the underlying configuration capability simply to eliminate visual duplication.
+
+If the existing Manage Medications surface is the only place where the medication can be edited or removed, preserve that capability.
+
+### History-Only Compatibility
+
+Existing users with legacy Zepbound injection history but no current Zepbound schedule must NOT be stranded.
+
+A history-only user must continue to have access to the existing injection history and injection functionality.
+
+Do not automatically create a new medication schedule entry for history-only users.
+
+Do not migrate, rename, delete, rewrite, or transform:
+
+    zepboundInjectionHistory
+
+The existing Zepbound compatibility provider and generic injection controller remain responsible for history persistence and injection behavior.
+
+If a history-only compatibility entry is needed in the Injectable Medications area, it should be presented there without modifying the user's medication schedule.
+
+### Privacy Requirements
+
+The application must not advertise Zepbound to a new or unconfigured user.
+
+Do NOT add:
+
+- a Zepbound card;
+- a Zepbound dashboard section;
+- a Zepbound suggestion;
+- a Zepbound dropdown;
+- a Zepbound-specific generic Medication Center section;
+- unsolicited Zepbound text outside a user-configured or history-derived context.
+
+Zepbound should appear when the user has independently configured it or when existing legacy Zepbound history justifies preserving access.
+
+The generic application should communicate the capability as injectable medication functionality rather than as a Zepbound-specific feature.
+
+### Generic Capability Architecture
+
+Continue using the existing generic capability path:
+
+    window.medicationCenterCapabilities.isInjectableMedication(medicationName)
+
+Medication Center must remain unaware of the Zepbound identity and legacy storage key.
+
+Zepbound-specific identity and compatibility behavior must remain inside the Zepbound compatibility boundary.
+
+Do not add direct comparisons such as:
+
+    medicationName === "Zepbound"
+
+to generic Medication Center code.
+
+Do not introduce another capability registry.
+
+Do not introduce medication IDs or replace the existing string-based medication schedule model.
+
+The existing schedule representation remains:
+
+    medications: ["Zepbound"]
+
+### Injection Controller Ownership
+
+Continue reusing the existing injection controller instance.
+
+Do NOT create:
+
+- a second controller;
+- a second injection modal;
+- a second history renderer;
+- a second event-handler path;
+- a second storage mechanism.
+
+The existing generic injection controller remains the sole owner of:
+
+- injection modal behavior;
+- Add;
+- Edit;
+- Delete;
+- delete confirmation;
+- history rendering;
+- lifecycle;
+- scrolling/touch behavior.
+
+The existing Zepbound compatibility provider remains responsible for the legacy history mapping and provider-specific behavior.
+
+### Storage Preservation
+
+The existing legacy history key remains:
+
+    zepboundInjectionHistory
+
+Do not:
+
+- migrate it;
+- rename it;
+- delete it;
+- duplicate it;
+- rewrite its structure;
+- transform its existing entries.
+
+The existing history shape remains:
+
+    date
+    time
+    dose
+    site
+    notes
+
+The existing `personalMedicationSchedule` remains string-based.
+
+No new storage mechanism is needed.
+
+### Standalone Zepbound Card
+
+The standalone Zepbound card has already been removed.
+
+Do NOT restore it.
+
+The underlying Zepbound compatibility provider, injection modal, and generic injection controller must remain because Medication Center now uses them.
+
+The goal is to remove the standalone entry point, not the underlying functionality.
+
+### Ordinary Medications
+
+Ordinary medications must remain unchanged.
+
+They should:
+
+- remain in their normal scheduled/as-needed presentation;
+- remain non-actionable unless they resolve through the generic injectable capability;
+- receive no injection-specific controls;
+- receive no Zepbound-specific behavior.
+
+### Files / Scope
+
+The next implementation should be limited to the smallest files necessary to improve:
+
+- Injectable Medications visual prominence;
+- direct medication-row interaction;
+- placement immediately above As-Needed Medications;
+- unnecessary duplication between daily-use presentation and Manage Medications;
+- configuration/editing workflow.
+
+Do not modify generic architecture unless a concrete implementation blocker is discovered.
+
+Avoid changes to:
+
+- medications.js
+- injectionCenter.js
+- storage.js
+
+unless explicitly required and approved.
+
+Do not introduce CSS architecture changes unless existing styles cannot provide the required visual treatment.
+
+### Validation Requirements
+
+Before considering this cleanup complete, verify all of the following.
+
+#### 1. New / Unconfigured User
+
+Verify:
+
+- no Zepbound-specific text appears;
+- no standalone Zepbound card exists;
+- no Injectable Medications section appears;
+- no injection controller is initialized;
+- no injection bridge is exposed;
+- no schedule data is created;
+- no history data is created.
+
+#### 2. Configured Injectable User
+
+Using a disposable test fixture:
+
+- configure Zepbound through the existing medication editor;
+- verify it is stored as the existing medication string;
+- verify it appears in Injectable Medications;
+- verify the section is immediately above As-Needed Medications;
+- verify Zepbound is visually prominent;
+- verify Zepbound itself is directly actionable;
+- verify tapping Zepbound opens the existing injection experience;
+- verify Enter/Space activation where applicable;
+- verify Zepbound does not remain duplicated in the ordinary scheduled-medication presentation.
+
+#### 3. Manage Medications
+
+Verify:
+
+- users can still configure injectable medications;
+- users can still edit injectable medications;
+- users can still remove injectable medications;
+- no unsolicited Zepbound suggestion or dropdown appears;
+- the UI does not create unnecessary duplicate daily-use representations.
+
+The configuration surface must not be broken merely to improve the main Medication Center presentation.
+
+#### 4. History-Only User
+
+Using a disposable history fixture:
+
+- provide valid existing `zepboundInjectionHistory`;
+- provide a schedule without Zepbound;
+- verify Injectable Medications access remains available;
+- verify the existing history renders;
+- verify the injection modal opens;
+- verify no new schedule entry is automatically created;
+- verify the legacy history remains unchanged.
+
+#### 5. Ordinary Medication
+
+Verify:
+
+- ordinary medications remain in their normal sections;
+- ordinary medications remain non-actionable;
+- no injection-specific UI appears for them;
+- no Zepbound-specific behavior leaks into generic medication handling.
+
+#### 6. Injection Behavior
+
+Verify that the existing shared injection experience remains unchanged:
+
+- same modal;
+- same controller instance;
+- same Add behavior;
+- same Edit behavior;
+- same Delete behavior;
+- same confirmation;
+- same history rendering;
+- same persistence;
+- same scrolling;
+- same touch behavior.
+
+#### 7. Storage Safety
+
+Verify:
+
+- no migration;
+- no rename;
+- no deletion;
+- no history rewrite;
+- no second history store;
+- no schedule serialization changes.
+
+#### 8. Architecture
+
+Verify:
+
+- `createInjectionController(...)` remains the sole production controller construction;
+- `initialize()` remains the sole production controller initialization;
+- no second capability registry exists;
+- generic files contain no Zepbound-specific references;
+- Medication Center continues to use the generic injectable capability resolver;
+- Zepbound identity remains inside the compatibility boundary.
+
+### Validation Commands
+
+Run:
+
+    git diff --check
+
+Run VS Code diagnostics on every modified JavaScript/HTML file.
+
+Run a generic-file search for:
+
+    Zepbound
+    zepbound
+    zepboundInjectionHistory
+
+against:
+
+    medications.js
+    medicationCenter.js
+    injectionCenter.js
+    storage.js
+
+Confirm that generic files do not acquire Zepbound-specific references.
+
+Confirm:
+
+    git diff --name-only
+
+contains only the files intentionally modified for this cleanup.
+
+After runtime testing, verify the real browser profile contains no disposable test schedule or history data.
+
+### Important Stop Point
+
+This phase is ONLY about cleaning up the existing injectable-medication presentation and workflow.
+
+Do NOT begin:
+
+- multi-injectable expansion beyond the existing generic capability architecture;
+- medication-model redesign;
+- storage migration;
+- restoration of the standalone Zepbound card;
+- unrelated Medication Center redesign;
+- unrelated styling cleanup;
+- new injectable-specific features.
+
+The goal is:
+
+    Make injectable medications feel like a first-class part of Medication Center,
+    make the configured injectable medication itself obvious and directly actionable,
+    minimize unnecessary navigation,
+    eliminate confusing duplicate presentation,
+    preserve the existing Zepbound functionality and history,
+    and preserve privacy for users who have not configured an injectable medication.
+
+### Final Desired Experience
+
+For a user who has configured Zepbound:
+
+    Medication Center
+
+        Scheduled Medications
+            ordinary medications
+
+        Injectable Medications
+            Zepbound  -> tap directly to injection experience
+
+        As-Needed Medications
+            existing PRN medications
+
+For a new user:
+
+    Medication Center
+
+        Scheduled Medications
+            ordinary medications
+
+        As-Needed Medications
+            existing PRN medications
+
+    No Zepbound
+    No unsolicited injectable-specific medication name
+    No injection controller
+    No injection history UI
+
+For a history-only user:
+
+    Medication Center
+
+        Injectable Medications
+            existing injection-history access
+
+        As-Needed Medications
+
+    No automatic Zepbound schedule entry
+
+This is the final cleanup direction to revisit in the next implementation phase.
