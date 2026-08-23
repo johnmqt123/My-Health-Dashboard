@@ -47,7 +47,7 @@
     <div class="quick-access-grid">
     </div>
     </div>
-    <button id="editProfileHeightButton" type="button" style="margin-top: 10px;">👤 Profile &amp; Links Editor</button>
+    <button id="editQuickLinksButton" type="button" style="margin-top: 10px;">🔗 Quick Links Editor</button>
 </div>
 
                 <div class="card nutrition-center-card dashboard-card" id="nutritionCard">
@@ -331,6 +331,13 @@
         <div id="asNeededLastTakenDisplay">No as-needed medications logged yet.</div>
     </div>
 </div>
+<div class="card dashboard-card personal-profile-card">
+    <div class="dashboard-card-header">
+        <h2 class="dashboard-card-title">Personal Profile</h2>
+    </div>
+    <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
+    <button id="editProfileHeightButton" type="button">Edit Profile</button>
+</div>
     </section>
 </div>
 
@@ -405,21 +412,20 @@
 </div>
 <div id="profileHeightModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <div class="profile-editor-section profile-editor-profile-section">
         <h2>Personal Profile</h2>
-
-        <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
 
         <label for="profileHeightFeetInput">Feet</label>
         <input id="profileHeightFeetInput" type="number" min="0" step="1" inputmode="numeric">
 
         <label for="profileHeightInchesInput">Inches</label>
         <input id="profileHeightInchesInput" type="number" min="0" max="11" step="1" inputmode="numeric">
-        </div>
-
-        <div class="profile-editor-section profile-editor-links-section">
-        <hr>
-        <h3>Quick Links</h3>
+        <button id="saveProfileHeightBtn">Save</button>
+        <button id="cancelProfileHeightBtn">Cancel</button>
+    </div>
+</div>
+<div id="quickLinksModal" class="modal" style="display: none;">
+    <div class="modal-content profile-quick-links-modal-content">
+        <h2>Quick Links</h2>
         <div id="profileQuickLinksList" class="profile-quick-links-list"></div>
 
         <label for="profileQuickLinkNameInput">Link Name</label>
@@ -432,12 +438,8 @@
             <button id="saveProfileQuickLinkBtn" type="button">Save Link</button>
             <button id="cancelProfileQuickLinkEditBtn" type="button">Clear</button>
         </div>
-        </div>
 
-        <div class="profile-editor-actions">
-        <button id="saveProfileHeightBtn">Save</button>
-        <button id="cancelProfileHeightBtn">Cancel</button>
-        </div>
+        <button id="closeQuickLinksModalBtn" type="button">Close</button>
     </div>
 </div>
 <div id="bpModal" class="modal">

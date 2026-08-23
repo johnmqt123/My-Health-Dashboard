@@ -24,7 +24,9 @@ const userProfile = {
 
     const profileHeightDisplay = document.getElementById("profileHeightDisplay");
     const editProfileHeightButton = document.getElementById("editProfileHeightButton");
+    const editQuickLinksButton = document.getElementById("editQuickLinksButton");
     const profileHeightModal = document.getElementById("profileHeightModal");
+    const quickLinksModal = document.getElementById("quickLinksModal");
     const profileHeightFeetInput = document.getElementById("profileHeightFeetInput");
     const profileHeightInchesInput = document.getElementById("profileHeightInchesInput");
     const saveProfileHeightBtn = document.getElementById("saveProfileHeightBtn");
@@ -293,6 +295,15 @@ const userProfile = {
         unlockProfileHeightModalBackgroundScroll();
     }
 
+    function closeQuickLinksModal() {
+        if (!quickLinksModal) {
+            return;
+        }
+
+        quickLinksModal.style.display = "none";
+        unlockProfileHeightModalBackgroundScroll();
+    }
+
     function openProfileHeightModal() {
         if (!profileHeightModal) {
             return;
@@ -305,9 +316,6 @@ const userProfile = {
         }
         const savedHeight = getHeightInchesFromProfile(profile);
         renderProfileHeight();
-        renderProfileQuickLinksList();
-        renderDashboardQuickLinks(profile);
-        clearQuickLinkEditor();
 
         if (savedHeight === null) {
             if (profileHeightFeetInput) profileHeightFeetInput.value = "";
@@ -322,6 +330,28 @@ const userProfile = {
 
         if (profileHeightFeetInput) {
             profileHeightFeetInput.focus();
+        }
+    }
+
+    function openQuickLinksModal() {
+        if (!quickLinksModal) {
+            return;
+        }
+
+        const profile = loadPersonalProfile();
+        const migrationResult = migrateLegacyNutritionTableLink(profile);
+        if (migrationResult.changed) {
+            savePersonalProfile(migrationResult.profile);
+        }
+
+        renderProfileQuickLinksList();
+        renderDashboardQuickLinks(profile);
+        clearQuickLinkEditor();
+        quickLinksModal.style.display = "flex";
+        lockProfileHeightModalBackgroundScroll();
+
+        if (profileQuickLinkNameInput) {
+            profileQuickLinkNameInput.focus();
         }
     }
 
@@ -463,8 +493,17 @@ const userProfile = {
             editProfileHeightButton.addEventListener("click", openProfileHeightModal);
         }
 
+        if (editQuickLinksButton) {
+            editQuickLinksButton.addEventListener("click", openQuickLinksModal);
+        }
+
         if (cancelProfileHeightBtn) {
             cancelProfileHeightBtn.addEventListener("click", closeProfileHeightModal);
+        }
+
+        const closeQuickLinksModalBtn = document.getElementById("closeQuickLinksModalBtn");
+        if (closeQuickLinksModalBtn) {
+            closeQuickLinksModalBtn.addEventListener("click", closeQuickLinksModal);
         }
 
         if (saveProfileHeightBtn) {

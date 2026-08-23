@@ -3629,6 +3629,142 @@ button:active,
     min-height: 0;
 }
 
+.personal-profile-card {
+    grid-column: 1 / -1;
+    border-left: 4px solid var(--dashboard-primary-accent);
+}
+
+.personal-profile-card .dashboard-card-header {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    border-radius: 10px 10px 0 0;
+    border-bottom-color: var(--dashboard-primary-accent-border);
+}
+
+.personal-profile-card .dashboard-card-title {
+    color: var(--dashboard-primary-accent-text);
+}
+
+.personal-profile-card > p {
+    margin: 0;
+    padding: 8px 10px;
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    border-radius: 8px;
+    background: var(--dashboard-neutral-accent-background);
+}
+
+.personal-profile-card > button {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+.personal-profile-card > button:hover,
+.personal-profile-card > button:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+}
+
+.personal-profile-card > button:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+.profile-quick-links-modal-content {
+    text-align: left;
+}
+
+.profile-quick-links-modal-content h2 {
+    color: var(--dashboard-primary-accent-text);
+}
+
+.profile-quick-links-modal-content #saveProfileQuickLinkBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+.profile-quick-links-modal-content #cancelProfileQuickLinkEditBtn,
+.profile-quick-links-modal-content #closeQuickLinksModalBtn {
+    background: var(--dashboard-neutral-accent-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    box-shadow: none;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-move-up,
+.profile-quick-links-modal-content .profile-quick-link-move-down,
+.profile-quick-links-modal-content .profile-quick-link-edit {
+    background: var(--dashboard-neutral-accent-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    box-shadow: none;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-delete {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    box-shadow: none;
+}
+
+.profile-quick-links-modal-content #saveProfileQuickLinkBtn:hover,
+.profile-quick-links-modal-content #saveProfileQuickLinkBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+}
+
+.profile-quick-links-modal-content #cancelProfileQuickLinkEditBtn:hover,
+.profile-quick-links-modal-content #cancelProfileQuickLinkEditBtn:active,
+.profile-quick-links-modal-content #closeQuickLinksModalBtn:hover,
+.profile-quick-links-modal-content #closeQuickLinksModalBtn:active {
+    background: var(--dashboard-neutral-accent-border);
+    border-color: var(--dashboard-neutral-accent);
+    color: var(--dashboard-neutral-accent-text);
+    transform: none;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-move-up:hover,
+.profile-quick-links-modal-content .profile-quick-link-move-up:active,
+.profile-quick-links-modal-content .profile-quick-link-move-down:hover,
+.profile-quick-links-modal-content .profile-quick-link-move-down:active,
+.profile-quick-links-modal-content .profile-quick-link-edit:hover,
+.profile-quick-links-modal-content .profile-quick-link-edit:active {
+    background: var(--dashboard-neutral-accent-border);
+    border-color: var(--dashboard-neutral-accent);
+    color: var(--dashboard-neutral-accent-text);
+    transform: none;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-delete:hover,
+.profile-quick-links-modal-content .profile-quick-link-delete:active {
+    background: #fecdd3;
+    border-color: #9f1239;
+    color: #9f1239;
+    transform: none;
+}
+
+.profile-quick-links-modal-content #saveProfileQuickLinkBtn:focus-visible,
+.profile-quick-links-modal-content #cancelProfileQuickLinkEditBtn:focus-visible,
+.profile-quick-links-modal-content #closeQuickLinksModalBtn:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-move-up:focus-visible,
+.profile-quick-links-modal-content .profile-quick-link-move-down:focus-visible,
+.profile-quick-links-modal-content .profile-quick-link-edit:focus-visible,
+.profile-quick-links-modal-content .profile-quick-link-delete:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
 .nutrition-today-summary {
     border: 1px solid #e2e8f0;
     border-radius: 10px;
