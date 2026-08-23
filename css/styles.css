@@ -4372,6 +4372,19 @@ body.zepbound-modal-open {
     flex: 0 0 auto;
 }
 
+.weight-history-chevron,
+.bp-history-chevron,
+.exercise-history-chevron,
+.nutrition-history-chevron,
+.nutrition-day-detail-chevron,
+.diary-history-chevron,
+.medication-card-notes-chevron,
+.medication-heading-chevron {
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
 /* Secondary modal actions: keep Save primary and Cancel/Close neutral. */
 #nutritionLogModal #saveNutritionBtn,
 #nutritionDailyGoalsModal #saveNutritionDailyGoalsBtn,

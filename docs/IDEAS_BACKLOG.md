@@ -2598,3 +2598,62 @@ FINAL FUTURE STOP POINT:
 Do not continue into additional dashboard redesign work after the agreed card model and visual hierarchy have been implemented and validated.
 
 Create a separate follow-up idea for any additional redesign discovered afterward rather than expanding the scope of the original implementation.
+
+IDEA — Personalize Dashboard Greeting from Personal Profile
+
+Current behavior:
+
+The dashboard greeting currently uses a hardcoded first name:
+
+- Good morning, John
+- Good afternoon, John
+- Good evening, John
+
+Future behavior:
+
+The greeting should obtain the user's first name from the Personal Profile rather than having the name hardcoded in the application.
+
+Personal Profile should eventually contain a First Name field, and the dashboard greeting should dynamically use that value.
+
+Examples:
+
+- First Name = John → Good morning, John
+- First Name = Mary → Good afternoon, Mary
+- First Name = Alex → Good evening, Alex
+
+The same first-name value should be used regardless of the time-of-day greeting.
+
+Fallback behavior:
+
+If no first name has been entered, the application should display a sensible greeting without a blank or undefined name.
+
+For example:
+
+- Good morning
+- Good afternoon
+- Good evening
+
+Design intent:
+
+The dashboard should obtain identity information from Personal Profile rather than embedding a specific person's name in the application code.
+
+This should be a relatively small, self-contained enhancement once the Personal Profile structure is established.
+
+Preserve the existing:
+
+- time-of-day greeting logic;
+- greeting layout and styling;
+- Personal Profile storage architecture;
+- existing dashboard behavior.
+
+Do not undertake the larger Personal Profile redesign as part of this idea.
+
+Suggested future implementation:
+
+1. Add a First Name field to Personal Profile.
+2. Store it using the established Personal Profile mechanism.
+3. Update the dashboard greeting to read the first name dynamically.
+4. Provide the no-name fallback.
+5. Verify desktop and iPhone behavior.
+
+Status: Ideas backlog — future enhancement.
