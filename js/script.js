@@ -748,6 +748,19 @@ function renderMedicationScheduleCards() {
 }
 
 window.renderMedicationScheduleCards = renderMedicationScheduleCards;
+
+function moveMedicationCenterBelowEntryPoint() {
+    const entryPoint = document.querySelector(".medication-center-card");
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+
+    if (!entryPoint || !medicationCenterSection) {
+        return;
+    }
+
+    entryPoint.insertAdjacentElement("afterend", medicationCenterSection);
+}
+
+moveMedicationCenterBelowEntryPoint();
 renderMedicationScheduleCards();
 function setupMedicationToggle(headingId, listId) {
     const heading = document.getElementById(headingId);
@@ -851,6 +864,11 @@ const backToTop =
     document.getElementById("backToTop");
 const pageBackToTop =
     document.getElementById("pageBackToTop");
+
+if (medicationCenterCardHeading) {
+    medicationCenterCardHeading.setAttribute("role", "button");
+    medicationCenterCardHeading.setAttribute("tabindex", "0");
+}
 const summaryMedicationStatus =
     document.getElementById("summaryBreakfastStatus");
 
@@ -996,6 +1014,34 @@ function openMedicationCenter(targetElement, options) {
     }
 
     scrollMedicationCenterTo(targetElement, options);
+}
+
+function collapseMedicationCenter() {
+    clearMedicationPeriodSettleTimers();
+    medicationPeriodNavigationRunId += 1;
+
+    if (typeof window.closeMedicationManagementModal === "function") {
+        window.closeMedicationManagementModal();
+    }
+
+    if (typeof window.closeZepboundModal === "function") {
+        window.closeZepboundModal();
+    }
+
+    const medicationCenterSection = document.getElementById("medicationCenterSection");
+    if (medicationCenterSection) {
+        medicationCenterSection.style.display = "none";
+    }
+
+    if (medicationCenterCardHeading) {
+        medicationCenterCardHeading.textContent =
+            "💊 Medication Center ▼";
+        medicationCenterCardHeading.focus();
+        medicationCenterCardHeading.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
 }
 
 function openMedicationCenterForPeriod(periodKey) {
@@ -1688,25 +1734,18 @@ medicationCenterCardHeading.addEventListener("click", function () {
         openMedicationCenter();
 
     } else {
-
-        clearMedicationPeriodSettleTimers();
-        medicationPeriodNavigationRunId += 1;
-
-        if (typeof window.closeMedicationManagementModal === "function") {
-            window.closeMedicationManagementModal();
-        }
-
-        if (typeof window.closeZepboundModal === "function") {
-            window.closeZepboundModal();
-        }
-
-        medicationCenterSection.style.display = "none";
-
-        medicationCenterCardHeading.textContent =
-            "💊 Medication Center ▼";
-
+        collapseMedicationCenter();
     }
 
+});
+
+medicationCenterCardHeading.addEventListener("keydown", function (event) {
+    if (event.key !== "Enter" && event.key !== " ") {
+        return;
+    }
+
+    event.preventDefault();
+    medicationCenterCardHeading.click();
 });
 
 if (summaryMedicationStatus) {
@@ -1722,29 +1761,7 @@ if (summaryMedicationStatus) {
 }
 
 backToTop.addEventListener("click", function () {
-
-    clearMedicationPeriodSettleTimers();
-    medicationPeriodNavigationRunId += 1;
-
-    if (typeof window.closeMedicationManagementModal === "function") {
-        window.closeMedicationManagementModal();
-    }
-
-    if (typeof window.closeZepboundModal === "function") {
-        window.closeZepboundModal();
-    }
-
-    document.getElementById("medicationCenterSection")
-        .style.display = "none";
-
-    medicationCenterCardHeading.textContent =
-        "💊 Medication Center ▼";
-
-    document.getElementById("greeting").scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
-
+    collapseMedicationCenter();
 });
 
 if (pageBackToTop) {
