@@ -2353,3 +2353,41 @@ For a history-only user:
     No automatic Zepbound schedule entry
 
 This is the final cleanup direction to revisit in the next implementation phase.
+
+## Future Idea — Generic Injectable Medication Support
+
+### Purpose
+
+Expand the existing Medication Center so injectable medications can be supported generically rather than being individually hard-coded.
+
+The current implementation should remain focused on the already-supported Zepbound experience. Broader injectable support should be deferred until explicitly approved.
+
+### Desired Future Behavior
+
+A user should be able to configure an injectable medication through the normal Medication Center workflow.
+
+The medication name should function primarily as the user's label for that medication, rather than exposing a specific medication as a built-in application feature.
+
+Once an injectable medication is configured:
+
+- it should appear in the main Medication Center under the existing `Injectable Medications` section;
+- it should be directly actionable from that section;
+- it should open the shared generic injection experience;
+- the medication should remain editable/removable through Manage Medications;
+- ordinary medications should remain unchanged;
+- As-Needed medications should remain separate and below the injectable section.
+
+### Important Privacy / Product Principle
+
+Do not unsolicitedly advertise specific injectable medications to new users.
+
+For example, the application should not display Zepbound, insulin, Xembify, or another medication as a suggested built-in feature simply because the application supports injectable functionality.
+
+The medication name should become visible as a configured medication only after the user independently adds it.
+
+### Architecture Direction
+
+Reuse the existing generic capability path:
+
+```js
+window.medicationCenterCapabilities.isInjectableMedication(medicationName)

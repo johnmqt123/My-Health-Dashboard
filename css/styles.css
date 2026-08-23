@@ -2118,6 +2118,52 @@ button.history-action-btn {
     align-self: center;
 }
 
+#asNeededMedicationContent #saveAsNeededAvailableMedicationBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+    font-weight: 700;
+}
+
+#asNeededMedicationContent #saveAsNeededAvailableMedicationBtn:hover,
+#asNeededMedicationContent #saveAsNeededAvailableMedicationBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+}
+
+#asNeededMedicationContent #saveAsNeededAvailableMedicationBtn:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: 2px;
+}
+
+#asNeededMedicationContent .as-needed-available-remove-btn,
+#asNeededMedicationContent .as-needed-delete-btn {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    box-shadow: none;
+    font-weight: 600;
+}
+
+#asNeededMedicationContent .as-needed-available-remove-btn:hover,
+#asNeededMedicationContent .as-needed-available-remove-btn:active,
+#asNeededMedicationContent .as-needed-delete-btn:hover,
+#asNeededMedicationContent .as-needed-delete-btn:active {
+    background: #fecdd3;
+    border-color: #9f1239;
+    color: #9f1239;
+    transform: none;
+}
+
+#asNeededMedicationContent .as-needed-available-remove-btn:focus-visible,
+#asNeededMedicationContent .as-needed-delete-btn:focus-visible {
+    outline: 2px solid #9f1239;
+    outline-offset: 2px;
+}
+
 @media (max-width: 480px) {
     #asNeededMedicationContent .as-needed-add-row {
         grid-template-columns: 1fr;
