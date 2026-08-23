@@ -72,14 +72,15 @@ textarea {
 }
 
 header {
-    background: var(--primary);
-    color: white;
+    background: var(--dashboard-primary-accent-background);
+    color: var(--dashboard-primary-accent-text);
     text-align: center;
     padding: 25px;
     border-radius: var(--radius);
     margin-bottom: 30px;
-    border: 1px solid rgba(191, 208, 223, 0.8);
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    border-left: 6px solid var(--dashboard-primary-accent);
+    box-shadow: var(--dashboard-card-elevation);
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -99,7 +100,7 @@ header p {
 }
 
 #today {
-    color: rgba(255, 255, 255, 0.72);
+    color: var(--muted);
     font-size: 0.95rem;
     line-height: 1.3;
 }
@@ -3379,10 +3380,11 @@ button:active,
     --card-accent-background: var(--dashboard-primary-accent-background);
     --card-accent-border: var(--dashboard-primary-accent-border);
     --card-accent-text: var(--dashboard-primary-accent-text);
-    border: 1px solid var(--dashboard-card-border);
+    border: 1px solid var(--card-accent-border);
     border-left: 4px solid var(--card-accent);
     border-radius: var(--dashboard-card-radius);
     box-shadow: var(--dashboard-card-elevation);
+    background: var(--card-accent-background);
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
@@ -3404,9 +3406,9 @@ button:active,
 .quick-access-scroll {
     max-height: 192px;
     padding: 8px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--card-accent-border);
     border-radius: 10px;
-    background: #f8fafc;
+    background: var(--dashboard-card-surface);
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
