@@ -2657,3 +2657,56 @@ Suggested future implementation:
 5. Verify desktop and iPhone behavior.
 
 Status: Ideas backlog — future enhancement.
+
+IDEAS BACKLOG — QUICK LINKS EDITOR COMPACT REDESIGN
+
+Title:
+Compact Expandable Quick Links Editor
+
+Priority:
+Future enhancement — not currently scheduled
+
+Current issue:
+The Quick Links Editor is functional, but the current presentation is too repetitive and visually clunky on mobile. Every Quick Link displays the same set of management controls:
+
+- Edit
+- Delete
+- Move Up
+- Move Down
+
+With several links, this creates a long list of repeated buttons and makes the editor difficult to scan.
+
+Proposed redesign:
+Convert each Quick Link into a compact, expandable/collapsible row.
+
+Collapsed state:
+- Display the Quick Link name prominently.
+- Keep the row visually clean and compact.
+- Show a clear, appropriately sized chevron indicating that the row can be expanded.
+- Do not display the management controls while the row is collapsed.
+
+Expanded state:
+- Display the Quick Link name.
+- Display the URL.
+- Provide the existing Edit action.
+- Provide the existing Delete action.
+- Provide Move Up and Move Down controls.
+- Keep all existing functionality and confirmation behavior.
+- Allow the row to be collapsed again when finished.
+
+Design goals:
+- Significantly reduce visual clutter.
+- Make the editor easier to scan on an iPhone.
+- Avoid the repetitive Edit/Delete/Move Up/Move Down pattern.
+- Establish a consistent expandable-row pattern that could potentially be reused elsewhere in the application.
+- Preserve the existing Quick Link data, ordering, storage, and behavior.
+- Maintain comfortable mobile tap targets and keyboard accessibility.
+
+Important:
+This is an interface redesign only. Do not change the underlying Quick Link data structure, storage keys, destinations, ordering semantics, or existing Add/Edit/Delete/Reorder functionality.
+
+Potential future consideration:
+If the expandable-row treatment works particularly well, consider whether the same interaction pattern could eventually be used for other dashboard management/editing interfaces.
+
+Scope:
+Treat this as a contained future enhancement to the Quick Links Editor. Do not combine it with a broader dashboard redesign.
