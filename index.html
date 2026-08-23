@@ -405,6 +405,7 @@
 </div>
 <div id="profileHeightModal" class="modal" style="display: none;">
     <div class="modal-content">
+        <div class="profile-editor-section profile-editor-profile-section">
         <h2>Personal Profile</h2>
 
         <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
@@ -414,7 +415,9 @@
 
         <label for="profileHeightInchesInput">Inches</label>
         <input id="profileHeightInchesInput" type="number" min="0" max="11" step="1" inputmode="numeric">
+        </div>
 
+        <div class="profile-editor-section profile-editor-links-section">
         <hr>
         <h3>Quick Links</h3>
         <div id="profileQuickLinksList" class="profile-quick-links-list"></div>
@@ -429,9 +432,12 @@
             <button id="saveProfileQuickLinkBtn" type="button">Save Link</button>
             <button id="cancelProfileQuickLinkEditBtn" type="button">Clear</button>
         </div>
+        </div>
 
+        <div class="profile-editor-actions">
         <button id="saveProfileHeightBtn">Save</button>
         <button id="cancelProfileHeightBtn">Cancel</button>
+        </div>
     </div>
 </div>
 <div id="bpModal" class="modal">
