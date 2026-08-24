@@ -7,13 +7,21 @@ function initializeHome() {
 function updateGreeting() {
     const greeting = document.getElementById("greeting");
     const hour = new Date().getHours();
+    const profile = typeof window.personalProfileData !== "undefined" &&
+        typeof window.personalProfileData.loadProfile === "function"
+        ? window.personalProfileData.loadProfile()
+        : {};
+    const firstName = typeof profile.firstName === "string"
+        ? profile.firstName.trim()
+        : "";
+    const greetingSuffix = firstName ? ", " + firstName : "";
 
     if (hour < 12) {
-        greeting.textContent = "Good Morning, " + userProfile.firstName;
+        greeting.textContent = "Good Morning" + greetingSuffix;
     } else if (hour < 18) {
-        greeting.textContent = "Good Afternoon, " + userProfile.firstName;
+        greeting.textContent = "Good Afternoon" + greetingSuffix;
     } else {
-        greeting.textContent = "Good Evening, " + userProfile.firstName;
+        greeting.textContent = "Good Evening" + greetingSuffix;
     }
 }
 

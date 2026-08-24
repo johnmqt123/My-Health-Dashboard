@@ -336,6 +336,7 @@
     <div class="dashboard-card-header">
         <h2 class="dashboard-card-title">Personal Profile</h2>
     </div>
+    <p><strong>First Name:</strong> <span id="profileFirstNameDisplay">Not set</span></p>
     <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
     <button id="editProfileHeightButton" type="button">Edit Profile</button>
 </div>
@@ -411,6 +412,9 @@
 <div id="profileHeightModal" class="modal" style="display: none;">
     <div class="modal-content">
         <h2>Personal Profile</h2>
+
+        <label for="profileFirstNameInput">First Name</label>
+        <input id="profileFirstNameInput" type="text" autocomplete="given-name" maxlength="80">
 
         <label for="profileHeightFeetInput">Feet</label>
         <input id="profileHeightFeetInput" type="number" min="0" step="1" inputmode="numeric">

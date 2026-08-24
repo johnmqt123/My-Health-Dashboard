@@ -101,6 +101,7 @@ header h1 {
     font-weight: 750;
     line-height: 1.15;
     letter-spacing: 0;
+    overflow-wrap: anywhere;
 }
 
 header p {
@@ -3710,6 +3711,7 @@ button:active,
     border: 1px solid var(--dashboard-neutral-accent-border);
     border-radius: 8px;
     background: var(--dashboard-neutral-accent-background);
+    overflow-wrap: anywhere;
 }
 
 .personal-profile-card > button {

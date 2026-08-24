@@ -23,10 +23,12 @@ const userProfile = {
     const personalProfileStorageKey = "personalProfile";
 
     const profileHeightDisplay = document.getElementById("profileHeightDisplay");
+    const profileFirstNameDisplay = document.getElementById("profileFirstNameDisplay");
     const editProfileHeightButton = document.getElementById("editProfileHeightButton");
     const editQuickLinksButton = document.getElementById("editQuickLinksButton");
     const profileHeightModal = document.getElementById("profileHeightModal");
     const quickLinksModal = document.getElementById("quickLinksModal");
+    const profileFirstNameInput = document.getElementById("profileFirstNameInput");
     const profileHeightFeetInput = document.getElementById("profileHeightFeetInput");
     const profileHeightInchesInput = document.getElementById("profileHeightInchesInput");
     const saveProfileHeightBtn = document.getElementById("saveProfileHeightBtn");
@@ -297,6 +299,23 @@ const userProfile = {
         profileHeightDisplay.textContent = formatHeightForDisplay(getHeightInchesFromProfile(profile));
     }
 
+    function getFirstNameFromProfile(profile) {
+        if (!profile || typeof profile.firstName !== "string") {
+            return "";
+        }
+
+        return profile.firstName.trim();
+    }
+
+    function renderProfileFirstName() {
+        if (!profileFirstNameDisplay) {
+            return;
+        }
+
+        const firstName = getFirstNameFromProfile(loadPersonalProfile());
+        profileFirstNameDisplay.textContent = firstName || "Not set";
+    }
+
     function lockProfileHeightModalBackgroundScroll() {
         lockedScrollTop = window.scrollY || window.pageYOffset || 0;
         lockedBodyStyles = {
@@ -361,6 +380,9 @@ const userProfile = {
             savePersonalProfile(migrationResult.profile);
         }
         const savedHeight = getHeightInchesFromProfile(profile);
+        if (profileFirstNameInput) {
+            profileFirstNameInput.value = getFirstNameFromProfile(profile);
+        }
         renderProfileHeight();
 
         if (savedHeight === null) {
@@ -402,30 +424,40 @@ const userProfile = {
     }
 
     function saveProfileHeight() {
+        const firstName = profileFirstNameInput ? profileFirstNameInput.value.trim() : "";
         const feet = getNumberOrNull(profileHeightFeetInput ? profileHeightFeetInput.value.trim() : "");
         const inches = getNumberOrNull(profileHeightInchesInput ? profileHeightInchesInput.value.trim() : "");
+        const feetText = profileHeightFeetInput ? profileHeightFeetInput.value.trim() : "";
+        const inchesText = profileHeightInchesInput ? profileHeightInchesInput.value.trim() : "";
+        const hasHeightInput = feetText !== "" || inchesText !== "";
 
-        if (feet === null || feet < 0 || !Number.isInteger(feet)) {
+        if (hasHeightInput && (feet === null || feet < 0 || !Number.isInteger(feet))) {
             alert("Please enter feet as a whole number.");
             return;
         }
 
-        if (inches === null || inches < 0 || inches > 11 || !Number.isInteger(inches)) {
+        if (hasHeightInput && (inches === null || inches < 0 || inches > 11 || !Number.isInteger(inches))) {
             alert("Please enter inches between 0 and 11.");
             return;
         }
 
-        const totalHeightInches = (feet * 12) + inches;
-        if (totalHeightInches <= 0) {
-            alert("Please enter a valid height.");
-            return;
-        }
-
         const profile = loadPersonalProfile();
-        profile.heightInches = totalHeightInches;
+        profile.firstName = firstName;
+        if (hasHeightInput) {
+            const totalHeightInches = (feet * 12) + inches;
+            if (totalHeightInches <= 0) {
+                alert("Please enter a valid height.");
+                return;
+            }
+            profile.heightInches = totalHeightInches;
+        }
         savePersonalProfile(profile);
+        renderProfileFirstName();
         renderProfileHeight();
         closeProfileHeightModal();
+        if (typeof window.updateGreeting === "function") {
+            window.updateGreeting();
+        }
     }
 
     function saveProfileQuickLink() {
@@ -539,6 +571,7 @@ const userProfile = {
         }
 
         renderProfileHeight();
+        renderProfileFirstName();
         renderDashboardQuickLinks(profile);
 
         if (personalProfileInitialized) {
