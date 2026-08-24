@@ -28,10 +28,18 @@
     --dashboard-primary-accent-background: #e9f1f8;
     --dashboard-primary-accent-border: #bfd0df;
     --dashboard-primary-accent-text: #1f4e79;
+    --dashboard-medication-accent: #2563a6;
+    --dashboard-medication-background: #edf4fb;
+    --dashboard-medication-border: #b9cee3;
+    --dashboard-medication-text: #1f4e79;
     --dashboard-neutral-accent: #64748b;
     --dashboard-neutral-accent-background: #f1f5f9;
     --dashboard-neutral-accent-border: #cbd5e1;
     --dashboard-neutral-accent-text: #475569;
+    --dashboard-quick-links-accent: #64748b;
+    --dashboard-quick-links-background: #f1f5f9;
+    --dashboard-quick-links-border: #cbd5e1;
+    --dashboard-quick-links-text: #334155;
     --dashboard-green-accent: #2f7d5a;
     --dashboard-green-accent-background: #eaf5ef;
     --dashboard-green-accent-border: #b9ddc8;
@@ -413,10 +421,10 @@ header p {
 }
 
 .medication-center-card {
-    --card-accent: var(--dashboard-primary-accent);
-    --card-accent-background: var(--dashboard-primary-accent-background);
-    --card-accent-border: var(--dashboard-primary-accent-border);
-    --card-accent-text: var(--dashboard-primary-accent-text);
+    --card-accent: var(--dashboard-medication-accent);
+    --card-accent-background: var(--dashboard-medication-background);
+    --card-accent-border: var(--dashboard-medication-border);
+    --card-accent-text: var(--dashboard-medication-text);
     border-left: 4px solid var(--card-accent);
 }
 
@@ -3376,10 +3384,10 @@ button:active,
 
 .quick-access-card {
     min-height: 0;
-    --card-accent: var(--dashboard-primary-accent);
-    --card-accent-background: var(--dashboard-primary-accent-background);
-    --card-accent-border: var(--dashboard-primary-accent-border);
-    --card-accent-text: var(--dashboard-primary-accent-text);
+    --card-accent: var(--dashboard-quick-links-accent);
+    --card-accent-background: var(--dashboard-quick-links-background);
+    --card-accent-border: var(--dashboard-quick-links-border);
+    --card-accent-text: var(--dashboard-quick-links-text);
     border: 1px solid var(--dashboard-card-border);
     border-left: 4px solid var(--card-accent);
     border-radius: var(--dashboard-card-radius);
@@ -3464,27 +3472,6 @@ button:active,
 .quick-access-button:focus-visible {
     outline: 2px solid var(--quick-link-accent);
     outline-offset: 2px;
-}
-
-.quick-access-button:nth-child(3n + 1) {
-    --quick-link-accent: var(--dashboard-green-accent);
-    --quick-link-background: var(--dashboard-green-accent-background);
-    --quick-link-border: var(--dashboard-green-accent-border);
-    --quick-link-text: var(--dashboard-green-accent-text);
-}
-
-.quick-access-button:nth-child(3n + 2) {
-    --quick-link-accent: #5546a8;
-    --quick-link-background: #f0eefb;
-    --quick-link-border: #c9c3ec;
-    --quick-link-text: #44378b;
-}
-
-.quick-access-button:nth-child(3n) {
-    --quick-link-accent: #087f8c;
-    --quick-link-background: #e7f6f7;
-    --quick-link-border: #abdfe2;
-    --quick-link-text: #076875;
 }
 
 #editProfileHeightButton {
