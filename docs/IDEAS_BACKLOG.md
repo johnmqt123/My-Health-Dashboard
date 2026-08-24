@@ -2710,3 +2710,57 @@ If the expandable-row treatment works particularly well, consider whether the sa
 
 Scope:
 Treat this as a contained future enhancement to the Quick Links Editor. Do not combine it with a broader dashboard redesign.
+IDEAS BACKLOG — Future Dashboard Element Reordering
+
+Title:
+User-Configurable Dashboard Card Order
+
+Concept:
+Allow the user to customize the vertical order of the major dashboard cards/modules so the dashboard can reflect how that individual actually uses the application.
+
+The Greeting/Header should remain permanently anchored at the top and should NOT be reorderable.
+
+Potential reorderable elements could include:
+- Medication Center
+- Quick Links
+- Nutrition
+- Weight
+- Daily Diary
+- Blood Pressure
+- Exercise
+- Injectable Medications
+- As-Needed Medications
+- Personal Profile
+- Any additional major dashboard modules added in the future
+
+User experience:
+- Provide a simple editing mechanism, similar in spirit to the existing Quick Links reordering controls.
+- Allow the user to move dashboard cards up and down.
+- The user could decide, for example, to place Quick Links immediately below the Greeting if they use them frequently.
+- Another user might prefer Medication Center near the top.
+- Less frequently used modules could be moved farther down.
+- Personal Profile would likely remain near the bottom by default, since it is infrequently accessed, but could still be repositioned if desired.
+
+Important design considerations:
+- Greeting/Header remains the fixed top anchor and cannot be moved.
+- The system should have a sensible default order for new users.
+- Reordering should affect only the user's dashboard presentation, not the underlying data or functionality of the modules.
+- The ordering preference should persist between sessions.
+- Adding a new dashboard module in a future version should have a predictable default position without unexpectedly disrupting a user's customized order.
+- The feature should remain simple and unobtrusive; dashboard customization should not make the normal dashboard experience feel like an administration screen.
+- Consider eventually providing a “Reset to Default Order” option.
+
+Relationship to Quick Links:
+The existing Quick Links editor already establishes a useful pattern for user-controlled ordering. The future dashboard reordering experience could borrow from that concept while being designed specifically for larger dashboard cards/modules.
+
+Future design question:
+Determine whether the best interaction is:
+1. A dedicated “Customize Dashboard” editor with Move Up/Move Down controls;
+2. An edit mode directly on the dashboard;
+3. Drag-and-drop reordering;
+4. Or another simple mobile-friendly approach.
+
+Mobile usability should be a primary consideration. Any drag-and-drop solution should have an accessible alternative such as Move Up/Move Down controls.
+
+Status:
+Future idea — do not implement as part of the current Quick Links/color work.
