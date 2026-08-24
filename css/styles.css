@@ -3734,6 +3734,16 @@ button:active,
     color: var(--dashboard-primary-accent-text);
 }
 
+.profile-quick-links-add-heading {
+    margin: 16px 0 0;
+    padding-top: 12px;
+    border-top: 1px solid var(--dashboard-card-border);
+    color: var(--dashboard-primary-accent-text);
+    font-size: 1rem;
+    line-height: 1.3;
+    text-align: left;
+}
+
 .profile-quick-links-modal-content #saveProfileQuickLinkBtn {
     background: var(--dashboard-primary-accent-background);
     border: 1px solid var(--dashboard-primary-accent-border);
