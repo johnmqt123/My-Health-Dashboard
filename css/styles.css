@@ -3572,11 +3572,57 @@ button:active,
 
 .profile-quick-link-row {
     display: grid;
-    gap: 8px;
+    gap: 0;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
-    padding: 10px;
+    padding: 0;
     background: #f8fafc;
+    overflow: hidden;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    min-height: 52px;
+    margin: 0;
+    padding: 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-summary:hover,
+.profile-quick-links-modal-content .profile-quick-link-summary:active {
+    background: #eef6ff;
+    transform: none;
+    box-shadow: none;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-summary:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
+    outline-offset: -2px;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-summary .profile-quick-link-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile-quick-links-modal-content .profile-quick-link-chevron {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 1.15rem;
+    font-weight: 700;
+    line-height: 1;
 }
 
 .profile-quick-link-name {
@@ -3586,16 +3632,21 @@ button:active,
 }
 
 .profile-quick-link-url {
-    margin: 0;
+    margin: 0 10px 8px;
     font-size: 0.85rem;
     color: #334155;
     overflow-wrap: anywhere;
+}
+
+.profile-quick-link-details {
+    min-width: 0;
 }
 
 .profile-quick-link-row-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+    margin: 0 10px;
     padding-top: 8px;
     border-top: 1px solid var(--dashboard-card-border);
 }
@@ -3610,9 +3661,9 @@ button:active,
 .profile-quick-link-row-actions > .profile-quick-link-move-up,
 .profile-quick-link-row-actions > .profile-quick-link-move-down {
     grid-row: 2;
-    min-height: 34px;
-    padding: 6px 8px;
-    font-size: 0.82rem;
+    min-height: 44px;
+    padding: 8px 10px;
+    font-size: 0.9rem;
 }
 
 .profile-quick-links-actions {

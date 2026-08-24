@@ -43,6 +43,7 @@ const userProfile = {
     let lockedHtmlOverflow = "";
     let personalProfileInitialized = false;
     let editingQuickLinkIndex = -1;
+    let expandedQuickLinkIndex = -1;
 
     function getNumberOrNull(value) {
         const num = Number(value);
@@ -209,6 +210,10 @@ const userProfile = {
         const profile = loadPersonalProfile();
         const links = getNormalizedQuickLinks(profile);
 
+        if (expandedQuickLinkIndex >= links.length) {
+            expandedQuickLinkIndex = -1;
+        }
+
         if (links.length === 0) {
             profileQuickLinksList.innerHTML = '<p class="profile-quick-links-empty">No custom quick links yet.</p>';
             return;
@@ -218,14 +223,19 @@ const userProfile = {
             .map(function (link, index) {
                 const isFirstLink = index === 0;
                 const isLastLink = index === links.length - 1;
+                const isExpanded = expandedQuickLinkIndex === index;
                 return '<div class="profile-quick-link-row" data-quick-link-index="' + index + '">' +
-                    '<p class="profile-quick-link-name">' +
-                        escapeHtml(link.name) +
-                    '</p>' +
-                    '<p class="profile-quick-link-url">' +
-                        escapeHtml(link.url) +
-                    '</p>' +
-                    '<div class="profile-quick-link-row-actions">' +
+                    '<button type="button" class="profile-quick-link-summary" aria-expanded="' + (isExpanded ? 'true' : 'false') + '" aria-controls="profile-quick-link-details-' + index + '">' +
+                        '<span class="profile-quick-link-name">' +
+                            escapeHtml(link.name) +
+                        '</span>' +
+                        '<span class="profile-quick-link-chevron" aria-hidden="true">' + (isExpanded ? '⌄' : '›') + '</span>' +
+                    '</button>' +
+                    '<div id="profile-quick-link-details-' + index + '" class="profile-quick-link-details"' + (isExpanded ? '' : ' hidden') + '>' +
+                        '<p class="profile-quick-link-url">' +
+                            escapeHtml(link.url) +
+                        '</p>' +
+                        '<div class="profile-quick-link-row-actions">' +
                         '<button type="button" class="profile-quick-link-move-up"' +
                             (isFirstLink ? ' disabled' : '') +
                             '>Move Up</button>' +
@@ -234,10 +244,23 @@ const userProfile = {
                             '>Move Down</button>' +
                         '<button type="button" class="profile-quick-link-edit">Edit</button>' +
                         '<button type="button" class="profile-quick-link-delete">Delete</button>' +
+                        '</div>' +
                     '</div>' +
                 '</div>';
             })
             .join("");
+    }
+
+    function toggleQuickLink(index) {
+        expandedQuickLinkIndex = expandedQuickLinkIndex === index ? -1 : index;
+        renderProfileQuickLinksList();
+
+        const summary = profileQuickLinksList
+            ? profileQuickLinksList.querySelector('[data-quick-link-index="' + index + '"] .profile-quick-link-summary')
+            : null;
+        if (summary) {
+            summary.focus();
+        }
     }
 
     function getHeightInchesFromProfile(profile) {
@@ -469,6 +492,11 @@ const userProfile = {
         }
 
         links.splice(index, 1);
+        if (expandedQuickLinkIndex === index) {
+            expandedQuickLinkIndex = -1;
+        } else if (expandedQuickLinkIndex > index) {
+            expandedQuickLinkIndex -= 1;
+        }
         savePersonalProfile(saveQuickLinksToProfile(profile, links));
         renderProfileQuickLinksList();
         renderDashboardQuickLinks(profile);
@@ -486,6 +514,12 @@ const userProfile = {
         const movedLink = links[index];
         links[index] = links[targetIndex];
         links[targetIndex] = movedLink;
+
+        if (expandedQuickLinkIndex === index) {
+            expandedQuickLinkIndex = targetIndex;
+        } else if (expandedQuickLinkIndex === targetIndex) {
+            expandedQuickLinkIndex = index;
+        }
 
         savePersonalProfile(saveQuickLinksToProfile(profile, links));
         renderProfileQuickLinksList();
@@ -570,6 +604,11 @@ const userProfile = {
 
                 if (event.target.closest(".profile-quick-link-delete")) {
                     deleteProfileQuickLink(index);
+                    return;
+                }
+
+                if (event.target.closest(".profile-quick-link-summary")) {
+                    toggleQuickLink(index);
                 }
             });
         }
