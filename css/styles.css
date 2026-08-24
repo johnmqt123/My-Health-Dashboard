@@ -3474,6 +3474,27 @@ button:active,
     outline-offset: 2px;
 }
 
+#editQuickLinksButton {
+    background: #f8fafc;
+    border: 1px solid var(--dashboard-quick-links-border);
+    color: #475569;
+    box-shadow: none;
+}
+
+#editQuickLinksButton:hover,
+#editQuickLinksButton:active {
+    background: #e2e8f0;
+    border-color: var(--dashboard-quick-links-accent);
+    color: #475569;
+    transform: none;
+    box-shadow: none;
+}
+
+#editQuickLinksButton:focus-visible {
+    outline: 2px solid var(--dashboard-quick-links-accent);
+    outline-offset: 2px;
+}
+
 #editProfileHeightButton {
     border: 1px solid var(--dashboard-neutral-accent-border);
     border-radius: 10px;
