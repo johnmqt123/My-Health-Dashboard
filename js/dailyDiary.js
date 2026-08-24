@@ -385,6 +385,12 @@
         renderHistory();
     }
 
+    function resetHistoryScroll() {
+        if (dailyDiaryHistoryDisplay) {
+            dailyDiaryHistoryDisplay.scrollTop = 0;
+        }
+    }
+
     function editHistoryDate(dateKey) {
         if (!parseDateKey(dateKey)) {
             return;
@@ -402,60 +408,18 @@
 
         if (isHidden) {
             renderHistory();
+            resetHistoryScroll();
             dailyDiaryHistorySection.style.display = "block";
             dailyDiaryHistoryButton.textContent = "Hide History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "true");
-
-            const alignHistoryControl = function () {
-                const buttonTop =
-                    window.pageYOffset + dailyDiaryHistoryButton.getBoundingClientRect().top;
-                const targetTop = Math.max(0, buttonTop - 8);
-
-                window.scrollTo({
-                    top: targetTop,
-                    behavior: "auto"
-                });
-            };
-
-            alignHistoryControl();
-
-            window.setTimeout(function () {
-                const buttonRect = dailyDiaryHistoryButton.getBoundingClientRect();
-                const sectionRect = dailyDiaryHistorySection.getBoundingClientRect();
-                const monthHeading = dailyDiaryHistoryDisplay
-                    ? dailyDiaryHistoryDisplay.querySelector(".diary-month-header")
-                    : null;
-                const monthRect = monthHeading ? monthHeading.getBoundingClientRect() : null;
-                const buttonVisible = buttonRect.top >= 0 && buttonRect.bottom <= window.innerHeight;
-                const sectionStartVisible = sectionRect.top < window.innerHeight;
-                const monthVisible = !monthRect || (monthRect.top >= 0 && monthRect.top < window.innerHeight);
-
-                if (buttonVisible && sectionStartVisible && monthVisible) {
-                    return;
-                }
-
-                alignHistoryControl();
-            }, 160);
-
             return;
         }
 
         expandedHistoryDate = null;
+        resetHistoryScroll();
         dailyDiaryHistorySection.style.display = "none";
         dailyDiaryHistoryButton.textContent = "📊 History";
         dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
-
-        if (typeof window.scrollMedicationCenterTo === "function" && dailyDiaryCard) {
-            window.scrollMedicationCenterTo(dailyDiaryCard);
-            return;
-        }
-
-        if (dailyDiaryCard) {
-            dailyDiaryCard.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
     }
 
     function initDailyDiaryCenter() {
@@ -517,6 +481,7 @@
 
         if (dailyDiarySearchInput) {
             dailyDiarySearchInput.addEventListener("input", function () {
+                resetHistoryScroll();
                 renderHistory();
             });
         }
