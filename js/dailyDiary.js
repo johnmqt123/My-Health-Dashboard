@@ -10,6 +10,7 @@
     const dailyDiaryHistoryButton = document.getElementById("dailyDiaryHistoryButton");
     const dailyDiaryHistorySection = document.getElementById("dailyDiaryHistorySection");
     const dailyDiaryHistoryDisplay = document.getElementById("dailyDiaryHistoryDisplay");
+    const dailyDiarySearchInput = document.getElementById("dailyDiarySearchInput");
 
     const dailyDiaryEditorModal = document.getElementById("dailyDiaryEditorModal");
     const dailyDiaryEditorTitle = document.getElementById("dailyDiaryEditorTitle");
@@ -166,6 +167,40 @@
         return compact.slice(0, 117) + "...";
     }
 
+    function getSearchPreviewText(textValue, searchText) {
+        const compact = String(textValue || "").replace(/\s+/g, " ").trim();
+        const normalizedSearch = String(searchText || "").trim();
+        if (!compact) {
+            return "No entry yet. Add today's diary entry.";
+        }
+
+        if (!normalizedSearch) {
+            return getPreviewText(compact);
+        }
+
+        const normalizedText = compact.toLowerCase();
+        const searchLower = normalizedSearch.toLowerCase();
+        const matchIndex = normalizedText.indexOf(searchLower);
+        if (matchIndex === -1) {
+            return getPreviewText(compact);
+        }
+
+        const snippetLength = 90;
+        const start = Math.max(0, matchIndex - 35);
+        const end = Math.min(compact.length, start + snippetLength);
+        let preview = compact.slice(start, end).trim();
+
+        if (start > 0) {
+            preview = "…" + preview;
+        }
+
+        if (end < compact.length) {
+            preview = preview + "…";
+        }
+
+        return preview || getPreviewText(compact);
+    }
+
     function getSortedEntriesNewestFirst() {
         return diaryEntries.slice().sort(function (a, b) {
             if (a.date === b.date) {
@@ -173,6 +208,20 @@
             }
 
             return a.date < b.date ? 1 : -1;
+        });
+    }
+
+    function getFilteredDiaryEntries() {
+        const query = dailyDiarySearchInput ? dailyDiarySearchInput.value.trim() : "";
+        const normalizedQuery = query.toLowerCase();
+        const sorted = getSortedEntriesNewestFirst();
+
+        if (!normalizedQuery) {
+            return sorted;
+        }
+
+        return sorted.filter(function (entry) {
+            return String(entry.text || "").toLowerCase().indexOf(normalizedQuery) !== -1;
         });
     }
 
@@ -253,20 +302,23 @@
             return;
         }
 
-        const sorted = getSortedEntriesNewestFirst();
+        const filteredEntries = getFilteredDiaryEntries();
 
         dailyDiaryHistoryDisplay.innerHTML = "";
         dailyDiaryHistoryDisplay.classList.add("diary-history-list");
 
-        if (!sorted.length) {
-            dailyDiaryHistoryDisplay.innerHTML = '<p class="history-empty">No diary entries yet.</p>';
+        if (!filteredEntries.length) {
+            const message = (dailyDiarySearchInput && dailyDiarySearchInput.value.trim())
+                ? "No matching entries."
+                : "No diary entries yet.";
+            dailyDiaryHistoryDisplay.innerHTML = '<p class="history-empty">' + escapeHtml(message) + "</p>";
             return;
         }
 
         const grouped = {};
         const orderedMonths = [];
 
-        sorted.forEach(function (entry) {
+        filteredEntries.forEach(function (entry) {
             const monthLabel = getHistoryMonthLabel(entry.date);
             if (!grouped[monthLabel]) {
                 grouped[monthLabel] = [];
@@ -290,6 +342,7 @@
                 const item = document.createElement("div");
                 item.className = "diary-history-item" + (isExpanded ? " is-expanded" : "");
 
+                const previewText = getSearchPreviewText(entry.text, dailyDiarySearchInput ? dailyDiarySearchInput.value : "");
                 const row = document.createElement("button");
                 row.type = "button";
                 row.className = "diary-history-row";
@@ -299,7 +352,7 @@
                 row.innerHTML =
                     '<span class="diary-history-main">' +
                         '<span class="diary-history-date">' + escapeHtml(getHistoryDayLabel(entry.date)) + "</span>" +
-                        '<span class="diary-history-preview">' + escapeHtml(getPreviewText(entry.text)) + "</span>" +
+                        '<span class="diary-history-preview">' + escapeHtml(previewText) + "</span>" +
                     "</span>" +
                     '<span class="diary-history-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>";
 
@@ -459,6 +512,12 @@
 
                 const dateKey = String(row.getAttribute("data-date") || "");
                 toggleHistoryEntry(dateKey);
+            });
+        }
+
+        if (dailyDiarySearchInput) {
+            dailyDiarySearchInput.addEventListener("input", function () {
+                renderHistory();
             });
         }
 
