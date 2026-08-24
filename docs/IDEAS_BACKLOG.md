@@ -2764,3 +2764,59 @@ Mobile usability should be a primary consideration. Any drag-and-drop solution s
 
 Status:
 Future idea — do not implement as part of the current Quick Links/color work.
+
+### Export Blood Pressure History for Healthcare Providers
+
+Add the ability to export Blood Pressure History in a format that can
+easily be provided to a healthcare professional.
+
+Initial target:
+
+- Blood Pressure History
+
+Primary use case:
+
+- Generate a professional Blood Pressure report that can be uploaded
+  to MyChart or included in a MyChart message to the user's doctor.
+
+Potential export formats:
+
+- PDF — formatted report suitable for uploading or attaching.
+- Plain text — easy to copy and paste directly into a MyChart message.
+- CSV — optional format for spreadsheet analysis or other applications.
+
+The report should ideally include:
+
+- Date
+- Time
+- Systolic pressure
+- Diastolic pressure
+- Pulse
+- Any existing notes associated with the reading
+
+Future considerations:
+
+- Date-range selection.
+- Summary statistics such as average systolic, average diastolic,
+  and average pulse.
+- Clearly identify the reporting period.
+- Professional, easy-to-read formatting.
+- Avoid unnecessary application-specific interface elements in the
+  exported report.
+
+Future candidates for the same export framework:
+
+- Weight History
+- Medication History
+- Nutrition History
+- Exercise History
+- Sleep History
+
+Design goal:
+
+Make it easy for the user to get their health information out of
+John's Assistant and into a format that is useful to their healthcare
+provider.
+
+No redesign of the existing Blood Pressure History screen is required
+to support this feature.
