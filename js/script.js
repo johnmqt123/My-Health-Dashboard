@@ -1775,17 +1775,6 @@ backToTop.addEventListener("click", function () {
 
 if (pageBackToTop) {
     pageBackToTop.addEventListener("click", function () {
-        const medicationCenterSection = document.getElementById("medicationCenterSection");
-
-        if (
-            medicationCenterSection &&
-            medicationCenterSection.style.display === "block" &&
-            backToTop
-        ) {
-            backToTop.click();
-            return;
-        }
-
         window.scrollTo({
             top: 0,
             behavior: "smooth"
