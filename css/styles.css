@@ -2951,7 +2951,6 @@ button:active,
 }
 
 #medicationCenterSection .main-injectable-medications-section {
-    border: 2px solid var(--accent);
     background: #eef6ff;
     padding: 14px;
 }

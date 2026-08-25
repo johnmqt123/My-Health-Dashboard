@@ -433,7 +433,7 @@ function renderMainInjectableMedications() {
     }
 
     const section = document.createElement("section");
-    section.className = "medication-schedule-section main-injectable-medications-section";
+    section.className = "card medication-center-card medication-schedule-section main-injectable-medications-section";
     section.id = "mainInjectableMedicationsSection";
 
     const title = document.createElement("h4");
