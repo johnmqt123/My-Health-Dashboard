@@ -2820,3 +2820,46 @@ provider.
 
 No redesign of the existing Blood Pressure History screen is required
 to support this feature.
+Daily Diary Image Attachments
+
+## Daily Diary Image Attachments
+
+Allow Daily Diary entries to contain local image attachments. The feature should be platform-neutral and support iPhone, Android, desktop, and other compatible devices.
+
+### Initial concept
+
+- Allow users to attach an image to a Diary entry.
+- Support mobile photo selection and desktop file selection through standard web capabilities.
+- Support image paste where the device/browser permits it, without making paste a requirement.
+- Store images locally using a browser-standard binary storage mechanism such as IndexedDB rather than an iPhone- or Android-specific solution.
+- Store the original image and generate a smaller thumbnail for display.
+- Display the thumbnail in Diary History.
+- Allow the user to tap/click the thumbnail to view the full image.
+- Preserve the existing text-based Diary History search.
+- Begin with one image per Diary entry if that provides the simplest reliable first implementation.
+- Include explicit image replacement/removal capability when implemented.
+- Do not rely on external image-hosting URLs.
+- Preserve all existing Diary entries that do not contain attachments.
+- Design the attachment data model so it can eventually support multiple images, captions, and export without requiring a fundamental redesign.
+
+### Platform requirement
+
+The implementation must **not be iPhone-specific**. Development and testing may initially focus on iPhone because that is the current primary environment, but the underlying architecture and user-facing capability should also support Android and desktop browsers.
+
+### Future considerations
+
+Defer the following until the basic image-attachment lifecycle is proven:
+
+- Multiple images per Diary entry
+- Image captions
+- Searching image captions
+- PDF or other healthcare-provider export integration
+- Additional attachment types
+
+### Privacy
+
+Because Diary entries may contain personal health information, image attachments should remain local to the application/device unless a future feature explicitly introduces secure synchronization or export. External image hosting should not be required.
+
+### Status
+
+Future feature / Ideas Backlog. Architecture should be investigated and approved before implementation.
