@@ -436,8 +436,8 @@ function renderMainInjectableMedications() {
     section.className = "card medication-center-card medication-schedule-section main-injectable-medications-section";
     section.id = "mainInjectableMedicationsSection";
 
-    const title = document.createElement("h4");
-    title.className = "medication-schedule-title";
+    const title = document.createElement("h2");
+    title.className = "";
     title.textContent = "Injectable Medications";
     section.appendChild(title);
 
