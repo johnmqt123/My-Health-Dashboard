@@ -356,6 +356,28 @@ function saveMedicationSchedule() {
     }
 }
 
+const expandedInjectableMedicationIds = new Set();
+
+const mainInjectableDayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
+function getInjectableMedicationRegimenLabel(regimen) {
+    if (!regimen || regimen.frequency !== "weekly" ||
+        !Number.isInteger(regimen.dayOfWeek) ||
+        !mainInjectableDayNames[regimen.dayOfWeek]) {
+        return "Weekly schedule not configured";
+    }
+
+    return "Every " + mainInjectableDayNames[regimen.dayOfWeek];
+}
+
 function renderMainInjectableMedications() {
     const asNeededCard = document.getElementById("asNeededMedicationCard");
     const medicationCenterSection = document.getElementById("medicationCenterSection");
@@ -372,105 +394,101 @@ function renderMainInjectableMedications() {
         existingSection.remove();
     }
 
-    const capabilities = window.medicationCenterCapabilities || {};
-    const isInjectable = typeof capabilities.isInjectableMedication === "function"
-        ? capabilities.isInjectableMedication
-        : null;
-    const openInjection = typeof capabilities.openInjection === "function"
-        ? capabilities.openInjection
-        : null;
-    const injectableMedications = [];
-    const medicationKeys = new Set();
-    const schedule = typeof personalMedicationSchedule !== "undefined" &&
-        Array.isArray(personalMedicationSchedule)
-        ? personalMedicationSchedule
-        : [];
-
-    if (isInjectable) {
-        schedule.forEach(function (group) {
-            if (!Array.isArray(group && group.medications)) {
-                return;
-            }
-
-            group.medications.forEach(function (medicationName) {
-                if (!isInjectable(medicationName)) {
-                    return;
-                }
-
-                const normalizedName = String(medicationName || "").trim();
-                const medicationKey = normalizedName.toLowerCase();
-                if (!normalizedName || medicationKeys.has(medicationKey)) {
-                    return;
-                }
-
-                medicationKeys.add(medicationKey);
-                injectableMedications.push({
-                    medicationName: normalizedName,
-                    open: openInjection
-                });
-            });
-        });
-    }
-
-    const injectionAccess = capabilities.getInjectionAccess &&
-        typeof capabilities.getInjectionAccess === "function"
-        ? capabilities.getInjectionAccess()
-        : null;
-    if (injectionAccess && typeof injectionAccess.open === "function" &&
-        isInjectable && isInjectable(injectionAccess.medicationName)) {
-        const normalizedName = String(injectionAccess.medicationName || "").trim();
-        const medicationKey = normalizedName.toLowerCase();
-        if (normalizedName && !medicationKeys.has(medicationKey)) {
-            injectableMedications.push({
-                medicationName: normalizedName,
-                open: injectionAccess.open
-            });
-        }
-    }
-
-    if (!injectableMedications.length) {
+    const definitionCompat = window.medicationDefinitionCompat || {};
+    if (typeof definitionCompat.loadMedicationDefinitions !== "function") {
         return;
     }
 
-    const section = document.createElement("section");
-    section.className = "card medication-center-card medication-schedule-section main-injectable-medications-section";
-    section.id = "mainInjectableMedicationsSection";
-
-    const title = document.createElement("h2");
-    title.className = "";
-    title.textContent = "Injectable Medications";
-    section.appendChild(title);
-
-    const list = document.createElement("ul");
-    list.className = "medication-schedule-list main-injectable-medications-list";
-
-    injectableMedications.forEach(function (injectableMedication) {
-        const item = document.createElement("li");
-        item.className = "main-injectable-medication-item";
-        item.textContent = injectableMedication.medicationName;
-
-        if (typeof injectableMedication.open === "function") {
-            item.tabIndex = 0;
-            item.setAttribute("role", "button");
-            item.setAttribute("aria-label", "Open injection tracking for " + injectableMedication.medicationName);
-            item.addEventListener("click", function () {
-                injectableMedication.open();
-            });
-            item.addEventListener("keydown", function (event) {
-                if (event.key !== "Enter" && event.key !== " ") {
-                    return;
-                }
-
-                event.preventDefault();
-                injectableMedication.open();
-            });
-        }
-
-        list.appendChild(item);
+    const existingCards = cardContainer.querySelectorAll(".main-injectable-medication-card");
+    existingCards.forEach(function (card) {
+        card.remove();
     });
 
-    section.appendChild(list);
-    cardContainer.insertBefore(section, asNeededCard);
+    const definitions = definitionCompat.loadMedicationDefinitions().filter(function (definition) {
+        return definition && definition.route === "injection" && definition.active !== false;
+    });
+    const regimens = typeof definitionCompat.loadInjectableMedicationRegimens === "function"
+        ? definitionCompat.loadInjectableMedicationRegimens()
+        : [];
+    const capabilities = window.medicationCenterCapabilities || {};
+    const openInjection = typeof capabilities.openInjection === "function"
+        ? capabilities.openInjection
+        : null;
+
+    definitions.forEach(function (definition) {
+        const isExpanded = expandedInjectableMedicationIds.has(definition.id);
+        const contentId = "injectableMedicationContent-" + definition.id;
+        const card = document.createElement("section");
+        card.className = "card medication-center-card main-injectable-medication-card";
+        card.dataset.medicationId = definition.id;
+
+        const heading = document.createElement("h2");
+        heading.className = "main-injectable-medication-heading";
+        heading.tabIndex = 0;
+        heading.setAttribute("role", "button");
+        heading.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+        heading.setAttribute("aria-controls", contentId);
+        heading.setAttribute("aria-label", definition.name + " injectable medication details");
+
+        const headingMain = document.createElement("span");
+        headingMain.className = "medication-heading-main";
+        const headingTitle = document.createElement("span");
+        headingTitle.className = "medication-heading-title";
+        headingTitle.textContent = "💉 " + definition.name;
+        const headingChevron = document.createElement("span");
+        headingChevron.className = "medication-heading-chevron";
+        headingChevron.setAttribute("aria-hidden", "true");
+        headingChevron.textContent = isExpanded ? "⌄" : "›";
+        headingMain.appendChild(headingTitle);
+        headingMain.appendChild(headingChevron);
+        heading.appendChild(headingMain);
+
+        const regimen = regimens.find(function (candidate) {
+            return candidate && candidate.medicationId === definition.id;
+        });
+        const schedule = document.createElement("span");
+        schedule.className = "main-injectable-medication-schedule";
+        schedule.textContent = getInjectableMedicationRegimenLabel(regimen);
+        heading.appendChild(schedule);
+
+        const content = document.createElement("div");
+        content.id = contentId;
+        content.className = "main-injectable-medication-content";
+        content.style.display = isExpanded ? "grid" : "none";
+
+        if (openInjection && definition.legacyHistoryKey === "zepboundInjectionHistory") {
+            const trackingButton = document.createElement("button");
+            trackingButton.type = "button";
+            trackingButton.className = "main-injectable-medication-tracking-button";
+            trackingButton.textContent = "Open Injection Tracking";
+            trackingButton.setAttribute("aria-label", "Open injection tracking for " + definition.name);
+            trackingButton.addEventListener("click", function () {
+                openInjection();
+            });
+            content.appendChild(trackingButton);
+        }
+
+        heading.addEventListener("click", function () {
+            if (expandedInjectableMedicationIds.has(definition.id)) {
+                expandedInjectableMedicationIds.delete(definition.id);
+            } else {
+                expandedInjectableMedicationIds.add(definition.id);
+            }
+            renderMainInjectableMedications();
+        });
+        heading.addEventListener("keydown", function (event) {
+            if (event.key !== "Enter" && event.key !== " ") {
+                return;
+            }
+
+            event.preventDefault();
+            heading.click();
+        });
+
+        card.appendChild(heading);
+        card.appendChild(content);
+        cardContainer.insertBefore(card, asNeededCard);
+    });
 }
 
 window.renderMainInjectableMedications = renderMainInjectableMedications;

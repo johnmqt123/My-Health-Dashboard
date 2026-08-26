@@ -469,6 +469,15 @@ header p {
     position: relative;
 }
 
+#medicationCenterSection .briefing {
+    grid-template-columns: minmax(0, 1fr);
+    overflow-x: hidden;
+}
+
+#medicationCenterSection .briefing > .card {
+    min-width: 0;
+}
+
 #medicationCenterSection .medication-center-sticky-header {
     position: sticky;
     top: 0;
@@ -2999,6 +3008,60 @@ button:active,
 
 #medicationCenterSection .main-injectable-medication-item:focus-visible {
     outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+#medicationCenterSection .main-injectable-medication-card {
+    gap: 10px;
+}
+
+#medicationCenterSection .main-injectable-medication-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-width: 0;
+    cursor: pointer;
+}
+
+#medicationCenterSection .main-injectable-medication-heading .medication-heading-main,
+#medicationCenterSection .main-injectable-medication-heading .medication-heading-title {
+    min-width: 0;
+}
+
+#medicationCenterSection .main-injectable-medication-schedule {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: normal;
+    text-align: right;
+}
+
+#medicationCenterSection .main-injectable-medication-content {
+    gap: 10px;
+}
+
+#medicationCenterSection .main-injectable-medication-tracking-button {
+    width: 100%;
+    margin: 0;
+    background: var(--dashboard-primary-accent-background);
+    border: 1px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    box-shadow: none;
+}
+
+#medicationCenterSection .main-injectable-medication-tracking-button:hover,
+#medicationCenterSection .main-injectable-medication-tracking-button:active {
+    background: var(--dashboard-primary-accent-border);
+    border-color: var(--dashboard-primary-accent);
+    color: var(--dashboard-primary-accent-text);
+    transform: none;
+    box-shadow: none;
+}
+
+#medicationCenterSection .main-injectable-medication-tracking-button:focus-visible {
+    outline: 2px solid var(--dashboard-primary-accent);
     outline-offset: 2px;
 }
 
