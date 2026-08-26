@@ -410,9 +410,9 @@ function renderMainInjectableMedications() {
     const regimens = typeof definitionCompat.loadInjectableMedicationRegimens === "function"
         ? definitionCompat.loadInjectableMedicationRegimens()
         : [];
-    const capabilities = window.medicationCenterCapabilities || {};
-    const openInjection = typeof capabilities.openInjection === "function"
-        ? capabilities.openInjection
+    const providerCompat = window.injectionProviderCompat || {};
+    const getInjectionProvider = typeof providerCompat.getInjectionProvider === "function"
+        ? providerCompat.getInjectionProvider
         : null;
 
     definitions.forEach(function (definition) {
@@ -456,14 +456,18 @@ function renderMainInjectableMedications() {
         content.className = "main-injectable-medication-content";
         content.style.display = isExpanded ? "grid" : "none";
 
-        if (openInjection && definition.legacyHistoryKey === "zepboundInjectionHistory") {
+        const trackingProvider = getInjectionProvider
+            ? getInjectionProvider(definition)
+            : null;
+        if (trackingProvider && typeof trackingProvider.open === "function" &&
+            (!trackingProvider.isAvailable || trackingProvider.isAvailable())) {
             const trackingButton = document.createElement("button");
             trackingButton.type = "button";
             trackingButton.className = "main-injectable-medication-tracking-button";
             trackingButton.textContent = "Open Injection Tracking";
             trackingButton.setAttribute("aria-label", "Open injection tracking for " + definition.name);
             trackingButton.addEventListener("click", function () {
-                openInjection();
+                trackingProvider.open();
             });
             content.appendChild(trackingButton);
         }

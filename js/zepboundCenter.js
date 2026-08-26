@@ -273,7 +273,10 @@ function initZepboundCenter() {
     }
 
     registerInjectionProvider(Object.assign({}, providerConfiguration, {
-        controller: injectionController
+        controller: injectionController,
+        open: function () {
+            injectionController.open();
+        }
     }));
 
     window.zepboundCenterInitialized = true;
