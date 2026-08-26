@@ -395,6 +395,11 @@ function getMedicationHistoryPeriod(legacyKey) {
 
 personalMedicationSchedule = migrateMedicationScheduleEvents(personalMedicationSchedule);
 
+if (window.medicationDefinitionCompat &&
+    typeof window.medicationDefinitionCompat.initializeMedicationDefinitionFoundation === "function") {
+    window.medicationDefinitionCompat.initializeMedicationDefinitionFoundation(personalMedicationSchedule);
+}
+
 window.medicationScheduleCompat = {
     normalizeMedicationScheduleEvents: normalizeMedicationScheduleEvents,
     migrateMedicationScheduleEvents: migrateMedicationScheduleEvents,
