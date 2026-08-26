@@ -1097,6 +1097,12 @@ function getInjectableRegimenLabel(regimen) {
     return "Every " + injectableDayNames[regimen.dayOfWeek];
 }
 
+function refreshInjectableMedicationPresentation() {
+    if (typeof window.renderMedicationScheduleCards === "function") {
+        window.renderMedicationScheduleCards();
+    }
+}
+
 function createInjectableDaySelect(selectedDay) {
     const select = document.createElement("select");
     select.id = "injectableDayOfWeekInput";
@@ -1185,6 +1191,7 @@ function saveInjectableDefinition(definition, nameInput, daySelect, isNew) {
     compat.saveInjectableMedicationRegimens(nextRegimens);
 
     buildMedicationList();
+    refreshInjectableMedicationPresentation();
 }
 
 function setInjectableDefinitionActive(definition, isActive) {
@@ -1211,6 +1218,7 @@ function setInjectableDefinitionActive(definition, isActive) {
             : existing;
     }));
     buildMedicationList();
+    refreshInjectableMedicationPresentation();
 }
 
 function renderInjectableMedicationManagement() {
