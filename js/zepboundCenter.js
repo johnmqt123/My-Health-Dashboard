@@ -1,4 +1,177 @@
 const injectionProvidersByMedicationId = new Map();
+const GENERIC_INJECTION_HISTORY_KEY = "injectableInjectionHistory";
+let activeInjectionProviderId = "";
+
+function getSharedInjectionElements() {
+    return {
+        openButton: null,
+        closeButton: document.getElementById("closeZepboundModalBtn"),
+        centerModal: document.getElementById("zepboundModal"),
+        centerContent: document.getElementById("zepboundModalContent"),
+        logButton: document.getElementById("logInjectionButton"),
+        historyButton: document.getElementById("historyInjectionButton"),
+        historySection: document.getElementById("historyInjectionSection"),
+        historyDisplay: document.getElementById("historyInjectionDisplay"),
+        entryModal: document.getElementById("injectionModal"),
+        saveButton: document.getElementById("saveInjectionBtn"),
+        cancelButton: document.getElementById("cancelInjectionBtn"),
+        injectionLogDisplay: document.getElementById("injectionLogDisplay"),
+        dateInput: document.getElementById("injectionDate"),
+        timeInput: document.getElementById("injectionTime"),
+        doseSelect: document.getElementById("doseSelect"),
+        siteSelect: document.getElementById("siteSelect"),
+        notesInput: document.getElementById("injectionNotes")
+    };
+}
+
+function loadGenericInjectionHistory(medicationId) {
+    const rawHistory = localStorage.getItem(GENERIC_INJECTION_HISTORY_KEY);
+    if (!rawHistory) {
+        return [];
+    }
+
+    try {
+        const parsedHistory = JSON.parse(rawHistory);
+        return Array.isArray(parsedHistory)
+            ? parsedHistory.filter(function (entry) {
+                return entry && entry.medicationId === medicationId;
+            })
+            : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function loadAllGenericInjectionHistory() {
+    const rawHistory = localStorage.getItem(GENERIC_INJECTION_HISTORY_KEY);
+    if (!rawHistory) {
+        return [];
+    }
+
+    try {
+        const parsedHistory = JSON.parse(rawHistory);
+        return Array.isArray(parsedHistory) ? parsedHistory : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveGenericInjectionHistory(medicationId, history) {
+    const existingHistory = loadAllGenericInjectionHistory().filter(function (entry) {
+        return !entry || entry.medicationId !== medicationId;
+    });
+    const medicationHistory = Array.isArray(history)
+        ? history.map(function (entry) {
+            return Object.assign({}, entry, { medicationId: medicationId });
+        })
+        : [];
+
+    saveData(GENERIC_INJECTION_HISTORY_KEY, existingHistory.concat(medicationHistory));
+}
+
+function createGenericInjectionEntry(entry, medicationId) {
+    return Object.assign(createInjectionEntry(entry), { medicationId: medicationId });
+}
+
+function updateGenericInjectionEntry(history, index, entry, medicationId) {
+    if (!Array.isArray(history) || index < 0 || index >= history.length) {
+        return history;
+    }
+
+    history[index] = createGenericInjectionEntry(entry, medicationId);
+    return history;
+}
+
+function setActiveInjectionProvider(providerId) {
+    activeInjectionProviderId = providerId || "";
+}
+
+function setInjectionModalMedicationName(medicationName) {
+    const modal = document.getElementById("zepboundModal");
+    if (!modal) {
+        return;
+    }
+
+    const heading = modal.querySelector(".zepbound-modal-header h2");
+    const description = modal.querySelector(".zepbound-modal-body > p");
+    if (heading) {
+        heading.textContent = "💉 " + medicationName + " Center";
+    }
+    if (description) {
+        description.textContent = "Record each " + medicationName + " injection.";
+    }
+}
+
+function createGenericInjectionProvider(definition) {
+    if (!definition || !definition.id || definition.route !== "injection" ||
+        definition.legacyHistoryKey || typeof createInjectionController !== "function") {
+        return null;
+    }
+
+    const medicationId = definition.id;
+    const provider = {
+        medicationDefinitionId: medicationId,
+        medicationName: definition.name,
+        route: "injection",
+        legacyHistoryKey: "",
+        deferInitialRender: true,
+        isAvailable: function () {
+            return definition.active !== false;
+        },
+        open: function () {
+            setActiveInjectionProvider(medicationId);
+            setInjectionModalMedicationName(definition.name);
+            controller.open();
+        },
+        loadHistory: function () {
+            return loadGenericInjectionHistory(medicationId);
+        },
+        saveHistory: function (history) {
+            saveGenericInjectionHistory(medicationId, history);
+        },
+        confirmDelete: confirmHistoryDelete,
+        defaultDose: "",
+        defaultSite: "",
+        historyButtonLabel: "📊 History",
+        hideHistoryButtonLabel: "Hide History",
+        elements: getSharedInjectionElements(),
+        helpers: {
+            createInjectionEntry: function (entry) {
+                return createGenericInjectionEntry(entry, medicationId);
+            },
+            updateInjectionEntry: function (history, index, entry) {
+                return updateGenericInjectionEntry(history, index, entry, medicationId);
+            },
+            deleteInjectionEntry: deleteInjectionEntry
+        },
+        historyClasses: {
+            entry: "zepbound-history-entry",
+            content: "zepbound-history-content",
+            actions: "zepbound-history-actions",
+            editButton: "history-edit-btn",
+            deleteButton: "history-delete-btn"
+        },
+        isActive: function () {
+            return activeInjectionProviderId === medicationId;
+        },
+        lifecycle: {
+            onOpen: function () {
+                setActiveInjectionProvider(medicationId);
+                setInjectionModalMedicationName(definition.name);
+            },
+            onClose: function () {
+                setActiveInjectionProvider("");
+            }
+        }
+    };
+    const controller = createInjectionController(provider);
+    if (!controller || !controller.initialize()) {
+        return null;
+    }
+
+    provider.controller = controller;
+    return provider;
+}
 
 function registerInjectionProvider(provider) {
     if (!provider || !provider.medicationDefinitionId) {
@@ -11,17 +184,31 @@ function registerInjectionProvider(provider) {
 
 function getInjectionProvider(definition) {
     if (!definition || typeof definition !== "object" ||
-        definition.route !== "injection" || !definition.id ||
-        !definition.legacyHistoryKey) {
+        definition.route !== "injection" || !definition.id) {
+        return null;
+    }
+
+    if (definition.active === false) {
         return null;
     }
 
     const provider = injectionProvidersByMedicationId.get(definition.id);
-    if (!provider || provider.legacyHistoryKey !== definition.legacyHistoryKey) {
+    if (provider) {
+        if (provider.legacyHistoryKey) {
+            return provider.legacyHistoryKey === definition.legacyHistoryKey
+                ? provider
+                : null;
+        }
+
+        return definition.legacyHistoryKey ? null : provider;
+    }
+
+    const genericProvider = createGenericInjectionProvider(definition);
+    if (!genericProvider) {
         return null;
     }
 
-    return provider;
+    return registerInjectionProvider(genericProvider);
 }
 
 window.injectionProviderCompat = {
@@ -209,6 +396,9 @@ function initZepboundCenter() {
             isAvailable: function () {
                 return zepboundMedicationDefinition.active !== false;
             },
+            isActive: function () {
+                return activeInjectionProviderId === zepboundMedicationDefinition.id;
+            },
             loadHistory: loadZepboundLegacyHistory,
             saveHistory: saveZepboundLegacyHistory,
             confirmDelete: confirmHistoryDelete,
@@ -248,8 +438,15 @@ function initZepboundCenter() {
                 deleteButton: "history-delete-btn"
             },
             lifecycle: {
-                onOpen: lockZepboundModalBackgroundScroll,
-                onClose: unlockZepboundModalBackgroundScroll,
+                onOpen: function () {
+                    setActiveInjectionProvider(zepboundMedicationDefinition.id);
+                    setInjectionModalMedicationName(injectionMedicationName);
+                    lockZepboundModalBackgroundScroll();
+                },
+                onClose: function () {
+                    unlockZepboundModalBackgroundScroll();
+                    setActiveInjectionProvider("");
+                },
                 onCenterTouchMove: function (event) {
                     if (!zepboundModalContent) {
                         return;

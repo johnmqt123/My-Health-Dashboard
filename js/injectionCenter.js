@@ -19,6 +19,10 @@ function createInjectionController(configuration) {
     let selectedHistoryIndex = null;
     let initialized = false;
 
+    function isControllerActive() {
+        return typeof options.isActive !== "function" || options.isActive();
+    }
+
     function validateConfiguration() {
         if (!medicationName || route !== "injection") {
             return false;
@@ -300,15 +304,27 @@ function createInjectionController(configuration) {
         }
 
         if (elements.closeButton) {
-            elements.closeButton.addEventListener("click", close);
+            elements.closeButton.addEventListener("click", function () {
+                if (isControllerActive()) {
+                    close();
+                }
+            });
         }
 
         if (elements.logButton) {
-            elements.logButton.addEventListener("click", openEntryModal);
+            elements.logButton.addEventListener("click", function () {
+                if (isControllerActive()) {
+                    openEntryModal();
+                }
+            });
         }
 
         if (elements.historyButton && elements.historySection) {
             elements.historyButton.addEventListener("click", function () {
+                if (!isControllerActive()) {
+                    return;
+                }
+
                 const isHidden = elements.historySection.style.display === "none";
                 elements.historySection.style.display = isHidden ? "block" : "none";
                 elements.historyButton.textContent = isHidden
@@ -322,18 +338,33 @@ function createInjectionController(configuration) {
         }
 
         if (elements.saveButton) {
-            elements.saveButton.addEventListener("click", saveEntry);
+            elements.saveButton.addEventListener("click", function () {
+                if (isControllerActive()) {
+                    saveEntry();
+                }
+            });
         }
 
         if (elements.cancelButton) {
             elements.cancelButton.addEventListener("click", function () {
+                if (!isControllerActive()) {
+                    return;
+                }
                 closeEntryModal();
             });
         }
 
         if (elements.historyDisplay) {
-            elements.historyDisplay.addEventListener("click", handleHistoryClick);
-            elements.historyDisplay.addEventListener("keydown", handleHistoryKeydown);
+            elements.historyDisplay.addEventListener("click", function (event) {
+                if (isControllerActive()) {
+                    handleHistoryClick(event);
+                }
+            });
+            elements.historyDisplay.addEventListener("keydown", function (event) {
+                if (isControllerActive()) {
+                    handleHistoryKeydown(event);
+                }
+            });
         }
 
         if (elements.centerModal && typeof lifecycle.onCenterTouchMove === "function") {
@@ -343,7 +374,9 @@ function createInjectionController(configuration) {
         }
 
         initialized = true;
-        render();
+        if (!options.deferInitialRender) {
+            render();
+        }
         return true;
     }
 
