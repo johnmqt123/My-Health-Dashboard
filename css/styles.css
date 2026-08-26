@@ -3066,6 +3066,109 @@ button:active,
     font-style: italic;
 }
 
+.injectable-medication-management {
+    display: grid;
+    gap: 10px;
+}
+
+.injectable-medication-definition-list {
+    display: grid;
+    gap: 8px;
+}
+
+.injectable-medication-definition-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #dbe5f0;
+    border-radius: 8px;
+    background: #ffffff;
+}
+
+.injectable-medication-definition-row.is-inactive {
+    opacity: 0.72;
+}
+
+.injectable-medication-definition-details {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.injectable-medication-definition-details span {
+    color: var(--muted);
+    font-size: 0.92rem;
+}
+
+.injectable-medication-definition-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.injectable-medication-definition-actions button,
+.injectable-medication-add-btn,
+.injectable-medication-definition-editor button {
+    min-height: 40px;
+    margin: 0;
+}
+
+.injectable-medication-deactivate-btn,
+.injectable-medication-activate-btn,
+.injectable-medication-cancel-btn {
+    min-height: 40px;
+    padding: 10px 14px;
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    border-radius: 8px;
+    background: var(--dashboard-neutral-accent-background);
+    color: var(--dashboard-neutral-accent-text);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.injectable-medication-definition-editor {
+    display: grid;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #dbe5f0;
+}
+
+.injectable-medication-definition-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.injectable-medication-definition-fields > div {
+    display: grid;
+    gap: 4px;
+}
+
+.injectable-medication-definition-fields label {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.injectable-medication-route-value {
+    min-height: 40px;
+    padding: 9px 10px;
+    border: 1px solid #dbe5f0;
+    border-radius: 8px;
+    background: #f8fbff;
+    color: var(--text);
+    box-sizing: border-box;
+}
+
+.injectable-medication-definition-editor .medication-editor-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .add-medication-time-block {
     margin-top: 14px;
     padding-top: 14px;
@@ -3938,6 +4041,18 @@ button:active,
 
     .medication-schedule-section {
         padding: 10px;
+    }
+
+    .injectable-medication-definition-row {
+        grid-template-columns: 1fr;
+    }
+
+    .injectable-medication-definition-actions {
+        justify-content: flex-start;
+    }
+
+    .injectable-medication-definition-fields {
+        grid-template-columns: 1fr;
     }
 
     .medication-schedule-title {

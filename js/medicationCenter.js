@@ -882,6 +882,8 @@ function buildMedicationList() {
 
     });
 
+    renderInjectableMedicationManagement();
+
     const addTimeContainer = document.createElement("div");
     addTimeContainer.className = "add-medication-time-block";
     addTimeContainer.id = "addMedicationTimeControls";
@@ -1030,6 +1032,340 @@ function scrollMedicationEditorIntoView(targetElement) {
             });
         }
     });
+}
+
+const injectableDayNames = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday"
+];
+
+function getMedicationDefinitionCompat() {
+    return window.medicationDefinitionCompat || null;
+}
+
+function getInjectableMedicationDefinitions() {
+    const compat = getMedicationDefinitionCompat();
+    if (!compat || typeof compat.loadMedicationDefinitions !== "function") {
+        return [];
+    }
+
+    return compat.loadMedicationDefinitions().filter(function (definition) {
+        return definition && definition.route === "injection";
+    });
+}
+
+function getInjectableRegimenForMedication(regimens, medicationId) {
+    return regimens.find(function (regimen) {
+        return regimen && regimen.medicationId === medicationId;
+    }) || null;
+}
+
+function getInjectableRegimenLabel(regimen) {
+    if (!regimen || regimen.frequency !== "weekly" ||
+        !Number.isInteger(regimen.dayOfWeek) ||
+        !injectableDayNames[regimen.dayOfWeek]) {
+        return "Weekly schedule not configured";
+    }
+
+    return "Every " + injectableDayNames[regimen.dayOfWeek];
+}
+
+function createInjectableDaySelect(selectedDay) {
+    const select = document.createElement("select");
+    select.id = "injectableDayOfWeekInput";
+    select.className = "medication-edit-input";
+    select.setAttribute("aria-label", "Weekly day");
+
+    injectableDayNames.forEach(function (dayName, dayOfWeek) {
+        const option = document.createElement("option");
+        option.value = String(dayOfWeek);
+        option.textContent = dayName;
+        select.appendChild(option);
+    });
+
+    select.value = Number.isInteger(selectedDay) && selectedDay >= 0 && selectedDay <= 6
+        ? String(selectedDay)
+        : "5";
+    return select;
+}
+
+function saveInjectableDefinition(definition, nameInput, daySelect, isNew) {
+    const compat = getMedicationDefinitionCompat();
+    if (!compat || typeof compat.loadMedicationDefinitions !== "function" ||
+        typeof compat.saveMedicationDefinitions !== "function" ||
+        typeof compat.loadInjectableMedicationRegimens !== "function" ||
+        typeof compat.saveInjectableMedicationRegimens !== "function") {
+        return;
+    }
+
+    const name = nameInput.value.replace(/\s+/g, " ").trim();
+    const dayOfWeek = Number(daySelect.value);
+    if (!name) {
+        alert("Please enter an injectable medication name.");
+        nameInput.focus();
+        return;
+    }
+
+    if (!Number.isInteger(dayOfWeek) || dayOfWeek < 0 || dayOfWeek > 6) {
+        alert("Please select a valid weekly day.");
+        daySelect.focus();
+        return;
+    }
+
+    const definitions = compat.loadMedicationDefinitions();
+    const duplicate = definitions.some(function (existing) {
+        return existing.active && existing.id !== (definition ? definition.id : "") &&
+            String(existing.name || "").trim().toLowerCase() === name.toLowerCase();
+    });
+    if (duplicate) {
+        alert("An active medication with that name already exists.");
+        nameInput.focus();
+        return;
+    }
+
+    const savedDefinition = definition
+        ? Object.assign({}, definition, {
+            name: name,
+            route: "injection"
+        })
+        : {
+            id: compat.generateMedicationDefinitionId(),
+            name: name,
+            route: "injection",
+            active: true
+        };
+    const nextDefinitions = isNew
+        ? definitions.concat(savedDefinition)
+        : definitions.map(function (existing) {
+            return existing.id === savedDefinition.id ? savedDefinition : existing;
+        });
+
+    compat.saveMedicationDefinitions(nextDefinitions);
+
+    const regimens = compat.loadInjectableMedicationRegimens();
+    const nextRegimen = {
+        medicationId: savedDefinition.id,
+        frequency: "weekly",
+        dayOfWeek: dayOfWeek
+    };
+    const nextRegimens = regimens.some(function (regimen) {
+        return regimen.medicationId === savedDefinition.id;
+    })
+        ? regimens.map(function (regimen) {
+            return regimen.medicationId === savedDefinition.id ? nextRegimen : regimen;
+        })
+        : regimens.concat(nextRegimen);
+    compat.saveInjectableMedicationRegimens(nextRegimens);
+
+    buildMedicationList();
+}
+
+function setInjectableDefinitionActive(definition, isActive) {
+    const compat = getMedicationDefinitionCompat();
+    if (!compat || typeof compat.loadMedicationDefinitions !== "function" ||
+        typeof compat.saveMedicationDefinitions !== "function") {
+        return;
+    }
+
+    const definitions = compat.loadMedicationDefinitions();
+    const duplicateActiveName = isActive && definitions.some(function (existing) {
+        return existing.active && existing.id !== definition.id &&
+            String(existing.name || "").trim().toLowerCase() ===
+            String(definition.name || "").trim().toLowerCase();
+    });
+    if (duplicateActiveName) {
+        alert("An active medication with that name already exists.");
+        return;
+    }
+
+    compat.saveMedicationDefinitions(definitions.map(function (existing) {
+        return existing.id === definition.id
+            ? Object.assign({}, existing, { active: isActive })
+            : existing;
+    }));
+    buildMedicationList();
+}
+
+function renderInjectableMedicationManagement() {
+    const compat = getMedicationDefinitionCompat();
+    if (!compat || !medicationEditor ||
+        typeof compat.loadMedicationDefinitions !== "function") {
+        return;
+    }
+
+    const definitions = getInjectableMedicationDefinitions();
+    const regimens = typeof compat.loadInjectableMedicationRegimens === "function"
+        ? compat.loadInjectableMedicationRegimens()
+        : [];
+    const section = document.createElement("section");
+    section.className = "medication-schedule-section injectable-medication-management";
+
+    const title = document.createElement("h4");
+    title.className = "medication-schedule-title";
+    title.textContent = "Injectable Medications";
+    section.appendChild(title);
+
+    const list = document.createElement("div");
+    list.className = "injectable-medication-definition-list";
+
+    if (!definitions.length) {
+        const empty = document.createElement("p");
+        empty.className = "medication-schedule-empty";
+        empty.textContent = "No injectable medications added yet.";
+        list.appendChild(empty);
+    }
+
+    definitions.forEach(function (definition) {
+        const row = document.createElement("div");
+        row.className = "injectable-medication-definition-row" +
+            (definition.active ? "" : " is-inactive");
+
+        const details = document.createElement("div");
+        details.className = "injectable-medication-definition-details";
+        const name = document.createElement("strong");
+        name.textContent = definition.name;
+        const schedule = document.createElement("span");
+        schedule.textContent = getInjectableRegimenLabel(
+            getInjectableRegimenForMedication(regimens, definition.id)
+        );
+        details.appendChild(name);
+        details.appendChild(schedule);
+
+        const actions = document.createElement("div");
+        actions.className = "injectable-medication-definition-actions";
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "editMedicationBtn";
+        editButton.textContent = "Edit " + definition.name;
+        editButton.addEventListener("click", function () {
+            openInjectableDefinitionEditor(section, definition);
+        });
+        const toggleButton = document.createElement("button");
+        toggleButton.type = "button";
+        toggleButton.className = definition.active
+            ? "injectable-medication-deactivate-btn"
+            : "injectable-medication-activate-btn";
+        toggleButton.textContent = definition.active ? "Deactivate" : "Activate";
+        toggleButton.setAttribute("aria-label", (definition.active ? "Deactivate " : "Activate ") + definition.name);
+        toggleButton.addEventListener("click", function () {
+            setInjectableDefinitionActive(definition, !definition.active);
+        });
+        actions.appendChild(editButton);
+        actions.appendChild(toggleButton);
+
+        row.appendChild(details);
+        row.appendChild(actions);
+        list.appendChild(row);
+    });
+
+    section.appendChild(list);
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "editMedicationBtn injectable-medication-add-btn";
+    addButton.textContent = "Add Injectable Medication";
+    addButton.addEventListener("click", function () {
+        openInjectableDefinitionEditor(section, null);
+    });
+    section.appendChild(addButton);
+    medicationEditor.appendChild(section);
+}
+
+function openInjectableDefinitionEditor(section, definition) {
+    const compat = getMedicationDefinitionCompat();
+    if (!compat || typeof compat.loadInjectableMedicationRegimens !== "function") {
+        return;
+    }
+
+    const existingEditor = section.querySelector(".injectable-medication-definition-editor");
+    if (existingEditor) {
+        existingEditor.remove();
+    }
+
+    const regimens = compat.loadInjectableMedicationRegimens();
+    const regimen = definition
+        ? getInjectableRegimenForMedication(regimens, definition.id)
+        : null;
+    const editor = document.createElement("div");
+    editor.className = "injectable-medication-definition-editor";
+
+    const nameLabel = document.createElement("label");
+    nameLabel.setAttribute("for", "injectableMedicationNameInput");
+    nameLabel.textContent = "Medication Name";
+    const nameInput = document.createElement("input");
+    nameInput.type = "text";
+    nameInput.id = "injectableMedicationNameInput";
+    nameInput.className = "medication-edit-input";
+    nameInput.value = definition ? definition.name : "";
+
+    const routeLabel = document.createElement("label");
+    routeLabel.textContent = "Route";
+    const routeValue = document.createElement("span");
+    routeValue.className = "injectable-medication-route-value";
+    routeValue.textContent = "Injection";
+
+    const frequencyLabel = document.createElement("label");
+    frequencyLabel.setAttribute("for", "injectableFrequencyInput");
+    frequencyLabel.textContent = "Frequency";
+    const frequencySelect = document.createElement("select");
+    frequencySelect.id = "injectableFrequencyInput";
+    frequencySelect.className = "medication-edit-input";
+    const weeklyOption = document.createElement("option");
+    weeklyOption.value = "weekly";
+    weeklyOption.textContent = "Weekly";
+    frequencySelect.appendChild(weeklyOption);
+
+    const dayLabel = document.createElement("label");
+    dayLabel.setAttribute("for", "injectableDayOfWeekInput");
+    dayLabel.textContent = "Day of week";
+    const daySelect = createInjectableDaySelect(regimen ? regimen.dayOfWeek : 5);
+
+    const fields = document.createElement("div");
+    fields.className = "injectable-medication-definition-fields";
+    [[nameLabel, nameInput], [routeLabel, routeValue], [frequencyLabel, frequencySelect], [dayLabel, daySelect]]
+        .forEach(function (field) {
+            const group = document.createElement("div");
+            group.appendChild(field[0]);
+            group.appendChild(field[1]);
+            fields.appendChild(group);
+        });
+
+    const actions = document.createElement("div");
+    actions.className = "medication-editor-actions compact-actions";
+    const saveButton = document.createElement("button");
+    saveButton.type = "button";
+    saveButton.className = "editMedicationBtn";
+    saveButton.textContent = "Save Injectable";
+    saveButton.addEventListener("click", function () {
+        if (frequencySelect.value !== "weekly") {
+            alert("Please select Weekly frequency.");
+            return;
+        }
+        if (definition && definition.route !== "injection") {
+            alert("The medication route must be Injection.");
+            return;
+        }
+        saveInjectableDefinition(definition, nameInput, daySelect, !definition);
+    });
+    const cancelButton = document.createElement("button");
+    cancelButton.type = "button";
+    cancelButton.className = "injectable-medication-cancel-btn";
+    cancelButton.textContent = "Cancel";
+    cancelButton.addEventListener("click", function () {
+        editor.remove();
+    });
+    actions.appendChild(saveButton);
+    actions.appendChild(cancelButton);
+
+    editor.appendChild(fields);
+    editor.appendChild(actions);
+    section.appendChild(editor);
+    nameInput.focus();
 }
 
 function normalizeMedicationDraftItems(items) {
