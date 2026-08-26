@@ -1,3 +1,34 @@
+const injectionProvidersByMedicationId = new Map();
+
+function registerInjectionProvider(provider) {
+    if (!provider || !provider.medicationDefinitionId) {
+        return null;
+    }
+
+    injectionProvidersByMedicationId.set(provider.medicationDefinitionId, provider);
+    return provider;
+}
+
+function getInjectionProvider(definition) {
+    if (!definition || typeof definition !== "object" ||
+        definition.route !== "injection" || !definition.id ||
+        !definition.legacyHistoryKey) {
+        return null;
+    }
+
+    const provider = injectionProvidersByMedicationId.get(definition.id);
+    if (!provider || provider.legacyHistoryKey !== definition.legacyHistoryKey) {
+        return null;
+    }
+
+    return provider;
+}
+
+window.injectionProviderCompat = {
+    registerInjectionProvider: registerInjectionProvider,
+    getInjectionProvider: getInjectionProvider
+};
+
 function initZepboundCenter() {
     if (window.zepboundCenterInitialized) {
         return;
@@ -72,6 +103,19 @@ function initZepboundCenter() {
             name: injectionCompatibilityConfig.medicationName,
             route: injectionCompatibilityConfig.route
         });
+    }
+
+    const medicationDefinitionCompat = window.medicationDefinitionCompat || {};
+    const zepboundMedicationDefinition =
+        typeof medicationDefinitionCompat.loadMedicationDefinitions === "function"
+            ? medicationDefinitionCompat.loadMedicationDefinitions().find(function (definition) {
+                return definition && definition.route === injectionCompatibilityConfig.route &&
+                    definition.legacyHistoryKey === injectionCompatibilityConfig.legacyStorageKey;
+            })
+            : null;
+
+    if (!zepboundMedicationDefinition) {
+        return;
     }
 
     const injectionMedicationDefinition = typeof getMedicationDefinition === "function"
@@ -158,8 +202,13 @@ function initZepboundCenter() {
 
     function createZepboundInjectionProvider() {
         return {
+            medicationDefinitionId: zepboundMedicationDefinition.id,
             medicationName: injectionCompatibilityConfig.medicationName,
             route: injectionCompatibilityConfig.route,
+            legacyHistoryKey: injectionCompatibilityConfig.legacyStorageKey,
+            isAvailable: function () {
+                return zepboundMedicationDefinition.active !== false;
+            },
             loadHistory: loadZepboundLegacyHistory,
             saveHistory: saveZepboundLegacyHistory,
             confirmDelete: confirmHistoryDelete,
@@ -222,6 +271,10 @@ function initZepboundCenter() {
     if (!injectionController || !injectionController.initialize()) {
         return;
     }
+
+    registerInjectionProvider(Object.assign({}, providerConfiguration, {
+        controller: injectionController
+    }));
 
     window.zepboundCenterInitialized = true;
     window.createZepboundInjectionProvider = createZepboundInjectionProvider;
