@@ -29,6 +29,8 @@
     const bpCard = document.getElementById("bpCard");
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
+    const bpFilterToggle = document.getElementById("bpFilterToggle");
+    const bpFilterPanel = document.getElementById("bpFilterPanel");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
     const bpStartDateInput = document.getElementById("bpStartDate");
     const bpEndDateInput = document.getElementById("bpEndDate");
@@ -208,6 +210,17 @@
         if (bpEndDateInput) bpEndDateInput.value = "";
         if (bpCopyStatus) bpCopyStatus.textContent = "";
         updateBpRangeSummary();
+    }
+
+    function toggleBpFilterPanel() {
+        if (!bpFilterToggle || !bpFilterPanel) {
+            return;
+        }
+
+        const willShow = bpFilterPanel.hidden;
+        bpFilterPanel.hidden = !willShow;
+        bpFilterToggle.setAttribute("aria-expanded", String(willShow));
+        bpFilterToggle.textContent = willShow ? "Hide Search & Filter" : "Search & Filter";
     }
 
     async function copySelectedBpReadings() {
@@ -679,6 +692,13 @@
         if (bpHistoryButton) {
             bpHistoryButton.textContent = "📊 History";
             bpHistoryButton.addEventListener("click", toggleHistory);
+        }
+
+        if (bpFilterToggle && bpFilterPanel) {
+            bpFilterPanel.hidden = true;
+            bpFilterToggle.textContent = "Search & Filter";
+            bpFilterToggle.setAttribute("aria-expanded", "false");
+            bpFilterToggle.addEventListener("click", toggleBpFilterPanel);
         }
 
         if (bpStartDateInput) {

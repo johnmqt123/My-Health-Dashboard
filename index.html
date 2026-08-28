@@ -146,26 +146,31 @@
         </div>
         <div class="summary-card history-section" id="dailyDiaryHistorySection" style="display: none;">
             <h2 class="history-section-header">📖 Diary History</h2>
-            <div class="daily-diary-search-wrap">
-                <label class="daily-diary-search-label" for="dailyDiarySearchInput">Search diary entries</label>
-                <input id="dailyDiarySearchInput" class="daily-diary-search-input" type="search" inputmode="search" placeholder="Search diary entries" aria-label="Search diary entries">
+            <div class="history-filter-toggle-row">
+                <button id="dailyDiaryFilterToggle" class="history-filter-toggle" type="button" aria-expanded="false" aria-controls="dailyDiaryFilterPanel">Search &amp; Filter</button>
+            </div>
+            <div id="dailyDiaryFilterPanel" class="history-filter-panel" hidden>
+                <div class="daily-diary-search-wrap">
+                    <label class="daily-diary-search-label" for="dailyDiarySearchInput">Search diary entries</label>
+                    <input id="dailyDiarySearchInput" class="daily-diary-search-input" type="search" inputmode="search" placeholder="Search diary entries" aria-label="Search diary entries">
 
-                <div class="daily-diary-filter-grid">
-                    <div class="daily-diary-filter-field">
-                        <label class="daily-diary-search-label" for="dailyDiaryStartDate">Start date</label>
-                        <input id="dailyDiaryStartDate" class="daily-diary-date-input" type="date" aria-label="Start date">
+                    <div class="daily-diary-filter-grid">
+                        <div class="daily-diary-filter-field">
+                            <label class="daily-diary-search-label" for="dailyDiaryStartDate">Start date</label>
+                            <input id="dailyDiaryStartDate" class="daily-diary-date-input" type="date" aria-label="Start date">
+                        </div>
+                        <div class="daily-diary-filter-field">
+                            <label class="daily-diary-search-label" for="dailyDiaryEndDate">End date</label>
+                            <input id="dailyDiaryEndDate" class="daily-diary-date-input" type="date" aria-label="End date">
+                        </div>
                     </div>
-                    <div class="daily-diary-filter-field">
-                        <label class="daily-diary-search-label" for="dailyDiaryEndDate">End date</label>
-                        <input id="dailyDiaryEndDate" class="daily-diary-date-input" type="date" aria-label="End date">
+
+                    <div class="daily-diary-filter-actions">
+                        <button id="dailyDiaryClearFiltersButton" class="daily-diary-clear-button" type="button" aria-label="Clear filters">Clear</button>
                     </div>
-                </div>
 
-                <div class="daily-diary-filter-actions">
-                    <button id="dailyDiaryClearFiltersButton" class="daily-diary-clear-button" type="button" aria-label="Clear filters">Clear</button>
+                    <div id="dailyDiaryResultCount" class="daily-diary-result-count" aria-live="polite">0 entries found</div>
                 </div>
-
-                <div id="dailyDiaryResultCount" class="daily-diary-result-count" aria-live="polite">0 entries found</div>
             </div>
 
             <div class="daily-diary-pagination-wrap">
@@ -233,23 +238,29 @@
 
     <h2 class="history-section-header">❤️ Blood Pressure History</h2>
 
-    <div class="bp-range-controls">
-        <div class="bp-date-field">
-            <label for="bpStartDate">Start date</label>
-            <input id="bpStartDate" type="date" />
-        </div>
-        <div class="bp-date-field">
-            <label for="bpEndDate">End date</label>
-            <input id="bpEndDate" type="date" />
-        </div>
-        <button id="bpClearRangeButton" class="secondary-action" type="button">Clear</button>
+    <div class="history-filter-toggle-row">
+        <button id="bpFilterToggle" class="history-filter-toggle" type="button" aria-expanded="false" aria-controls="bpFilterPanel">Search &amp; Filter</button>
     </div>
 
-    <div id="bpRangeResultCount" class="bp-range-result-count">0 readings</div>
-    <textarea id="bpCopyTextPreview" class="bp-copy-text-preview" readonly aria-label="Blood pressure readings to copy"></textarea>
-    <div class="bp-copy-actions">
-        <button id="bpCopyButton" type="button" class="dashboard-action" disabled>Copy</button>
-        <span id="bpCopyStatus" class="bp-copy-status" aria-live="polite"></span>
+    <div id="bpFilterPanel" class="history-filter-panel" hidden>
+        <div class="bp-range-controls">
+            <div class="bp-date-field">
+                <label for="bpStartDate">Start date</label>
+                <input id="bpStartDate" type="date" />
+            </div>
+            <div class="bp-date-field">
+                <label for="bpEndDate">End date</label>
+                <input id="bpEndDate" type="date" />
+            </div>
+            <button id="bpClearRangeButton" class="secondary-action" type="button">Clear</button>
+        </div>
+
+        <div id="bpRangeResultCount" class="bp-range-result-count">0 readings</div>
+        <textarea id="bpCopyTextPreview" class="bp-copy-text-preview" readonly aria-label="Blood pressure readings to copy"></textarea>
+        <div class="bp-copy-actions">
+            <button id="bpCopyButton" type="button" class="dashboard-action" disabled>Copy</button>
+            <span id="bpCopyStatus" class="bp-copy-status" aria-live="polite"></span>
+        </div>
     </div>
 
     <div id="bpHistoryDisplay" class="history-display history-stack">

@@ -9,6 +9,8 @@
     const dailyDiaryOpenTodayButton = document.getElementById("dailyDiaryOpenTodayButton");
     const dailyDiaryHistoryButton = document.getElementById("dailyDiaryHistoryButton");
     const dailyDiaryHistorySection = document.getElementById("dailyDiaryHistorySection");
+    const dailyDiaryFilterToggle = document.getElementById("dailyDiaryFilterToggle");
+    const dailyDiaryFilterPanel = document.getElementById("dailyDiaryFilterPanel");
     const dailyDiaryHistoryDisplay = document.getElementById("dailyDiaryHistoryDisplay");
     const dailyDiarySearchInput = document.getElementById("dailyDiarySearchInput");
     const dailyDiaryStartDateInput = document.getElementById("dailyDiaryStartDate");
@@ -544,6 +546,17 @@
         renderHistory();
     }
 
+    function toggleDiaryFilterPanel() {
+        if (!dailyDiaryFilterToggle || !dailyDiaryFilterPanel) {
+            return;
+        }
+
+        const willShow = dailyDiaryFilterPanel.hidden;
+        dailyDiaryFilterPanel.hidden = !willShow;
+        dailyDiaryFilterToggle.setAttribute("aria-expanded", String(willShow));
+        dailyDiaryFilterToggle.textContent = willShow ? "Hide Search & Filter" : "Search & Filter";
+    }
+
     function loadMoreDiaryEntries() {
         const filteredEntries = getFilteredDiaryEntries();
         if (!filteredEntries.length) {
@@ -576,6 +589,13 @@
             dailyDiaryHistoryButton.textContent = "📊 History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
             dailyDiaryHistoryButton.addEventListener("click", toggleHistory);
+        }
+
+        if (dailyDiaryFilterToggle && dailyDiaryFilterPanel) {
+            dailyDiaryFilterPanel.hidden = true;
+            dailyDiaryFilterToggle.textContent = "Search & Filter";
+            dailyDiaryFilterToggle.setAttribute("aria-expanded", "false");
+            dailyDiaryFilterToggle.addEventListener("click", toggleDiaryFilterPanel);
         }
 
         dailyDiaryOpenTodayButton.addEventListener("click", function () {

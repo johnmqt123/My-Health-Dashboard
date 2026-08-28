@@ -2399,10 +2399,39 @@ button.history-action-btn {
     transform: none;
 }
 
-.daily-diary-search-wrap {
+.history-filter-toggle-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: 0 0 8px;
+}
+
+.history-filter-toggle {
+    min-height: 32px;
+    padding: 6px 12px;
+    border: 1px solid #d7dfe9;
+    border-radius: 999px;
+    background: #f8fafc;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: none;
+}
+
+.history-filter-panel {
     display: grid;
     gap: 8px;
     margin: 0 0 10px;
+    width: 100%;
+}
+
+.history-filter-panel[hidden] {
+    display: none;
+}
+
+.daily-diary-search-wrap {
+    display: grid;
+    gap: 8px;
     width: 100%;
 }
 
