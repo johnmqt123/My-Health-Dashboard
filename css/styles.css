@@ -2418,6 +2418,12 @@ button.history-action-btn {
     box-shadow: none;
 }
 
+.history-filter-toggle[aria-expanded="true"] {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: var(--text);
+}
+
 .history-filter-panel {
     display: grid;
     gap: 8px;

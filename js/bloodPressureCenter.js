@@ -162,9 +162,7 @@
 
     function buildSelectedBpCopyText(entries) {
         return entries.map(function (entry) {
-            const line = formatBloodPressureCopyDate(entry) + "  " + String(entry.systolic || "--") + "/" + String(entry.diastolic || "--") + "  " + String(entry.pulse || "--");
-            const note = String(entry.note || "").trim();
-            return note ? line + "  " + note : line;
+            return formatBloodPressureCopyDate(entry) + "  " + String(entry.systolic || "--") + "/" + String(entry.diastolic || "--") + "  " + String(entry.pulse || "--");
         }).join("\n");
     }
 
