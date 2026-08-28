@@ -2863,3 +2863,18 @@ Because Diary entries may contain personal health information, image attachments
 ### Status
 
 Future feature / Ideas Backlog. Architecture should be investigated and approved before implementation.
+
+### User-Configurable Exercise Types
+
+Allow users to add and manage their own exercise types rather than being limited to the exercise types currently provided by the app.
+
+Design considerations:
+- Duration should be the common measurement available for all exercise types.
+- Distance should be optional and displayed only when it makes sense for that exercise.
+- Cycling, walking, and running could use both duration and distance.
+- Weightlifting, yoga, stretching, and similar activities may use duration without distance.
+- Notes should remain available for additional information.
+- Exercise history should display only the measurements that apply to each exercise type.
+- A future Manage Exercises area could allow users to add, edit, activate/deactivate, and manage exercise types.
+
+Important: Do not assume that every exercise has a distance measurement. Duration should be the broadly applicable measurement, with distance treated as optional.
