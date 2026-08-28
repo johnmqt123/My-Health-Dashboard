@@ -233,6 +233,25 @@
 
     <h2 class="history-section-header">❤️ Blood Pressure History</h2>
 
+    <div class="bp-range-controls">
+        <div class="bp-date-field">
+            <label for="bpStartDate">Start date</label>
+            <input id="bpStartDate" type="date" />
+        </div>
+        <div class="bp-date-field">
+            <label for="bpEndDate">End date</label>
+            <input id="bpEndDate" type="date" />
+        </div>
+        <button id="bpClearRangeButton" class="secondary-action" type="button">Clear</button>
+    </div>
+
+    <div id="bpRangeResultCount" class="bp-range-result-count">0 readings</div>
+    <textarea id="bpCopyTextPreview" class="bp-copy-text-preview" readonly aria-label="Blood pressure readings to copy"></textarea>
+    <div class="bp-copy-actions">
+        <button id="bpCopyButton" type="button" class="dashboard-action" disabled>Copy</button>
+        <span id="bpCopyStatus" class="bp-copy-status" aria-live="polite"></span>
+    </div>
+
     <div id="bpHistoryDisplay" class="history-display history-stack">
         No blood pressure entries yet.
     </div>

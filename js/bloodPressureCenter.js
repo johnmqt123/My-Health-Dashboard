@@ -30,6 +30,13 @@
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
+    const bpStartDateInput = document.getElementById("bpStartDate");
+    const bpEndDateInput = document.getElementById("bpEndDate");
+    const bpClearRangeButton = document.getElementById("bpClearRangeButton");
+    const bpRangeResultCount = document.getElementById("bpRangeResultCount");
+    const bpCopyTextPreview = document.getElementById("bpCopyTextPreview");
+    const bpCopyButton = document.getElementById("bpCopyButton");
+    const bpCopyStatus = document.getElementById("bpCopyStatus");
     const bpDetailModal = document.getElementById("bpDetailModal");
     const bpDetailContent = document.getElementById("bpDetailContent");
     const bpDetailEditBtn = document.getElementById("bpDetailEditBtn");
@@ -38,6 +45,215 @@
     let editingBpIndex = null;
     let activeDetailIndex = null;
     let lockedScrollTop = 0;
+
+    function parseBloodPressureDateValue(dateText) {
+        const cleanValue = String(dateText || "").trim();
+        if (!cleanValue) {
+            return null;
+        }
+
+        const isoMatch = /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.exec(cleanValue);
+        if (isoMatch) {
+            const year = Number(isoMatch[1]);
+            const month = Number(isoMatch[2]);
+            const day = Number(isoMatch[3]);
+            const value = new Date(year, month - 1, day);
+            if (!Number.isNaN(value.getTime())) {
+                return value;
+            }
+        }
+
+        const usMatch = /^([0-9]{1,2})\/([0-9]{1,2})\/([0-9]{4})$/.exec(cleanValue);
+        if (usMatch) {
+            const month = Number(usMatch[1]);
+            const day = Number(usMatch[2]);
+            const year = Number(usMatch[3]);
+            const value = new Date(year, month - 1, day);
+            if (!Number.isNaN(value.getTime())) {
+                return value;
+            }
+        }
+
+        const fallback = new Date(cleanValue);
+        if (!Number.isNaN(fallback.getTime())) {
+            return fallback;
+        }
+
+        return null;
+    }
+
+    function formatBloodPressureCopyDate(entry) {
+        const parsed = parseBloodPressureDateValue(entry && entry.date ? entry.date : "");
+        if (!parsed) {
+            return "Unknown Date";
+        }
+
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        const year = parsed.getFullYear();
+        return month + "/" + day + "/" + year;
+    }
+
+    function getBloodPressureDateKey(entry) {
+        const parsed = parseBloodPressureDateValue(entry && entry.date ? entry.date : "");
+        if (!parsed) {
+            return "";
+        }
+
+        const year = parsed.getFullYear();
+        const month = String(parsed.getMonth() + 1).padStart(2, "0");
+        const day = String(parsed.getDate()).padStart(2, "0");
+        return year + "-" + month + "-" + day;
+    }
+
+    function getFilteredBpEntries() {
+        let startDate = "";
+        let endDate = "";
+
+        if (bpStartDateInput) {
+            startDate = String(bpStartDateInput.value || "").trim();
+        }
+        if (bpEndDateInput) {
+            endDate = String(bpEndDateInput.value || "").trim();
+        }
+
+        if (startDate && endDate && startDate > endDate) {
+            return [];
+        }
+
+        const filtered = bpHistory
+            .slice()
+            .filter(function (entry) {
+                const dateKey = getBloodPressureDateKey(entry);
+                if (!dateKey) {
+                    return false;
+                }
+
+                if (startDate && dateKey < startDate) {
+                    return false;
+                }
+
+                if (endDate && dateKey > endDate) {
+                    return false;
+                }
+
+                return true;
+            })
+            .sort(function (a, b) {
+                const timeA = parseBloodPressureDateValue(a && a.date ? a.date : "");
+                const timeB = parseBloodPressureDateValue(b && b.date ? b.date : "");
+                return (timeB ? timeB.getTime() : 0) - (timeA ? timeA.getTime() : 0);
+            });
+
+        if (!startDate && !endDate) {
+            return bpHistory
+                .slice()
+                .sort(function (a, b) {
+                    const timeA = parseBloodPressureDateValue(a && a.date ? a.date : "");
+                    const timeB = parseBloodPressureDateValue(b && b.date ? b.date : "");
+                    return (timeB ? timeB.getTime() : 0) - (timeA ? timeA.getTime() : 0);
+                });
+        }
+
+        return filtered;
+    }
+
+    function buildSelectedBpCopyText(entries) {
+        return entries.map(function (entry) {
+            const line = formatBloodPressureCopyDate(entry) + "  " + String(entry.systolic || "--") + "/" + String(entry.diastolic || "--") + "  " + String(entry.pulse || "--");
+            const note = String(entry.note || "").trim();
+            return note ? line + "  " + note : line;
+        }).join("\n");
+    }
+
+    function updateBpRangeSummary() {
+        const hasInvalidRange = Boolean(
+            bpStartDateInput && bpEndDateInput &&
+            bpStartDateInput.value && bpEndDateInput.value &&
+            bpStartDateInput.value > bpEndDateInput.value
+        );
+
+        const entries = getFilteredBpEntries();
+        const displayText = buildSelectedBpCopyText(entries);
+
+        if (bpCopyTextPreview) {
+            bpCopyTextPreview.value = displayText;
+        }
+
+        if (bpCopyButton) {
+            bpCopyButton.disabled = !entries.length || hasInvalidRange;
+        }
+
+        if (bpRangeResultCount) {
+            if (hasInvalidRange) {
+                bpRangeResultCount.textContent = "Start date must be on or before end date.";
+                return;
+            }
+
+            if (!entries.length) {
+                bpRangeResultCount.textContent = "No readings to copy.";
+                return;
+            }
+
+            bpRangeResultCount.textContent = entries.length === 1 ? "1 reading" : entries.length + " readings";
+        }
+
+        if (bpCopyStatus) {
+            bpCopyStatus.textContent = "";
+        }
+    }
+
+    function clearBpRangeSelection() {
+        if (bpStartDateInput) bpStartDateInput.value = "";
+        if (bpEndDateInput) bpEndDateInput.value = "";
+        if (bpCopyStatus) bpCopyStatus.textContent = "";
+        updateBpRangeSummary();
+    }
+
+    async function copySelectedBpReadings() {
+        const text = bpCopyTextPreview ? bpCopyTextPreview.value.trim() : "";
+        if (!text) {
+            if (bpCopyStatus) {
+                bpCopyStatus.textContent = "No readings to copy.";
+            }
+            return;
+        }
+
+        try {
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(text);
+                window.__copiedText = text;
+            } else {
+                const helper = document.createElement("textarea");
+                helper.value = text;
+                helper.setAttribute("readonly", "");
+                helper.style.position = "fixed";
+                helper.style.left = "-9999px";
+                document.body.appendChild(helper);
+                helper.select();
+                document.execCommand("copy");
+                document.body.removeChild(helper);
+                window.__copiedText = text;
+            }
+
+            if (bpCopyStatus) {
+                bpCopyStatus.textContent = "Copied";
+            }
+
+            if (bpCopyButton) {
+                bpCopyButton.textContent = "Copied";
+                window.setTimeout(function () {
+                    if (bpCopyButton) {
+                        bpCopyButton.textContent = "Copy";
+                    }
+                }, 1400);
+            }
+        } catch (error) {
+            if (bpCopyStatus) {
+                bpCopyStatus.textContent = "Copy unavailable. Please copy manually.";
+            }
+        }
+    }
 
     function parseHistoryDate(entry) {
         if (!entry || !entry.date) return null;
@@ -387,6 +603,7 @@
 
         saveBloodPressureData();
         renderCurrentReading();
+        updateBpRangeSummary();
 
         if (bpHistorySection && bpHistorySection.style.display === "block") {
             renderHistory();
@@ -453,6 +670,7 @@
 
     function initBloodPressureCenter() {
         renderCurrentReading();
+        updateBpRangeSummary();
 
         if (bpHistorySection) {
             bpHistorySection.style.display = "none";
@@ -461,6 +679,32 @@
         if (bpHistoryButton) {
             bpHistoryButton.textContent = "📊 History";
             bpHistoryButton.addEventListener("click", toggleHistory);
+        }
+
+        if (bpStartDateInput) {
+            bpStartDateInput.addEventListener("change", function () {
+                if (bpStartDateInput.value && bpEndDateInput && bpEndDateInput.value && bpStartDateInput.value > bpEndDateInput.value) {
+                    alert("Start date must be on or before end date.");
+                }
+                updateBpRangeSummary();
+            });
+        }
+
+        if (bpEndDateInput) {
+            bpEndDateInput.addEventListener("change", function () {
+                if (bpStartDateInput && bpStartDateInput.value && bpEndDateInput.value && bpStartDateInput.value > bpEndDateInput.value) {
+                    alert("Start date must be on or before end date.");
+                }
+                updateBpRangeSummary();
+            });
+        }
+
+        if (bpClearRangeButton) {
+            bpClearRangeButton.addEventListener("click", clearBpRangeSelection);
+        }
+
+        if (bpCopyButton) {
+            bpCopyButton.addEventListener("click", copySelectedBpReadings);
         }
 
         if (bpButton) {

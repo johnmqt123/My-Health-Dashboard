@@ -850,6 +850,89 @@ header p {
     line-height: 1;
 }
 
+.bp-range-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 10px;
+    margin: 0 0 10px;
+}
+
+.bp-date-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 140px;
+    flex: 1 1 170px;
+}
+
+.bp-date-field label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.bp-date-field input {
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 10px;
+    border: 1px solid var(--dashboard-card-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--text);
+    box-sizing: border-box;
+}
+
+.secondary-action {
+    min-height: 38px;
+    padding: 8px 14px;
+    border: 1px solid #d7dfe9;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.bp-range-result-count {
+    font-size: 0.92rem;
+    color: var(--muted);
+    margin: 0 0 8px;
+}
+
+.bp-copy-text-preview {
+    width: 100%;
+    min-height: 130px;
+    max-height: 240px;
+    resize: vertical;
+    border: 1px solid var(--dashboard-card-border);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--text);
+    padding: 10px 12px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    box-sizing: border-box;
+}
+
+.bp-copy-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 8px 0 12px;
+}
+
+.bp-copy-status {
+    min-height: 1.2em;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+#bpCopyButton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 #bpHistoryDisplay.bp-history-list {
     gap: 6px;
 }
