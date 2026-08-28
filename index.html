@@ -149,7 +149,29 @@
             <div class="daily-diary-search-wrap">
                 <label class="daily-diary-search-label" for="dailyDiarySearchInput">Search diary entries</label>
                 <input id="dailyDiarySearchInput" class="daily-diary-search-input" type="search" inputmode="search" placeholder="Search diary entries" aria-label="Search diary entries">
+
+                <div class="daily-diary-filter-grid">
+                    <div class="daily-diary-filter-field">
+                        <label class="daily-diary-search-label" for="dailyDiaryStartDate">Start date</label>
+                        <input id="dailyDiaryStartDate" class="daily-diary-date-input" type="date" aria-label="Start date">
+                    </div>
+                    <div class="daily-diary-filter-field">
+                        <label class="daily-diary-search-label" for="dailyDiaryEndDate">End date</label>
+                        <input id="dailyDiaryEndDate" class="daily-diary-date-input" type="date" aria-label="End date">
+                    </div>
+                </div>
+
+                <div class="daily-diary-filter-actions">
+                    <button id="dailyDiaryClearFiltersButton" class="daily-diary-clear-button" type="button" aria-label="Clear filters">Clear</button>
+                </div>
+
+                <div id="dailyDiaryResultCount" class="daily-diary-result-count" aria-live="polite">0 entries found</div>
             </div>
+
+            <div class="daily-diary-pagination-wrap">
+                <button id="dailyDiaryShowMoreButton" class="daily-diary-show-more-button" type="button" aria-label="Show more entries" hidden>Show More</button>
+            </div>
+
             <div id="dailyDiaryHistoryDisplay" class="history-display history-stack">No diary entries yet.</div>
         </div>
 

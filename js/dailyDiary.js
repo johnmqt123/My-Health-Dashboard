@@ -11,6 +11,11 @@
     const dailyDiaryHistorySection = document.getElementById("dailyDiaryHistorySection");
     const dailyDiaryHistoryDisplay = document.getElementById("dailyDiaryHistoryDisplay");
     const dailyDiarySearchInput = document.getElementById("dailyDiarySearchInput");
+    const dailyDiaryStartDateInput = document.getElementById("dailyDiaryStartDate");
+    const dailyDiaryEndDateInput = document.getElementById("dailyDiaryEndDate");
+    const dailyDiaryClearFiltersButton = document.getElementById("dailyDiaryClearFiltersButton");
+    const dailyDiaryResultCount = document.getElementById("dailyDiaryResultCount");
+    const dailyDiaryShowMoreButton = document.getElementById("dailyDiaryShowMoreButton");
 
     const dailyDiaryEditorModal = document.getElementById("dailyDiaryEditorModal");
     const dailyDiaryEditorTitle = document.getElementById("dailyDiaryEditorTitle");
@@ -21,6 +26,9 @@
 
     let expandedHistoryDate = null;
     let editorActiveDate = null;
+    const INITIAL_DIARY_VISIBLE_COUNT = 40;
+    const DIARY_SHOW_MORE_STEP = 40;
+    let visibleDiaryEntriesCount = 0;
 
     function getLocalDateKey(dateValue) {
         const safeDate = dateValue instanceof Date ? dateValue : new Date();
@@ -211,18 +219,74 @@
         });
     }
 
+    function getDiaryFilterState() {
+        return {
+            searchText: dailyDiarySearchInput ? String(dailyDiarySearchInput.value || "").trim() : "",
+            startDate: dailyDiaryStartDateInput ? String(dailyDiaryStartDateInput.value || "").trim() : "",
+            endDate: dailyDiaryEndDateInput ? String(dailyDiaryEndDateInput.value || "").trim() : ""
+        };
+    }
+
     function getFilteredDiaryEntries() {
-        const query = dailyDiarySearchInput ? dailyDiarySearchInput.value.trim() : "";
+        const filterState = getDiaryFilterState();
+        const query = filterState.searchText;
         const normalizedQuery = query.toLowerCase();
+        const startDate = filterState.startDate;
+        const endDate = filterState.endDate;
         const sorted = getSortedEntriesNewestFirst();
 
-        if (!normalizedQuery) {
-            return sorted;
+        if (startDate && endDate && startDate > endDate) {
+            return [];
         }
 
         return sorted.filter(function (entry) {
+            if (startDate && entry.date < startDate) {
+                return false;
+            }
+
+            if (endDate && entry.date > endDate) {
+                return false;
+            }
+
+            if (!normalizedQuery) {
+                return true;
+            }
+
             return String(entry.text || "").toLowerCase().indexOf(normalizedQuery) !== -1;
         });
+    }
+
+    function getDiaryResultLabel(count) {
+        if (count === 1) {
+            return "1 entry found";
+        }
+
+        return count + " entries found";
+    }
+
+    function resetDiaryVisibleCount() {
+        visibleDiaryEntriesCount = INITIAL_DIARY_VISIBLE_COUNT;
+    }
+
+    function updateDiaryResultCount(filteredEntries) {
+        if (!dailyDiaryResultCount) {
+            return;
+        }
+
+        if (dailyDiaryStartDateInput && dailyDiaryEndDateInput &&
+            dailyDiaryStartDateInput.value && dailyDiaryEndDateInput.value &&
+            dailyDiaryStartDateInput.value > dailyDiaryEndDateInput.value) {
+            dailyDiaryResultCount.textContent = "Start date must be on or before end date.";
+            return;
+        }
+
+        if (!filteredEntries.length) {
+            dailyDiaryResultCount.textContent = getDiaryResultLabel(0);
+            return;
+        }
+
+        const maximumVisible = Math.min(visibleDiaryEntriesCount, filteredEntries.length);
+        dailyDiaryResultCount.textContent = getDiaryResultLabel(filteredEntries.length) + " · showing " + maximumVisible;
     }
 
     function renderTodaySummary() {
@@ -303,22 +367,51 @@
         }
 
         const filteredEntries = getFilteredDiaryEntries();
+        const hasInvalidRange = Boolean(
+            dailyDiaryStartDateInput && dailyDiaryEndDateInput &&
+            dailyDiaryStartDateInput.value && dailyDiaryEndDateInput.value &&
+            dailyDiaryStartDateInput.value > dailyDiaryEndDateInput.value
+        );
+
+        if (filteredEntries.length && visibleDiaryEntriesCount === 0) {
+            visibleDiaryEntriesCount = Math.min(INITIAL_DIARY_VISIBLE_COUNT, filteredEntries.length);
+        }
+
+        if (!filteredEntries.length) {
+            dailyDiaryHistoryDisplay.innerHTML = "";
+            dailyDiaryHistoryDisplay.classList.add("diary-history-list");
+            if (dailyDiaryShowMoreButton) {
+                dailyDiaryShowMoreButton.hidden = true;
+            }
+            updateDiaryResultCount(filteredEntries);
+
+            const message = hasInvalidRange
+                ? "Start date must be on or before end date."
+                : (dailyDiarySearchInput && dailyDiarySearchInput.value.trim())
+                    ? "No matching entries."
+                    : "No diary entries yet.";
+            dailyDiaryHistoryDisplay.innerHTML = '<p class="history-empty">' + escapeHtml(message) + "</p>";
+            return;
+        }
+
+        if (visibleDiaryEntriesCount <= 0) {
+            visibleDiaryEntriesCount = Math.min(INITIAL_DIARY_VISIBLE_COUNT, filteredEntries.length);
+        }
+
+        const visibleEntries = filteredEntries.slice(0, Math.min(visibleDiaryEntriesCount, filteredEntries.length));
 
         dailyDiaryHistoryDisplay.innerHTML = "";
         dailyDiaryHistoryDisplay.classList.add("diary-history-list");
+        updateDiaryResultCount(filteredEntries);
 
-        if (!filteredEntries.length) {
-            const message = (dailyDiarySearchInput && dailyDiarySearchInput.value.trim())
-                ? "No matching entries."
-                : "No diary entries yet.";
-            dailyDiaryHistoryDisplay.innerHTML = '<p class="history-empty">' + escapeHtml(message) + "</p>";
-            return;
+        if (dailyDiaryShowMoreButton) {
+            dailyDiaryShowMoreButton.hidden = filteredEntries.length <= visibleEntries.length;
         }
 
         const grouped = {};
         const orderedMonths = [];
 
-        filteredEntries.forEach(function (entry) {
+        visibleEntries.forEach(function (entry) {
             const monthLabel = getHistoryMonthLabel(entry.date);
             if (!grouped[monthLabel]) {
                 grouped[monthLabel] = [];
@@ -422,6 +515,48 @@
         dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
     }
 
+    function applyDiaryFilterChanges() {
+        const filteredEntries = getFilteredDiaryEntries();
+        if (dailyDiaryStartDateInput && dailyDiaryEndDateInput &&
+            dailyDiaryStartDateInput.value && dailyDiaryEndDateInput.value &&
+            dailyDiaryStartDateInput.value > dailyDiaryEndDateInput.value) {
+            alert("Start date must be on or before end date.");
+        }
+
+        visibleDiaryEntriesCount = INITIAL_DIARY_VISIBLE_COUNT;
+        if (filteredEntries.length < INITIAL_DIARY_VISIBLE_COUNT) {
+            visibleDiaryEntriesCount = filteredEntries.length;
+        }
+        renderHistory();
+    }
+
+    function clearDiaryFilters() {
+        if (dailyDiarySearchInput) {
+            dailyDiarySearchInput.value = "";
+        }
+        if (dailyDiaryStartDateInput) {
+            dailyDiaryStartDateInput.value = "";
+        }
+        if (dailyDiaryEndDateInput) {
+            dailyDiaryEndDateInput.value = "";
+        }
+        visibleDiaryEntriesCount = INITIAL_DIARY_VISIBLE_COUNT;
+        renderHistory();
+    }
+
+    function loadMoreDiaryEntries() {
+        const filteredEntries = getFilteredDiaryEntries();
+        if (!filteredEntries.length) {
+            return;
+        }
+
+        visibleDiaryEntriesCount = Math.min(
+            visibleDiaryEntriesCount + DIARY_SHOW_MORE_STEP,
+            filteredEntries.length
+        );
+        renderHistory();
+    }
+
     function initDailyDiaryCenter() {
         if (!dailyDiaryOpenTodayButton || !dailyDiaryEditorInput || !dailyDiaryEditorSaveButton) {
             return;
@@ -429,6 +564,7 @@
 
         diaryEntries = normalizeDiaryEntries(diaryEntries);
         saveDiaryEntries();
+        visibleDiaryEntriesCount = INITIAL_DIARY_VISIBLE_COUNT;
 
         renderTodaySummary();
 
@@ -482,7 +618,33 @@
         if (dailyDiarySearchInput) {
             dailyDiarySearchInput.addEventListener("input", function () {
                 resetHistoryScroll();
-                renderHistory();
+                applyDiaryFilterChanges();
+            });
+        }
+
+        if (dailyDiaryStartDateInput) {
+            dailyDiaryStartDateInput.addEventListener("change", function () {
+                resetHistoryScroll();
+                applyDiaryFilterChanges();
+            });
+        }
+
+        if (dailyDiaryEndDateInput) {
+            dailyDiaryEndDateInput.addEventListener("change", function () {
+                resetHistoryScroll();
+                applyDiaryFilterChanges();
+            });
+        }
+
+        if (dailyDiaryClearFiltersButton) {
+            dailyDiaryClearFiltersButton.addEventListener("click", function () {
+                clearDiaryFilters();
+            });
+        }
+
+        if (dailyDiaryShowMoreButton) {
+            dailyDiaryShowMoreButton.addEventListener("click", function () {
+                loadMoreDiaryEntries();
             });
         }
 
