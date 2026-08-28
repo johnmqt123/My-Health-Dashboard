@@ -116,28 +116,28 @@
                 key: "carbohydrates",
                 label: "Carbohydrates",
                 target: null,
-                unit: "",
+                unit: "g",
                 established: false
             },
             {
                 key: "fat",
                 label: "Fat",
                 target: null,
-                unit: "",
+                unit: "g",
                 established: false
             },
             {
                 key: "fiber",
                 label: "Fiber",
                 target: null,
-                unit: "",
+                unit: "g",
                 established: false
             },
             {
                 key: "sodium",
                 label: "Sodium",
                 target: null,
-                unit: "",
+                unit: "mg",
                 established: false
             }
         ],
@@ -993,7 +993,9 @@
 
     function formatGoalValue(goal) {
         if (!goal.established) {
-            return "Goal to be added later";
+            return goal.unit
+                ? "Goal to be added later (" + goal.unit + ")"
+                : "Goal to be added later";
         }
 
         return goal.target.toLocaleString() + " " + goal.unit;
