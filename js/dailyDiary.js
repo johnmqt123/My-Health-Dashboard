@@ -507,6 +507,16 @@
             dailyDiaryHistorySection.style.display = "block";
             dailyDiaryHistoryButton.textContent = "Hide History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "true");
+
+            if (typeof window.scrollMedicationCenterTo === "function") {
+                window.scrollMedicationCenterTo(dailyDiaryHistoryButton);
+                return;
+            }
+
+            dailyDiaryHistoryButton.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
             return;
         }
 
@@ -515,6 +525,18 @@
         dailyDiaryHistorySection.style.display = "none";
         dailyDiaryHistoryButton.textContent = "📊 History";
         dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
+
+        if (typeof window.scrollMedicationCenterTo === "function" && dailyDiaryCard) {
+            window.scrollMedicationCenterTo(dailyDiaryCard);
+            return;
+        }
+
+        if (dailyDiaryCard) {
+            dailyDiaryCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
     }
 
     function applyDiaryFilterChanges() {
