@@ -28,6 +28,8 @@
 
     let expandedHistoryDate = null;
     let editorActiveDate = null;
+    let lockedScrollTop = 0;
+    let diaryModalLockCount = 0;
     const INITIAL_DIARY_VISIBLE_COUNT = 40;
     const DIARY_SHOW_MORE_STEP = 40;
     let visibleDiaryEntriesCount = 0;
@@ -304,6 +306,35 @@
         }
     }
 
+    function lockDiaryModalBackgroundScroll() {
+        if (diaryModalLockCount > 0) {
+            diaryModalLockCount += 1;
+            return;
+        }
+
+        lockedScrollTop = window.scrollY || window.pageYOffset || 0;
+        document.documentElement.classList.add("diary-editor-open");
+        document.body.classList.add("diary-editor-open");
+        document.body.style.top = "-" + lockedScrollTop + "px";
+        diaryModalLockCount = 1;
+    }
+
+    function unlockDiaryModalBackgroundScroll() {
+        if (diaryModalLockCount === 0) {
+            return;
+        }
+
+        diaryModalLockCount -= 1;
+        if (diaryModalLockCount > 0) {
+            return;
+        }
+
+        document.documentElement.classList.remove("diary-editor-open");
+        document.body.classList.remove("diary-editor-open");
+        document.body.style.top = "";
+        window.scrollTo(0, lockedScrollTop);
+    }
+
     function openEditorForDate(dateKey) {
         if (!parseDateKey(dateKey) || !dailyDiaryEditorModal || !dailyDiaryEditorInput) {
             return;
@@ -325,6 +356,7 @@
 
         dailyDiaryEditorInput.value = entry ? String(entry.text || "") : "";
         dailyDiaryEditorModal.style.display = "block";
+        lockDiaryModalBackgroundScroll();
 
         window.requestAnimationFrame(function () {
             dailyDiaryEditorInput.focus();
@@ -334,6 +366,8 @@
     }
 
     function closeEditor() {
+        unlockDiaryModalBackgroundScroll();
+
         if (!dailyDiaryEditorModal || !dailyDiaryEditorInput) {
             editorActiveDate = null;
             return;

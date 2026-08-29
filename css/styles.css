@@ -2535,6 +2535,10 @@ button.history-action-btn {
     gap: 6px;
 }
 
+#dailyDiaryHistoryDisplay {
+    overscroll-behavior: contain;
+}
+
 @media (max-width: 480px) {
     .daily-diary-filter-grid {
         grid-template-columns: 1fr;
@@ -4678,6 +4682,18 @@ body.zepbound-modal-open {
 }
 
 body.zepbound-modal-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
+html.diary-editor-open,
+body.diary-editor-open {
+    overflow: hidden;
+}
+
+body.diary-editor-open {
     position: fixed;
     left: 0;
     right: 0;
