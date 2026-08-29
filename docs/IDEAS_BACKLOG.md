@@ -2878,3 +2878,5 @@ Design considerations:
 - A future Manage Exercises area could allow users to add, edit, activate/deactivate, and manage exercise types.
 
 Important: Do not assume that every exercise has a distance measurement. Duration should be the broadly applicable measurement, with distance treated as optional.
+
+Quick Links: External URLs are opened with window.open(url, "_blank", "noopener,noreferrer") so they open in a new browser tab. The previous iOS-specific window.location.href behavior was removed. This also avoids replacing John's Assistant when a Quick Link is opened.
