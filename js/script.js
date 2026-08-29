@@ -1116,7 +1116,6 @@ if (quickAccessGrid) {
 
         const feature = button.dataset.feature || "This feature";
         const url = button.dataset.url;
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
         if (feature === "Reminders") {
             alert("Apple Reminders does not currently expose a supported URL scheme that Safari can launch from a web page. Open the Reminders app manually.");
@@ -1124,11 +1123,6 @@ if (quickAccessGrid) {
         }
 
         if (url) {
-            if (isIOS) {
-                window.location.href = url;
-                return;
-            }
-
             window.open(url, "_blank", "noopener,noreferrer");
             return;
         }
