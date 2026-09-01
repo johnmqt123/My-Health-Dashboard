@@ -379,6 +379,18 @@
                     maxlength="80"
                     placeholder="Enter medication name"
                 >
+                <input id="newAsNeededMedicationDefaultQuantity" type="number" min="0.1" step="0.1" inputmode="decimal" value="1" aria-label="Default quantity">
+                <select id="newAsNeededMedicationDefaultUnit" aria-label="Default unit">
+                    <option value="tablet">tablet</option>
+                    <option value="capsule">capsule</option>
+                    <option value="drop">drop</option>
+                    <option value="teaspoon">teaspoon</option>
+                    <option value="tablespoon">tablespoon</option>
+                    <option value="mL">mL</option>
+                    <option value="puff">puff</option>
+                    <option value="dose">dose</option>
+                    <option value="application">application</option>
+                </select>
                 <button id="saveAsNeededAvailableMedicationBtn" type="button">Add Medication</button>
             </div>
             <p id="asNeededAvailableMedicationStatus" class="as-needed-status" aria-live="polite"></p>
@@ -416,13 +428,24 @@
         <input
             id="asNeededMedicationCount"
             type="number"
-            min="1"
-            step="1"
-            inputmode="numeric"
+            min="0.1"
+            step="0.1"
+            inputmode="decimal"
             value="1"
         >
 
-        
+        <label for="asNeededMedicationUnit">Unit</label>
+        <select id="asNeededMedicationUnit">
+            <option value="tablet">tablet</option>
+            <option value="capsule">capsule</option>
+            <option value="drop">drop</option>
+            <option value="teaspoon">teaspoon</option>
+            <option value="tablespoon">tablespoon</option>
+            <option value="mL">mL</option>
+            <option value="puff">puff</option>
+            <option value="dose">dose</option>
+            <option value="application">application</option>
+        </select>
 
         <label for="asNeededMedicationNote">Note (optional)</label>
         <textarea id="asNeededMedicationNote"></textarea>
@@ -761,3 +784,5 @@
 <script src="js/home.js?v=67732a7"></script>
 <script src="js/dailyRoutine.js?v=67732a7"></script>
 <script src="js/script.js?v=67732a7"></script>
+</body>
+</html>

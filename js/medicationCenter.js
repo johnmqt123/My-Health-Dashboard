@@ -68,11 +68,20 @@ const asNeededAvailableMedicationList =
 const newAsNeededMedicationInput =
     document.getElementById("newAsNeededMedicationInput");
 
+const newAsNeededMedicationDefaultQuantity =
+    document.getElementById("newAsNeededMedicationDefaultQuantity");
+
+const newAsNeededMedicationDefaultUnit =
+    document.getElementById("newAsNeededMedicationDefaultUnit");
+
 const saveAsNeededAvailableMedicationBtn =
     document.getElementById("saveAsNeededAvailableMedicationBtn");
 
 const asNeededAvailableMedicationStatus =
     document.getElementById("asNeededAvailableMedicationStatus");
+
+const asNeededMedicationUnit =
+    document.getElementById("asNeededMedicationUnit");
 
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
@@ -82,7 +91,20 @@ const AS_NEEDED_DEFAULT_MEDICATIONS = [
     "ALA",
     "Tylenol"
 ];
+const AS_NEEDED_DOSE_UNITS = [
+    "tablet",
+    "capsule",
+    "drop",
+    "teaspoon",
+    "tablespoon",
+    "mL",
+    "puff",
+    "dose",
+    "application"
+];
 let asNeededAvailableMedications = [];
+let editingAsNeededMedicationIndex = -1;
+let editingAsNeededHistoryIndex = -1;
 let medicationEditorLockedScrollTop = 0;
 let medicationEditorReturnScrollSnapshot = null;
 let activeScheduleNotesEventId = "";
@@ -107,7 +129,70 @@ function getAsNeededMedicationCompareKey(name) {
     return normalizeAsNeededMedicationName(name).toLowerCase();
 }
 
-function dedupeAsNeededMedicationNames(items) {
+function normalizeAsNeededDoseQuantity(value, fallbackValue) {
+    const quantity = Number(value);
+    return Number.isFinite(quantity) && quantity > 0 ? quantity : fallbackValue;
+}
+
+function normalizeAsNeededDoseUnit(value) {
+    return AS_NEEDED_DOSE_UNITS.indexOf(value) >= 0 ? value : "tablet";
+}
+
+function formatAsNeededDose(quantity, unit) {
+    const normalizedQuantity = normalizeAsNeededDoseQuantity(quantity, 1);
+    const normalizedUnit = normalizeAsNeededDoseUnit(unit);
+    const displayQuantity = Number.isInteger(normalizedQuantity)
+        ? String(normalizedQuantity)
+        : String(normalizedQuantity);
+
+    if (normalizedUnit === "mL") {
+        return displayQuantity + " mL";
+    }
+
+    const displayUnit = normalizedQuantity === 1
+        ? normalizedUnit
+        : normalizedUnit === "dose"
+            ? "doses"
+            : normalizedUnit + "s";
+    return displayQuantity + " " + displayUnit;
+}
+
+function getAsNeededOccurrenceDose(entry) {
+    const isLegacyEntry = !Object.prototype.hasOwnProperty.call(entry || {}, "quantity");
+    return {
+        quantity: normalizeAsNeededDoseQuantity(
+            isLegacyEntry ? entry && entry.tablets : entry && entry.quantity,
+            1
+        ),
+        unit: normalizeAsNeededDoseUnit(isLegacyEntry ? "tablet" : entry && entry.unit)
+    };
+}
+
+function getAsNeededMedicationDefinitionByName(name) {
+    const compareKey = getAsNeededMedicationCompareKey(name);
+    return asNeededAvailableMedications.find(function (definition) {
+        return getAsNeededMedicationCompareKey(definition.name) === compareKey;
+    }) || null;
+}
+
+function normalizeAsNeededMedicationDefinition(item) {
+    const isLegacyName = typeof item === "string";
+    const name = normalizeAsNeededMedicationName(isLegacyName ? item : item && item.name);
+    if (!name) {
+        return null;
+    }
+
+    return {
+        name: name,
+        defaultQuantity: normalizeAsNeededDoseQuantity(
+            isLegacyName ? 1 : item.defaultQuantity,
+            1
+        ),
+        defaultUnit: normalizeAsNeededDoseUnit(isLegacyName ? "tablet" : item.defaultUnit)
+    };
+}
+
+function normalizeAsNeededMedicationDefinitions(items) {
     if (!Array.isArray(items)) {
         return [];
     }
@@ -115,13 +200,13 @@ function dedupeAsNeededMedicationNames(items) {
     const seen = new Set();
 
     return items.map(function (item) {
-        return normalizeAsNeededMedicationName(item);
+        return normalizeAsNeededMedicationDefinition(item);
     }).filter(function (item) {
         if (!item) {
             return false;
         }
 
-        const key = getAsNeededMedicationCompareKey(item);
+        const key = getAsNeededMedicationCompareKey(item.name);
         if (seen.has(key)) {
             return false;
         }
@@ -132,25 +217,24 @@ function dedupeAsNeededMedicationNames(items) {
 }
 
 function saveAsNeededAvailableMedications() {
-    saveData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, asNeededAvailableMedications);
+    const storedDefinitions = asNeededAvailableMedications.map(function (definition) {
+        if (definition.defaultQuantity === 1 && definition.defaultUnit === "tablet") {
+            return definition.name;
+        }
+
+        return definition;
+    });
+    saveData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, storedDefinitions);
 }
 
 function loadAsNeededAvailableMedications() {
     const storedList = loadData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, null);
 
     if (!Array.isArray(storedList)) {
-        const migratedList = dedupeAsNeededMedicationNames(AS_NEEDED_DEFAULT_MEDICATIONS);
-        saveData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, migratedList);
-        return migratedList;
+        return normalizeAsNeededMedicationDefinitions(AS_NEEDED_DEFAULT_MEDICATIONS);
     }
 
-    const normalizedList = dedupeAsNeededMedicationNames(storedList);
-
-    if (JSON.stringify(normalizedList) !== JSON.stringify(storedList)) {
-        saveData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, normalizedList);
-    }
-
-    return normalizedList;
+    return normalizeAsNeededMedicationDefinitions(storedList);
 }
 
 function setAsNeededAvailableMedicationStatus(messageText, isError) {
@@ -171,10 +255,10 @@ function renderAsNeededMedicationChoices() {
     const previousValue = asNeededMedicationChoice.value;
     asNeededMedicationChoice.innerHTML = "";
 
-    asNeededAvailableMedications.forEach(function (medicationName) {
+    asNeededAvailableMedications.forEach(function (definition) {
         const option = document.createElement("option");
-        option.value = medicationName;
-        option.textContent = medicationName;
+        option.value = definition.name;
+        option.textContent = definition.name;
         asNeededMedicationChoice.appendChild(option);
     });
 
@@ -183,8 +267,8 @@ function renderAsNeededMedicationChoices() {
     customOption.textContent = "Other / custom medication";
     asNeededMedicationChoice.appendChild(customOption);
 
-    const hasPreviousValue = asNeededAvailableMedications.some(function (item) {
-        return item === previousValue;
+    const hasPreviousValue = asNeededAvailableMedications.some(function (definition) {
+        return definition.name === previousValue;
     });
 
     if (previousValue === "custom") {
@@ -192,7 +276,7 @@ function renderAsNeededMedicationChoices() {
     } else if (hasPreviousValue) {
         asNeededMedicationChoice.value = previousValue;
     } else if (asNeededAvailableMedications.length) {
-        asNeededMedicationChoice.value = asNeededAvailableMedications[0];
+        asNeededMedicationChoice.value = asNeededAvailableMedications[0].name;
     } else {
         asNeededMedicationChoice.value = "custom";
     }
@@ -221,21 +305,33 @@ function renderAsNeededAvailableMedicationList() {
 
     asNeededAvailableMedicationList.innerHTML = "";
 
-    asNeededAvailableMedications.forEach(function (medicationName) {
+    asNeededAvailableMedications.forEach(function (definition, index) {
         const row = document.createElement("div");
         row.className = "as-needed-available-row";
 
         const name = document.createElement("span");
         name.className = "as-needed-available-name";
-        name.textContent = medicationName;
+        name.textContent = definition.name;
+
+        const dose = document.createElement("span");
+        dose.className = "as-needed-available-dose";
+        dose.textContent = formatAsNeededDose(definition.defaultQuantity, definition.defaultUnit);
+
+        const editButton = document.createElement("button");
+        editButton.type = "button";
+        editButton.className = "history-action-btn edit as-needed-available-edit-btn";
+        editButton.textContent = "Edit";
+        editButton.setAttribute("data-index", String(index));
 
         const removeButton = document.createElement("button");
         removeButton.type = "button";
         removeButton.className = "history-action-btn delete as-needed-available-remove-btn";
         removeButton.textContent = "Remove from List";
-        removeButton.setAttribute("data-medication", medicationName);
+        removeButton.setAttribute("data-medication", definition.name);
 
         row.appendChild(name);
+        row.appendChild(dose);
+        row.appendChild(editButton);
         row.appendChild(removeButton);
         asNeededAvailableMedicationList.appendChild(row);
     });
@@ -253,8 +349,22 @@ function addAsNeededAvailableMedication() {
     }
 
     const compareKey = getAsNeededMedicationCompareKey(normalizedName);
-    const isDuplicate = asNeededAvailableMedications.some(function (medicationName) {
-        return getAsNeededMedicationCompareKey(medicationName) === compareKey;
+    const defaultQuantity = normalizeAsNeededDoseQuantity(
+        newAsNeededMedicationDefaultQuantity ? newAsNeededMedicationDefaultQuantity.value : 1,
+        0
+    );
+    const defaultUnit = normalizeAsNeededDoseUnit(
+        newAsNeededMedicationDefaultUnit ? newAsNeededMedicationDefaultUnit.value : "tablet"
+    );
+
+    if (!defaultQuantity) {
+        setAsNeededAvailableMedicationStatus("Enter a default quantity greater than zero.", true);
+        return;
+    }
+
+    const isDuplicate = asNeededAvailableMedications.some(function (definition, index) {
+        return index !== editingAsNeededMedicationIndex &&
+            getAsNeededMedicationCompareKey(definition.name) === compareKey;
     });
 
     if (isDuplicate) {
@@ -266,29 +376,50 @@ function addAsNeededAvailableMedication() {
         return;
     }
 
-    asNeededAvailableMedications.push(normalizedName);
+    const definition = {
+        name: normalizedName,
+        defaultQuantity: defaultQuantity,
+        defaultUnit: defaultUnit
+    };
+
+    if (editingAsNeededMedicationIndex >= 0) {
+        asNeededAvailableMedications[editingAsNeededMedicationIndex] = definition;
+    } else {
+        asNeededAvailableMedications.push(definition);
+    }
+
     saveAsNeededAvailableMedications();
     renderAsNeededAvailableMedicationList();
     renderAsNeededMedicationChoices();
     setAsNeededAvailableMedicationStatus(
-        "✓ " + normalizedName + " is now available for As-Needed logging.",
+        "✓ " + normalizedName + " is ready for As-Needed logging.",
         false
     );
     newAsNeededMedicationInput.value = "";
+    if (newAsNeededMedicationDefaultQuantity) {
+        newAsNeededMedicationDefaultQuantity.value = "1";
+    }
+    if (newAsNeededMedicationDefaultUnit) {
+        newAsNeededMedicationDefaultUnit.value = "tablet";
+    }
+    editingAsNeededMedicationIndex = -1;
+    if (saveAsNeededAvailableMedicationBtn) {
+        saveAsNeededAvailableMedicationBtn.textContent = "Add Medication";
+    }
     newAsNeededMedicationInput.focus();
 }
 
 function removeAsNeededAvailableMedication(medicationName) {
     const compareKey = getAsNeededMedicationCompareKey(medicationName);
-    const index = asNeededAvailableMedications.findIndex(function (item) {
-        return getAsNeededMedicationCompareKey(item) === compareKey;
+    const index = asNeededAvailableMedications.findIndex(function (definition) {
+        return getAsNeededMedicationCompareKey(definition.name) === compareKey;
     });
 
     if (index < 0) {
         return;
     }
 
-    const label = asNeededAvailableMedications[index];
+    const label = asNeededAvailableMedications[index].name;
     if (!confirmAsNeededMedicationRemove(label)) {
         return;
     }
@@ -580,20 +711,20 @@ function renderAsNeededMedicationHistory() {
 
     asNeededLastTakenDisplay.innerHTML = medicationNames.map(function (medicationName) {
         const latest = latestByMedication[medicationName];
-        const tablets = Number(latest.tablets) || 1;
-        const tabletsText = tablets + " tablet" + (tablets === 1 ? "" : "s");
+        const historyIndex = asNeededMedicationHistory.lastIndexOf(latest);
+        const dose = getAsNeededOccurrenceDose(latest);
         const noteText = latest.note ? " — " + latest.note : "";
 
         return "<div class=\"as-needed-entry\"><p><strong>" + medicationName + "</strong><br>Last Taken: " +
-            formatDateTime(latest.dateTime) + " · " + tabletsText + noteText +
-            "</p><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div>";
+            formatDateTime(latest.dateTime) + " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
+            "</p><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" + historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div>";
     }).join("");
 }
 
 function resetAsNeededMedicationForm() {
     if (asNeededMedicationChoice) {
         if (asNeededAvailableMedications.length) {
-            asNeededMedicationChoice.value = asNeededAvailableMedications[0];
+            asNeededMedicationChoice.value = asNeededAvailableMedications[0].name;
         } else {
             asNeededMedicationChoice.value = "custom";
         }
@@ -608,12 +739,19 @@ function resetAsNeededMedicationForm() {
         asNeededMedicationCount.value = "1";
     }
 
+    if (asNeededMedicationUnit) {
+        asNeededMedicationUnit.value = "tablet";
+    }
+
     if (asNeededMedicationNote) {
         asNeededMedicationNote.value = "";
     }
+
+    updateAsNeededMedicationNameInputVisibility();
 }
 
 function openAsNeededMedicationModal() {
+    editingAsNeededHistoryIndex = -1;
     resetAsNeededMedicationForm();
 
     if (asNeededMedicationModal) {
@@ -644,6 +782,11 @@ function updateAsNeededMedicationNameInputVisibility() {
 
     if (!isCustom) {
         asNeededMedicationNameInput.value = "";
+        const definition = getAsNeededMedicationDefinitionByName(asNeededMedicationChoice.value);
+        if (definition && asNeededMedicationCount && asNeededMedicationUnit) {
+            asNeededMedicationCount.value = String(definition.defaultQuantity);
+            asNeededMedicationUnit.value = definition.defaultUnit;
+        }
     }
 }
 
@@ -1846,6 +1989,29 @@ if (newAsNeededMedicationInput) {
 
 if (asNeededAvailableMedicationList) {
     asNeededAvailableMedicationList.addEventListener("click", function (event) {
+        const editButton = event.target.closest(".as-needed-available-edit-btn");
+        if (editButton && asNeededAvailableMedicationList.contains(editButton)) {
+            const index = Number(editButton.getAttribute("data-index"));
+            const definition = asNeededAvailableMedications[index];
+            if (!definition || !newAsNeededMedicationInput) {
+                return;
+            }
+
+            editingAsNeededMedicationIndex = index;
+            newAsNeededMedicationInput.value = definition.name;
+            if (newAsNeededMedicationDefaultQuantity) {
+                newAsNeededMedicationDefaultQuantity.value = String(definition.defaultQuantity);
+            }
+            if (newAsNeededMedicationDefaultUnit) {
+                newAsNeededMedicationDefaultUnit.value = definition.defaultUnit;
+            }
+            if (saveAsNeededAvailableMedicationBtn) {
+                saveAsNeededAvailableMedicationBtn.textContent = "Save Medication";
+            }
+            newAsNeededMedicationInput.focus();
+            return;
+        }
+
         const removeButton = event.target.closest(".as-needed-available-remove-btn");
         if (!removeButton || !asNeededAvailableMedicationList.contains(removeButton)) {
             return;
@@ -1881,14 +2047,35 @@ if (saveAsNeededMedicationBtn) {
             return;
         }
 
+        const quantity = normalizeAsNeededDoseQuantity(
+            asNeededMedicationCount ? asNeededMedicationCount.value : 1,
+            0
+        );
+        if (!quantity) {
+            alert("Please enter a quantity greater than zero.");
+            return;
+        }
+
+        const existingEntry = editingAsNeededHistoryIndex >= 0
+            ? asNeededMedicationHistory[editingAsNeededHistoryIndex]
+            : null;
         const entry = {
             medication: medicationName,
-            dateTime: getDefaultDateTimeValue(),
-            tablets: asNeededMedicationCount ? Number(asNeededMedicationCount.value) : 1,
+            dateTime: existingEntry && existingEntry.dateTime
+                ? existingEntry.dateTime
+                : getDefaultDateTimeValue(),
+            quantity: quantity,
+            unit: normalizeAsNeededDoseUnit(
+                asNeededMedicationUnit ? asNeededMedicationUnit.value : "tablet"
+            ),
             note: asNeededMedicationNote ? asNeededMedicationNote.value.trim() : ""
         };
 
-        asNeededMedicationHistory.push(entry);
+        if (editingAsNeededHistoryIndex >= 0) {
+            asNeededMedicationHistory[editingAsNeededHistoryIndex] = entry;
+        } else {
+            asNeededMedicationHistory.push(entry);
+        }
         saveData("asNeededMedicationHistory", asNeededMedicationHistory);
         closeAsNeededMedicationModal();
         renderAsNeededMedicationHistory();
@@ -1897,6 +2084,22 @@ if (saveAsNeededMedicationBtn) {
 
 if (asNeededLastTakenDisplay) {
     asNeededLastTakenDisplay.addEventListener("click", function (event) {
+        const editButton = event.target.closest(".as-needed-edit-btn");
+        if (editButton) {
+            const historyIndex = Number(editButton.getAttribute("data-index"));
+            const entry = asNeededMedicationHistory[historyIndex];
+            if (!entry) return;
+            openAsNeededMedicationModal();
+            editingAsNeededHistoryIndex = historyIndex;
+            asNeededMedicationChoice.value = entry.medication;
+            updateAsNeededMedicationNameInputVisibility();
+            const dose = getAsNeededOccurrenceDose(entry);
+            asNeededMedicationCount.value = String(dose.quantity);
+            asNeededMedicationUnit.value = dose.unit;
+            asNeededMedicationNote.value = entry.note || "";
+            return;
+        }
+
         const deleteButton = event.target.closest(".medication-delete-btn");
         if (!deleteButton) return;
 
