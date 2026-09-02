@@ -75,7 +75,7 @@
                 return;
             }
 
-            data[key] = JSON.parse(rawValue);
+            data[key] = key === "taskListDate" ? rawValue : JSON.parse(rawValue);
         });
 
         return data;
@@ -143,7 +143,7 @@
         return { valid: true, backup: backup };
     }
 
-    function downloadBackup() {
+    async function downloadBackup() {
         let backup;
         try {
             backup = createBackup();
@@ -152,18 +152,52 @@
             return;
         }
 
-        const blob = new Blob([JSON.stringify(backup, null, 2)], {
-            type: "application/json"
-        });
+        const json = JSON.stringify(backup, null, 2);
+        const date = new Date().toISOString().slice(0, 10);
+        const filename = "johns-assistant-backup-" + date + ".json";
+
+        let file;
+        try {
+            file = new File([json], filename, { type: "application/json" });
+        } catch (error) {
+            file = null;
+        }
+
+        if (file && navigator.share && navigator.canShare) {
+            let canShareFile = false;
+            try {
+                canShareFile = navigator.canShare({ files: [file] });
+            } catch (error) {
+                canShareFile = false;
+            }
+
+            if (canShareFile) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: filename
+                    });
+                    window.alert("Backup shared successfully.");
+                    return;
+                } catch (error) {
+                    if (error && error.name === "AbortError") {
+                        return;
+                    }
+                }
+            }
+        }
+
+        const blob = new Blob([json], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        const date = new Date().toISOString().slice(0, 10);
         link.href = url;
-        link.download = "johns-assistant-backup-" + date + ".json";
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         link.remove();
-        URL.revokeObjectURL(url);
+        window.setTimeout(function () {
+            URL.revokeObjectURL(url);
+        }, 1000);
         window.alert("Backup downloaded successfully.");
     }
 
