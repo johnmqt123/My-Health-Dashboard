@@ -376,6 +376,10 @@ function addAsNeededAvailableMedication() {
         return;
     }
 
+    const existingDefinition = editingAsNeededMedicationIndex >= 0
+        ? asNeededAvailableMedications[editingAsNeededMedicationIndex]
+        : null;
+    const originalName = existingDefinition ? existingDefinition.name : "";
     const definition = {
         name: normalizedName,
         defaultQuantity: defaultQuantity,
@@ -386,6 +390,16 @@ function addAsNeededAvailableMedication() {
         asNeededAvailableMedications[editingAsNeededMedicationIndex] = definition;
     } else {
         asNeededAvailableMedications.push(definition);
+    }
+
+    if (existingDefinition && originalName !== normalizedName) {
+        asNeededMedicationHistory.forEach(function (entry) {
+            if (entry && typeof entry === "object" && entry.medication === originalName) {
+                entry.medication = normalizedName;
+            }
+        });
+        saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+        renderAsNeededMedicationHistory();
     }
 
     saveAsNeededAvailableMedications();
@@ -715,9 +729,12 @@ function renderAsNeededMedicationHistory() {
         const dose = getAsNeededOccurrenceDose(latest);
         const noteText = latest.note ? " — " + latest.note : "";
 
-        return "<div class=\"as-needed-entry\"><p><strong>" + medicationName + "</strong><br>Last Taken: " +
-            formatDateTime(latest.dateTime) + " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
-            "</p><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" + historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" + medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div>";
+        return "<div class=\"as-needed-entry\"><div class=\"history-entry-header\"><strong>" + medicationName +
+            "</strong></div><div class=\"history-entry-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
+            " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
+            "</div><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
+            historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" +
+            medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
     }).join("");
 }
 

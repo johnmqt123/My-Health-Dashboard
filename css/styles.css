@@ -2197,11 +2197,22 @@ button.history-action-btn {
 
 #asNeededMedicationContent .as-needed-entry {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
     padding: 8px 0;
     border-bottom: 1px solid #e2e8f0;
+}
+
+#asNeededMedicationContent .as-needed-entry .history-entry-header,
+#asNeededMedicationContent .as-needed-entry .history-entry-meta,
+#asNeededMedicationContent .as-needed-entry .history-entry-actions {
+    width: 100%;
+}
+
+#asNeededMedicationContent .as-needed-entry .history-entry-actions {
+    margin-top: 0;
 }
 
 #asNeededMedicationContent .as-needed-entry:last-child {
