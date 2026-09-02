@@ -2114,6 +2114,7 @@ button.history-action-btn {
 }
 
 #asNeededMedicationContent .as-needed-manager {
+    container-type: inline-size;
     padding: 10px;
     border: 1px solid #e2e8f0;
     border-radius: 10px;
@@ -2233,7 +2234,9 @@ button.history-action-btn {
     min-height: 40px;
     padding: 6px 12px;
     border-radius: 8px;
-    white-space: nowrap;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: break-word;
     align-self: start;
 }
 
@@ -2284,8 +2287,54 @@ button.history-action-btn {
 }
 
 @media (max-width: 480px) {
+    #asNeededMedicationContent .as-needed-available-row {
+        grid-template-columns: minmax(0, 1fr) max-content;
+        gap: 4px 10px;
+    }
+
+    #asNeededMedicationContent .as-needed-available-name {
+        grid-column: 1 / -1;
+    }
+
+    #asNeededMedicationContent .as-needed-available-dose {
+        grid-column: 1 / -1;
+    }
+
+    #asNeededMedicationContent .as-needed-available-edit-btn {
+        grid-column: 1;
+        grid-row: 3;
+        justify-self: start;
+    }
+
+    #asNeededMedicationContent .as-needed-available-remove-btn {
+        grid-column: 2;
+        grid-row: 3;
+        justify-self: start;
+    }
+
     #asNeededMedicationContent .as-needed-add-row {
         grid-template-columns: 1fr;
+    }
+}
+
+@container (max-width: 220px) {
+    #asNeededMedicationContent .as-needed-available-row {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    #asNeededMedicationContent .as-needed-available-edit-btn,
+    #asNeededMedicationContent .as-needed-available-remove-btn {
+        grid-column: 1;
+        width: 100%;
+        justify-self: stretch;
+    }
+
+    #asNeededMedicationContent .as-needed-available-edit-btn {
+        grid-row: 3;
+    }
+
+    #asNeededMedicationContent .as-needed-available-remove-btn {
+        grid-row: 4;
     }
 }
 
