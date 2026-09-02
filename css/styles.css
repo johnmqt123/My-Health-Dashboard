@@ -2139,11 +2139,10 @@ button.history-action-btn {
 }
 
 #asNeededMedicationContent .as-needed-available-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    align-items: start;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
 #asNeededMedicationContent .as-needed-available-dose {
@@ -2235,7 +2234,7 @@ button.history-action-btn {
     padding: 6px 12px;
     border-radius: 8px;
     white-space: nowrap;
-    align-self: center;
+    align-self: start;
 }
 
 #asNeededMedicationContent #saveAsNeededAvailableMedicationBtn {

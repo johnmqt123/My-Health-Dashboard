@@ -369,7 +369,7 @@
             <h3>Available As-Needed Medications</h3>
             <div id="asNeededAvailableMedicationList" class="as-needed-available-list">No medications added yet.</div>
 
-            <label for="newAsNeededMedicationInput">New As-Needed Medication</label>
+            <label id="asNeededAvailableMedicationFormLabel" for="newAsNeededMedicationInput">New As-Needed Medication</label>
             <div class="as-needed-add-row">
                 <input
                     id="newAsNeededMedicationInput"
@@ -392,6 +392,7 @@
                     <option value="application">application</option>
                 </select>
                 <button id="saveAsNeededAvailableMedicationBtn" type="button">Add Medication</button>
+                <button id="cancelAsNeededAvailableMedicationBtn" type="button" style="display: none;">Cancel</button>
             </div>
             <p id="asNeededAvailableMedicationStatus" class="as-needed-status" aria-live="polite"></p>
         </div>
@@ -414,7 +415,7 @@
 </button>
 <div id="asNeededMedicationModal" class="modal" style="display: none;">
     <div class="modal-content">
-        <h2>Log As-Needed Medication</h2>
+        <h2 id="asNeededMedicationModalTitle">Log As-Needed Medication</h2>
 
         <label for="asNeededMedicationChoice">Medication</label>
         <select id="asNeededMedicationChoice">

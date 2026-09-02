@@ -77,11 +77,20 @@ const newAsNeededMedicationDefaultUnit =
 const saveAsNeededAvailableMedicationBtn =
     document.getElementById("saveAsNeededAvailableMedicationBtn");
 
+const cancelAsNeededAvailableMedicationBtn =
+    document.getElementById("cancelAsNeededAvailableMedicationBtn");
+
+const asNeededAvailableMedicationFormLabel =
+    document.getElementById("asNeededAvailableMedicationFormLabel");
+
 const asNeededAvailableMedicationStatus =
     document.getElementById("asNeededAvailableMedicationStatus");
 
 const asNeededMedicationUnit =
     document.getElementById("asNeededMedicationUnit");
+
+const asNeededMedicationModalTitle =
+    document.getElementById("asNeededMedicationModalTitle");
 
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
@@ -245,6 +254,29 @@ function setAsNeededAvailableMedicationStatus(messageText, isError) {
     const message = String(messageText || "").trim();
     asNeededAvailableMedicationStatus.textContent = message;
     asNeededAvailableMedicationStatus.classList.toggle("error", !!isError && !!message);
+}
+
+function resetAsNeededAvailableMedicationEditor() {
+    editingAsNeededMedicationIndex = -1;
+
+    if (newAsNeededMedicationInput) {
+        newAsNeededMedicationInput.value = "";
+    }
+    if (newAsNeededMedicationDefaultQuantity) {
+        newAsNeededMedicationDefaultQuantity.value = "1";
+    }
+    if (newAsNeededMedicationDefaultUnit) {
+        newAsNeededMedicationDefaultUnit.value = "tablet";
+    }
+    if (asNeededAvailableMedicationFormLabel) {
+        asNeededAvailableMedicationFormLabel.textContent = "New As-Needed Medication";
+    }
+    if (saveAsNeededAvailableMedicationBtn) {
+        saveAsNeededAvailableMedicationBtn.textContent = "Add Medication";
+    }
+    if (cancelAsNeededAvailableMedicationBtn) {
+        cancelAsNeededAvailableMedicationBtn.style.display = "none";
+    }
 }
 
 function renderAsNeededMedicationChoices() {
@@ -417,8 +449,14 @@ function addAsNeededAvailableMedication() {
         newAsNeededMedicationDefaultUnit.value = "tablet";
     }
     editingAsNeededMedicationIndex = -1;
+    if (asNeededAvailableMedicationFormLabel) {
+        asNeededAvailableMedicationFormLabel.textContent = "New As-Needed Medication";
+    }
     if (saveAsNeededAvailableMedicationBtn) {
         saveAsNeededAvailableMedicationBtn.textContent = "Add Medication";
+    }
+    if (cancelAsNeededAvailableMedicationBtn) {
+        cancelAsNeededAvailableMedicationBtn.style.display = "none";
     }
     newAsNeededMedicationInput.focus();
 }
@@ -767,15 +805,37 @@ function resetAsNeededMedicationForm() {
     updateAsNeededMedicationNameInputVisibility();
 }
 
-function openAsNeededMedicationModal() {
-    editingAsNeededHistoryIndex = -1;
+function openAsNeededMedicationModal(historyIndex) {
+    editingAsNeededHistoryIndex = Number.isInteger(historyIndex) ? historyIndex : -1;
     resetAsNeededMedicationForm();
+
+    if (editingAsNeededHistoryIndex >= 0) {
+        const entry = asNeededMedicationHistory[editingAsNeededHistoryIndex];
+        if (!entry) {
+            editingAsNeededHistoryIndex = -1;
+        } else {
+            asNeededMedicationChoice.value = entry.medication;
+            updateAsNeededMedicationNameInputVisibility();
+            const dose = getAsNeededOccurrenceDose(entry);
+            asNeededMedicationCount.value = String(dose.quantity);
+            asNeededMedicationUnit.value = dose.unit;
+            asNeededMedicationNote.value = entry.note || "";
+        }
+    }
+
+    if (asNeededMedicationModalTitle) {
+        asNeededMedicationModalTitle.textContent = editingAsNeededHistoryIndex >= 0
+            ? "Edit As-Needed Medication Entry"
+            : "Log As-Needed Medication";
+    }
 
     if (asNeededMedicationModal) {
         asNeededMedicationModal.style.display = "block";
     }
 
-    if (asNeededMedicationChoice && asNeededMedicationChoice.value === "custom" && asNeededMedicationNameInput) {
+    if (editingAsNeededHistoryIndex >= 0 && asNeededMedicationCount) {
+        asNeededMedicationCount.focus();
+    } else if (asNeededMedicationChoice && asNeededMedicationChoice.value === "custom" && asNeededMedicationNameInput) {
         asNeededMedicationNameInput.focus();
     } else if (asNeededMedicationChoice) {
         asNeededMedicationChoice.focus();
@@ -2004,6 +2064,16 @@ if (newAsNeededMedicationInput) {
     });
 }
 
+if (cancelAsNeededAvailableMedicationBtn) {
+    cancelAsNeededAvailableMedicationBtn.addEventListener("click", function () {
+        resetAsNeededAvailableMedicationEditor();
+        setAsNeededAvailableMedicationStatus("Medication edit canceled.", false);
+        if (newAsNeededMedicationInput) {
+            newAsNeededMedicationInput.focus();
+        }
+    });
+}
+
 if (asNeededAvailableMedicationList) {
     asNeededAvailableMedicationList.addEventListener("click", function (event) {
         const editButton = event.target.closest(".as-needed-available-edit-btn");
@@ -2024,6 +2094,12 @@ if (asNeededAvailableMedicationList) {
             }
             if (saveAsNeededAvailableMedicationBtn) {
                 saveAsNeededAvailableMedicationBtn.textContent = "Save Medication";
+            }
+            if (asNeededAvailableMedicationFormLabel) {
+                asNeededAvailableMedicationFormLabel.textContent = "Edit As-Needed Medication";
+            }
+            if (cancelAsNeededAvailableMedicationBtn) {
+                cancelAsNeededAvailableMedicationBtn.style.display = "inline-block";
             }
             newAsNeededMedicationInput.focus();
             return;
@@ -2106,14 +2182,7 @@ if (asNeededLastTakenDisplay) {
             const historyIndex = Number(editButton.getAttribute("data-index"));
             const entry = asNeededMedicationHistory[historyIndex];
             if (!entry) return;
-            openAsNeededMedicationModal();
-            editingAsNeededHistoryIndex = historyIndex;
-            asNeededMedicationChoice.value = entry.medication;
-            updateAsNeededMedicationNameInputVisibility();
-            const dose = getAsNeededOccurrenceDose(entry);
-            asNeededMedicationCount.value = String(dose.quantity);
-            asNeededMedicationUnit.value = dose.unit;
-            asNeededMedicationNote.value = entry.note || "";
+            openAsNeededMedicationModal(historyIndex);
             return;
         }
 
@@ -2121,10 +2190,17 @@ if (asNeededLastTakenDisplay) {
         if (!deleteButton) return;
 
         const medication = deleteButton.getAttribute("data-medication");
-        if (!medication || !confirmHistoryDelete()) return;
+        if (!medication) return;
 
         const medicationHistory = getMedicationHistoryFor(medication);
         if (!medicationHistory.length) return;
+
+        const latestEntry = medicationHistory[medicationHistory.length - 1];
+        const latestDose = getAsNeededOccurrenceDose(latestEntry);
+        const deleteMessage = "Delete this history entry?\n\n" + medication +
+            "\n" + formatDateTime(latestEntry.dateTime) + " · " +
+            formatAsNeededDose(latestDose.quantity, latestDose.unit);
+        if (!window.confirm(deleteMessage)) return;
 
         const latestIndex = asNeededMedicationHistory.lastIndexOf(medicationHistory[medicationHistory.length - 1]);
         if (latestIndex >= 0) {
