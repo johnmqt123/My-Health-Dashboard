@@ -41,6 +41,17 @@
     
 </div>
 
+<div class="card dashboard-card backup-restore-card">
+    <div class="dashboard-card-header">
+        <h2 class="dashboard-card-title">Data Backup &amp; Restore</h2>
+    </div>
+    <div class="backup-restore-actions">
+        <button id="backupDataButton" type="button">Backup Data</button>
+        <button id="restoreDataButton" type="button">Restore Data</button>
+        <input id="restoreDataFileInput" type="file" accept="application/json,.json" hidden>
+    </div>
+</div>
+
         <div class="card quick-access-card">
     <h2>⚡ Quick Links</h2>
     <div class="quick-access-scroll">
@@ -772,6 +783,7 @@
     </div>
 </div>
 <script src="js/storage.js?v=67732a7"></script>
+<script src="js/dataTransfer.js?v=67732a7"></script>
 <script src="js/userProfile.js?v=67732a7"></script>
 <script src="js/medications.js?v=67732a7"></script>
 <script src="js/exercise.js?v=67732a7"></script>
