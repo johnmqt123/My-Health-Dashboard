@@ -2880,3 +2880,32 @@ Design considerations:
 Important: Do not assume that every exercise has a distance measurement. Duration should be the broadly applicable measurement, with distance treated as optional.
 
 Quick Links: External URLs are opened with window.open(url, "_blank", "noopener,noreferrer") so they open in a new browser tab. The previous iOS-specific window.location.href behavior was removed. This also avoids replacing John's Assistant when a Quick Link is opened.
+
+## Data Backup & Restore
+
+Add a user-controlled backup and restore system for all John’s Assistant health data.
+
+The application should be able to export a complete backup of its stored data to a portable JSON file and later restore that data from the backup file.
+
+The backup should protect all applicable application data, including:
+- Daily Diary
+- Medication definitions and medication history
+- As-Needed medication definitions and history
+- Weight history
+- Blood Pressure history
+- Nutrition/food history
+- Exercise history
+- CPAP data
+- Other health data added to the application in the future
+
+The backup/restore system should:
+- Use JSON as the primary full-backup format.
+- Allow the user to download/save a backup file.
+- Allow the user to select a backup file and restore it.
+- Preserve the existing data structures and stored information.
+- Provide appropriate warnings before replacing/restoring existing data.
+- Be user-controlled rather than automatically uploading health data to a cloud service.
+- Be designed so the data can eventually be transferred to another device or a future version of the application.
+- Include a visible indication of when a backup was last created, if practical.
+
+Priority: High — data protection.

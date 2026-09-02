@@ -516,3 +516,7 @@ All major health modules should follow the same interaction model whenever pract
 Design effort should focus first on the parts of the application that are used most often.
 
 Frequent daily tasks should be optimized before infrequently used reference features.
+
+### Data Backup & Restore — High Priority
+
+Protect user health history from browser/device data loss by implementing a user-controlled full backup and restore system. Use a portable JSON backup containing all applicable application data. Provide simple Backup and Restore controls and design the system for future device migration and expansion of the application's data model.
