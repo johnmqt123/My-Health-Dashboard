@@ -92,6 +92,10 @@
     }
 
     function getValueType(value) {
+        if (value === null) {
+            return "null";
+        }
+
         if (Array.isArray(value)) {
             return "array";
         }
@@ -224,7 +228,10 @@
 
         try {
             STORAGE_KEYS.forEach(function (key) {
-                localStorage.setItem(key, JSON.stringify(backupData[key]));
+                const value = key === "taskListDate"
+                    ? backupData[key]
+                    : JSON.stringify(backupData[key]);
+                localStorage.setItem(key, value);
             });
         } catch (error) {
             try {
