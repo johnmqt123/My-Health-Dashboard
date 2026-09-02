@@ -2144,6 +2144,13 @@ button.history-action-btn {
     grid-template-columns: minmax(0, 1fr) auto auto auto;
     align-items: start;
     gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#asNeededMedicationContent .as-needed-available-row:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
 }
 
 #asNeededMedicationContent .as-needed-available-dose {
