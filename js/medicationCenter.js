@@ -1082,7 +1082,7 @@ function buildMedicationList() {
 
         const firstUseDescription = document.createElement("p");
         firstUseDescription.className = "medication-editor-hint";
-        firstUseDescription.textContent = "Choose the type of medication to add.";
+        firstUseDescription.textContent = "Choose the type of medication to add. A regular medication uses a named time, such as Breakfast, Lunch, Dinner, or Bedtime.";
         firstUseSection.appendChild(firstUseDescription);
 
         const firstUseActions = document.createElement("div");
@@ -1172,12 +1172,15 @@ function buildMedicationList() {
     addTimeLabel.setAttribute("for", "newMedicationTimeInput");
     addTimeLabel.textContent = hasRegularSchedules
         ? "Add Another Medication Schedule"
-        : "Regular Medication Schedule";
+        : "When do you usually take this medication?";
     addTimeContainer.appendChild(addTimeLabel);
 
     const addTimeInput = document.createElement("input");
     addTimeInput.type = "text";
     addTimeInput.id = "newMedicationTimeInput";
+    if (!hasRegularSchedules) {
+        addTimeInput.placeholder = "Example: Breakfast";
+    }
     addTimeInput.style.width = "100%";
     addTimeContainer.appendChild(addTimeInput);
 
