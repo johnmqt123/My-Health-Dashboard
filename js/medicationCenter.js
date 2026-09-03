@@ -1055,11 +1055,6 @@ function buildMedicationList() {
     medicationEditArea.innerHTML = "";
     medicationEditArea.style.display = "none";
 
-    const scheduleHint = document.createElement("p");
-    scheduleHint.className = "medication-editor-hint";
-    scheduleHint.innerHTML = "<strong>Manage your Medication Schedule</strong><br>Set up your medication schedule and add medications to each schedule event.";
-    medicationEditor.appendChild(scheduleHint);
-
     if (!Array.isArray(personalMedicationSchedule)) {
         personalMedicationSchedule = [];
     }
@@ -1068,10 +1063,50 @@ function buildMedicationList() {
         personalMedicationSchedule = window.medicationScheduleCompat.normalizeMedicationScheduleEvents(personalMedicationSchedule);
     }
 
-    if (!personalMedicationSchedule.length) {
-        const empty = document.createElement("p");
-        empty.textContent = "No medication schedule configured yet.";
-        medicationEditor.appendChild(empty);
+    const hasRegularSchedules = personalMedicationSchedule.length > 0;
+    let firstUseRegularButton = null;
+
+    if (hasRegularSchedules) {
+        const scheduleHint = document.createElement("p");
+        scheduleHint.className = "medication-editor-hint";
+        scheduleHint.innerHTML = "<strong>Manage your Medication Schedule</strong><br>Set up your medication schedule and add medications to each schedule event.";
+        medicationEditor.appendChild(scheduleHint);
+    } else {
+        const firstUseSection = document.createElement("section");
+        firstUseSection.className = "medication-schedule-section medication-first-use";
+
+        const firstUseTitle = document.createElement("h4");
+        firstUseTitle.className = "medication-schedule-title";
+        firstUseTitle.textContent = "Add a Medication";
+        firstUseSection.appendChild(firstUseTitle);
+
+        const firstUseDescription = document.createElement("p");
+        firstUseDescription.className = "medication-editor-hint";
+        firstUseDescription.textContent = "Choose the type of medication to add.";
+        firstUseSection.appendChild(firstUseDescription);
+
+        const firstUseActions = document.createElement("div");
+        firstUseActions.className = "medication-editor-actions compact-actions";
+
+        firstUseRegularButton = document.createElement("button");
+        firstUseRegularButton.type = "button";
+        firstUseRegularButton.textContent = "Regular Medication";
+
+        const firstUseInjectableButton = document.createElement("button");
+        firstUseInjectableButton.type = "button";
+        firstUseInjectableButton.textContent = "Injectable Medication";
+
+        firstUseActions.appendChild(firstUseRegularButton);
+        firstUseActions.appendChild(firstUseInjectableButton);
+        firstUseSection.appendChild(firstUseActions);
+        medicationEditor.appendChild(firstUseSection);
+
+        firstUseInjectableButton.addEventListener("click", function () {
+            const addInjectableButton = medicationEditor.querySelector(".injectable-medication-add-btn");
+            if (addInjectableButton) {
+                addInjectableButton.click();
+            }
+        });
     }
 
     const sortedSchedule = window.medicationScheduleCompat && typeof window.medicationScheduleCompat.sortMedicationScheduleItems === "function"
@@ -1129,10 +1164,15 @@ function buildMedicationList() {
     const addTimeContainer = document.createElement("div");
     addTimeContainer.className = "add-medication-time-block";
     addTimeContainer.id = "addMedicationTimeControls";
+    if (!hasRegularSchedules) {
+        addTimeContainer.style.display = "none";
+    }
 
     const addTimeLabel = document.createElement("label");
     addTimeLabel.setAttribute("for", "newMedicationTimeInput");
-    addTimeLabel.textContent = "Add Another Medication Schedule";
+    addTimeLabel.textContent = hasRegularSchedules
+        ? "Add Another Medication Schedule"
+        : "Regular Medication Schedule";
     addTimeContainer.appendChild(addTimeLabel);
 
     const addTimeInput = document.createElement("input");
@@ -1148,6 +1188,13 @@ function buildMedicationList() {
     addTimeContainer.appendChild(addTimeButton);
 
     medicationEditor.appendChild(addTimeContainer);
+
+    if (firstUseRegularButton) {
+        firstUseRegularButton.addEventListener("click", function () {
+            addTimeContainer.style.display = "grid";
+            addTimeInput.focus();
+        });
+    }
 
     addTimeButton.addEventListener("click", function () {
         const normalized = addTimeInput.value.trim();
