@@ -7,6 +7,8 @@
     const BACKUP_FORMAT = "johns-assistant-backup";
     const BACKUP_FORMAT_VERSION = 1;
     const APPLICATION_NAME = "John's Assistant";
+    const LAST_BACKUP_STORAGE_KEY = "lastBackupTimestamp";
+    const LAST_RESTORE_STORAGE_KEY = "lastRestoreTimestamp";
     const STORAGE_KEYS = [
         "medicationLog",
         "medicationHistory",
@@ -56,6 +58,41 @@
         todayTasks: "array",
         taskListDate: "string"
     };
+
+    const backupRestoreStatus = document.getElementById("backupRestoreStatus");
+
+    function formatActivityTimestamp(value) {
+        if (!value) {
+            return "Never";
+        }
+
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "Never" : date.toLocaleString([], {
+            dateStyle: "short",
+            timeStyle: "short"
+        });
+    }
+
+    function renderActivityStatus() {
+        if (!backupRestoreStatus) {
+            return;
+        }
+
+        backupRestoreStatus.textContent = "Last Backup: " +
+            formatActivityTimestamp(localStorage.getItem(LAST_BACKUP_STORAGE_KEY)) +
+            "  Last Restore: " +
+            formatActivityTimestamp(localStorage.getItem(LAST_RESTORE_STORAGE_KEY));
+    }
+
+    function recordBackupActivity() {
+        localStorage.setItem(LAST_BACKUP_STORAGE_KEY, new Date().toISOString());
+        renderActivityStatus();
+    }
+
+    function recordRestoreActivity() {
+        localStorage.setItem(LAST_RESTORE_STORAGE_KEY, new Date().toISOString());
+        renderActivityStatus();
+    }
 
     function getEmptyValue(key) {
         return EXPECTED_TYPES[key] === "array"
@@ -181,6 +218,7 @@
                         files: [file],
                         title: filename
                     });
+                    recordBackupActivity();
                     window.alert("Backup shared successfully.");
                     return;
                 } catch (error) {
@@ -202,6 +240,7 @@
         window.setTimeout(function () {
             URL.revokeObjectURL(url);
         }, 1000);
+        recordBackupActivity();
         window.alert("Backup downloaded successfully.");
     }
 
@@ -269,6 +308,7 @@
             return { valid: false, error: "Restore failed." };
         }
 
+        recordRestoreActivity();
         window.alert("Backup restored successfully. The application will reload.");
         window.location.reload();
         return { valid: true };
@@ -310,6 +350,8 @@
         });
         restoreFileInput.addEventListener("change", handleRestoreFile);
     }
+
+    renderActivityStatus();
 
     window.backupRestore = {
         storageKeys: STORAGE_KEYS.slice(),

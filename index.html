@@ -41,17 +41,6 @@
     
 </div>
 
-<div class="card dashboard-card backup-restore-card">
-    <div class="dashboard-card-header">
-        <h2 class="dashboard-card-title">Data Backup &amp; Restore</h2>
-    </div>
-    <div class="backup-restore-actions">
-        <button id="backupDataButton" type="button">Backup Data</button>
-        <button id="restoreDataButton" type="button">Restore Data</button>
-        <input id="restoreDataFileInput" type="file" accept="application/json,.json" hidden>
-    </div>
-</div>
-
         <div class="card quick-access-card">
     <h2>⚡ Quick Links</h2>
     <div class="quick-access-scroll">
@@ -420,6 +409,17 @@
     <p><strong>Current Height:</strong> <span id="profileHeightDisplay">Height not set</span></p>
     <button id="editProfileHeightButton" type="button">Edit Profile</button>
 </div>
+</div>
+<div class="card dashboard-card backup-restore-card">
+    <div class="dashboard-card-header">
+        <h2 class="dashboard-card-title">Data Backup &amp; Restore</h2>
+    </div>
+    <div class="backup-restore-actions">
+        <button id="backupDataButton" type="button">Backup Data</button>
+        <button id="restoreDataButton" type="button">Restore Data</button>
+        <input id="restoreDataFileInput" type="file" accept="application/json,.json" hidden>
+    </div>
+    <p id="backupRestoreStatus" class="backup-restore-status">Last Backup: Never &nbsp; Last Restore: Never</p>
 </div>
 <button id="pageBackToTop" type="button" style="display: block; margin: 18px auto 8px;">
     ↑ Back to Top
