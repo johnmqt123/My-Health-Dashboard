@@ -2909,3 +2909,7 @@ The backup/restore system should:
 - Include a visible indication of when a backup was last created, if practical.
 
 Priority: High — data protection.
+
+### Medication Center — Improve Manage Medications First-Use Experience
+
+Redesign and clarify the **Manage Medications** section for new users. The current interface assumes users already understand the concept of medication schedules and makes adding a first medication difficult to discover. Clearly distinguish adding a regular medication from adding an injectable medication, and avoid terminology such as “Add another medication schedule” when no medication has yet been configured.
