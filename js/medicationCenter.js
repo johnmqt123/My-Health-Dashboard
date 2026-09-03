@@ -1179,7 +1179,7 @@ function buildMedicationList() {
     addTimeInput.type = "text";
     addTimeInput.id = "newMedicationTimeInput";
     if (!hasRegularSchedules) {
-        addTimeInput.placeholder = "Example: Breakfast";
+        addTimeInput.placeholder = "Example: Breakfast or Early Morning";
     }
     addTimeInput.style.width = "100%";
     addTimeContainer.appendChild(addTimeInput);
@@ -1187,7 +1187,9 @@ function buildMedicationList() {
     const addTimeButton = document.createElement("button");
     addTimeButton.type = "button";
     addTimeButton.id = "addMedicationTimeBtn";
-    addTimeButton.textContent = "Add Schedule";
+    addTimeButton.textContent = hasRegularSchedules
+        ? "Add Schedule"
+        : "Add This Medication Time";
     addTimeContainer.appendChild(addTimeButton);
 
     medicationEditor.appendChild(addTimeContainer);
