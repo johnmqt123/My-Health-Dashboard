@@ -4765,19 +4765,31 @@ button:active,
     background: #f8fbff;
 }
 
+.exercise-type-manager-list {
+    max-height: 240px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
 .exercise-type-manager-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
     gap: 8px;
     padding: 6px 0;
 }
 
-.exercise-type-manager-row button {
+.exercise-type-manager-row span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.modal-content .exercise-type-manager-row button {
     width: auto;
-    min-height: 36px;
-    padding: 6px 10px;
-    font-size: 0.9rem;
+    min-height: 40px;
+    margin: 0;
+    padding: 6px 9px;
+    font-size: 0.85rem;
 }
 
 .modal-content textarea {

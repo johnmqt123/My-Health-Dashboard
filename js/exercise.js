@@ -88,6 +88,7 @@
             return;
         }
 
+        exerciseTypeManagerList.className = "exercise-type-manager-list";
         exerciseTypeManagerList.innerHTML = "";
         exerciseTypes.forEach(function (type) {
             const row = document.createElement("div");
