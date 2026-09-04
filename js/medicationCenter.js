@@ -97,7 +97,16 @@ let asNeededMedicationHistory =
 const AS_NEEDED_AVAILABLE_MEDICATIONS_KEY =
     "asNeededAvailableMedications";
 const AS_NEEDED_DEFAULT_MEDICATIONS = [
-    "Tylenol"
+    {
+        name: "Tylenol",
+        defaultQuantity: 2,
+        defaultUnit: "tablet"
+    },
+    {
+        name: "Cough Syrup",
+        defaultQuantity: 1,
+        defaultUnit: "teaspoon"
+    }
 ];
 const AS_NEEDED_DOSE_UNITS = [
     "tablet",
@@ -111,6 +120,7 @@ const AS_NEEDED_DOSE_UNITS = [
     "application"
 ];
 let asNeededAvailableMedications = [];
+let asNeededUsingDefaultSamples = false;
 let expandedAsNeededMedicationName = "";
 let expandedAsNeededHistoryMedicationName = "";
 let editingAsNeededMedicationIndex = -1;
@@ -241,9 +251,11 @@ function loadAsNeededAvailableMedications() {
     const storedList = loadData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, null);
 
     if (!Array.isArray(storedList)) {
+        asNeededUsingDefaultSamples = true;
         return normalizeAsNeededMedicationDefinitions(AS_NEEDED_DEFAULT_MEDICATIONS);
     }
 
+    asNeededUsingDefaultSamples = false;
     return normalizeAsNeededMedicationDefinitions(storedList);
 }
 
@@ -357,7 +369,8 @@ function renderAsNeededAvailableMedicationList() {
 
         const dose = document.createElement("span");
         dose.className = "as-needed-available-dose";
-        dose.textContent = formatAsNeededDose(definition.defaultQuantity, definition.defaultUnit);
+        dose.textContent = formatAsNeededDose(definition.defaultQuantity, definition.defaultUnit) +
+            (asNeededUsingDefaultSamples ? " (example)" : "");
         toggleButton.appendChild(name);
         toggleButton.appendChild(dose);
 
@@ -396,6 +409,7 @@ function addAsNeededAvailableMedication() {
     }
 
     const compareKey = getAsNeededMedicationCompareKey(normalizedName);
+    asNeededUsingDefaultSamples = false;
     const defaultQuantity = normalizeAsNeededDoseQuantity(
         newAsNeededMedicationDefaultQuantity ? newAsNeededMedicationDefaultQuantity.value : 1,
         0
@@ -486,6 +500,7 @@ function removeAsNeededAvailableMedication(medicationName) {
         return;
     }
 
+    asNeededUsingDefaultSamples = false;
     const label = asNeededAvailableMedications[index].name;
     if (!confirmAsNeededMedicationRemove(label)) {
         return;
@@ -2174,6 +2189,7 @@ if (asNeededAvailableMedicationList) {
                 return;
             }
 
+            asNeededUsingDefaultSamples = false;
             editingAsNeededMedicationIndex = index;
             newAsNeededMedicationInput.value = definition.name;
             if (newAsNeededMedicationDefaultQuantity) {
