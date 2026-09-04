@@ -24,8 +24,12 @@
     const exerciseTimeInput = document.getElementById("exerciseTimeInput");
     const exerciseNoteInput = document.getElementById("exerciseNoteInput");
     const saveExerciseBtn = document.getElementById("saveExerciseBtn");
-    const stationaryBikeBtn = document.getElementById("stationaryBikeBtn");
-    const ebikeRideBtn = document.getElementById("ebikeRideBtn");
+    const exerciseTypeList = document.getElementById("exerciseTypeList");
+    const manageExerciseTypesBtn = document.getElementById("manageExerciseTypesBtn");
+    const exerciseTypeManager = document.getElementById("exerciseTypeManager");
+    const newExerciseTypeInput = document.getElementById("newExerciseTypeInput");
+    const addExerciseTypeBtn = document.getElementById("addExerciseTypeBtn");
+    const exerciseTypeManagerList = document.getElementById("exerciseTypeManagerList");
     const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
     const deleteExerciseBtn = document.getElementById("deleteExerciseBtn");
     const exerciseDetailModal = document.getElementById("exerciseDetailModal");
@@ -38,6 +42,68 @@
     let editingExerciseIndex = null;
     let activeDetailIndex = null;
     let lockedScrollTop = 0;
+    const EXERCISE_TYPES_STORAGE_KEY = "exerciseTypes";
+    const DEFAULT_EXERCISE_TYPES = [
+        "Stationary Bike",
+        "E-Bike Ride",
+        "Walking",
+        "Running",
+        "Swimming",
+        "Strength Training",
+        "Hiking"
+    ];
+    let exerciseTypes = loadData(EXERCISE_TYPES_STORAGE_KEY, null);
+
+    if (!Array.isArray(exerciseTypes)) {
+        exerciseTypes = DEFAULT_EXERCISE_TYPES.slice();
+    }
+
+    function saveExerciseTypes() {
+        saveData(EXERCISE_TYPES_STORAGE_KEY, exerciseTypes);
+    }
+
+    function getExerciseUnit(type) {
+        return type === "E-Bike Ride" ? "miles" : "minutes";
+    }
+
+    function renderExerciseTypeButtons() {
+        if (!exerciseTypeList) {
+            return;
+        }
+
+        exerciseTypeList.innerHTML = "";
+        exerciseTypes.forEach(function (type) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "exercise-type-btn";
+            button.dataset.exerciseType = type;
+            button.textContent = type;
+            button.classList.toggle("selected", type === activeExerciseType);
+            exerciseTypeList.appendChild(button);
+        });
+    }
+
+    function renderExerciseTypeManager() {
+        if (!exerciseTypeManagerList) {
+            return;
+        }
+
+        exerciseTypeManagerList.innerHTML = "";
+        exerciseTypes.forEach(function (type) {
+            const row = document.createElement("div");
+            row.className = "exercise-type-manager-row";
+            const label = document.createElement("span");
+            label.textContent = type;
+            const removeButton = document.createElement("button");
+            removeButton.type = "button";
+            removeButton.textContent = "Remove";
+            removeButton.dataset.exerciseType = type;
+            removeButton.disabled = exerciseTypes.length <= 1;
+            row.appendChild(label);
+            row.appendChild(removeButton);
+            exerciseTypeManagerList.appendChild(row);
+        });
+    }
 
     function parseHistoryDate(entry) {
         if (!entry || !entry.date) return null;
@@ -184,24 +250,23 @@
     }
 
     function selectExerciseType(type) {
-        activeExerciseType = type === "E-Bike Ride" ? "E-Bike Ride" : "Stationary Bike";
-        activeExerciseUnit = activeExerciseType === "E-Bike Ride" ? "miles" : "minutes";
-
-        if (stationaryBikeBtn) {
-            stationaryBikeBtn.classList.toggle("selected", activeExerciseType === "Stationary Bike");
+        if (type && exerciseTypes.indexOf(type) < 0) {
+            exerciseTypes.push(type);
         }
-        if (ebikeRideBtn) {
-            ebikeRideBtn.classList.toggle("selected", activeExerciseType === "E-Bike Ride");
-        }
+        activeExerciseType = type && exerciseTypes.indexOf(type) >= 0
+            ? type
+            : exerciseTypes[0] || "Stationary Bike";
+        activeExerciseUnit = getExerciseUnit(activeExerciseType);
 
         if (exerciseAmountLabel) {
-            exerciseAmountLabel.textContent = activeExerciseType === "E-Bike Ride" ? "Miles" : "Minutes";
+            exerciseAmountLabel.textContent = activeExerciseUnit === "miles" ? "Miles" : "Minutes";
         }
         if (exerciseAmountInput) {
             exerciseAmountInput.type = "number";
             exerciseAmountInput.step = activeExerciseUnit === "miles" ? "0.1" : "1";
             exerciseAmountInput.setAttribute("inputmode", activeExerciseUnit === "miles" ? "decimal" : "numeric");
         }
+        renderExerciseTypeButtons();
     }
 
     function setExerciseModalMode(isEditMode, entry) {
@@ -319,11 +384,10 @@
         if (saveExerciseBtn) {
             saveExerciseBtn.style.display = "none";
         }
-        if (stationaryBikeBtn) {
-            stationaryBikeBtn.classList.remove("selected");
-        }
-        if (ebikeRideBtn) {
-            ebikeRideBtn.classList.remove("selected");
+        if (exerciseTypeList) {
+            exerciseTypeList.querySelectorAll(".exercise-type-btn").forEach(function (button) {
+                button.classList.remove("selected");
+            });
         }
     }
 
@@ -486,9 +550,14 @@
             });
         }
 
-        if (stationaryBikeBtn) {
-            stationaryBikeBtn.addEventListener("click", function () {
-                selectExerciseType("Stationary Bike");
+        if (exerciseTypeList) {
+            exerciseTypeList.addEventListener("click", function (event) {
+                const button = event.target.closest(".exercise-type-btn");
+                if (!button || !exerciseTypeList.contains(button)) {
+                    return;
+                }
+
+                selectExerciseType(button.dataset.exerciseType || "");
                 if (exerciseAmountInput && editingExerciseIndex === null) {
                     exerciseAmountInput.value = "";
                 }
@@ -496,13 +565,59 @@
             });
         }
 
-        if (ebikeRideBtn) {
-            ebikeRideBtn.addEventListener("click", function () {
-                selectExerciseType("E-Bike Ride");
-                if (exerciseAmountInput && editingExerciseIndex === null) {
-                    exerciseAmountInput.value = "";
+        if (manageExerciseTypesBtn) {
+            manageExerciseTypesBtn.addEventListener("click", function () {
+                const isVisible = exerciseTypeManager && exerciseTypeManager.style.display !== "none";
+                if (exerciseTypeManager) {
+                    exerciseTypeManager.style.display = isVisible ? "none" : "block";
                 }
-                showExerciseAmountField();
+                if (!isVisible) {
+                    renderExerciseTypeManager();
+                }
+            });
+        }
+
+        if (addExerciseTypeBtn) {
+            addExerciseTypeBtn.addEventListener("click", function () {
+                const type = newExerciseTypeInput ? newExerciseTypeInput.value.replace(/\s+/g, " ").trim() : "";
+                if (!type) {
+                    alert("Please enter an exercise type.");
+                    return;
+                }
+                if (exerciseTypes.some(function (existing) {
+                    return existing.toLowerCase() === type.toLowerCase();
+                })) {
+                    alert("That exercise type already exists.");
+                    return;
+                }
+                exerciseTypes.push(type);
+                saveExerciseTypes();
+                renderExerciseTypeButtons();
+                renderExerciseTypeManager();
+                newExerciseTypeInput.value = "";
+            });
+        }
+
+        if (exerciseTypeManagerList) {
+            exerciseTypeManagerList.addEventListener("click", function (event) {
+                const removeButton = event.target.closest("button[data-exercise-type]");
+                if (!removeButton || !exerciseTypeManagerList.contains(removeButton)) {
+                    return;
+                }
+                const type = removeButton.dataset.exerciseType;
+                if (exerciseTypes.length <= 1) {
+                    return;
+                }
+                exerciseTypes = exerciseTypes.filter(function (existing) {
+                    return existing !== type;
+                });
+                saveExerciseTypes();
+                if (activeExerciseType === type) {
+                    activeExerciseType = exerciseTypes[0];
+                    activeExerciseUnit = getExerciseUnit(activeExerciseType);
+                }
+                renderExerciseTypeButtons();
+                renderExerciseTypeManager();
             });
         }
 
@@ -681,6 +796,8 @@
                 }, 120);
             });
         }
+
+        renderExerciseTypeButtons();
 
         displayExerciseLog();
     }

@@ -4732,6 +4732,54 @@ button:active,
     display: none;
 }
 
+.exercise-type-list {
+    display: grid;
+    gap: 8px;
+}
+
+.exercise-type-btn {
+    --exercise-accent: #087f8c;
+    --exercise-accent-background: #e7f6f7;
+    --exercise-accent-border: #abdfe2;
+    --exercise-accent-text: #076875;
+    background: var(--exercise-accent-background);
+    border: 2px solid var(--exercise-accent-border);
+    color: var(--exercise-accent-text);
+    box-shadow: none;
+}
+
+.exercise-type-btn:hover,
+.exercise-type-btn:active,
+.exercise-type-btn.selected {
+    background: var(--exercise-accent-border);
+    border-color: var(--exercise-accent);
+    color: var(--exercise-accent-text);
+    transform: none;
+}
+
+.exercise-type-manager {
+    margin: 8px 0 12px;
+    padding: 10px;
+    border: 1px solid #dbe5f0;
+    border-radius: 8px;
+    background: #f8fbff;
+}
+
+.exercise-type-manager-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.exercise-type-manager-row button {
+    width: auto;
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+}
+
 .modal-content textarea {
     min-height: 80px;
     resize: vertical;

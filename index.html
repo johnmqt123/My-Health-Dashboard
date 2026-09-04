@@ -583,13 +583,14 @@
     <div class="modal-content">
         <h2>Log Exercise</h2>
 
-        <button id="stationaryBikeBtn">
-            🚴 Stationary Bike
-        </button>
-
-        <button id="ebikeRideBtn">
-            🚲 E-Bike Ride
-        </button>
+        <div id="exerciseTypeList" class="exercise-type-list"></div>
+        <button id="manageExerciseTypesBtn" type="button">Manage Exercise Types</button>
+        <div id="exerciseTypeManager" class="exercise-type-manager" style="display: none;">
+            <label for="newExerciseTypeInput">New Exercise Type</label>
+            <input id="newExerciseTypeInput" type="text" maxlength="60" placeholder="Example: Yoga">
+            <button id="addExerciseTypeBtn" type="button">Add Exercise Type</button>
+            <div id="exerciseTypeManagerList"></div>
+        </div>
 
         <label id="exerciseAmountLabel" for="exerciseAmountInput">Minutes</label>
         <input id="exerciseAmountInput" type="number" min="0" step="1" inputmode="numeric">
