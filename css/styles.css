@@ -4758,11 +4758,14 @@ button:active,
 }
 
 .exercise-type-manager {
-    margin: 8px 0 12px;
+    margin: 0 0 12px;
     padding: 10px;
-    border: 1px solid #dbe5f0;
-    border-radius: 8px;
-    background: #f8fbff;
+}
+
+.exercise-type-manager-modal-content {
+    max-height: min(82vh, 620px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .exercise-type-manager-list {

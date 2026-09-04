@@ -17,6 +17,8 @@
     const exerciseModal = document.getElementById("exerciseModal");
     const exerciseModalContent = exerciseModal ? exerciseModal.querySelector(".modal-content") : null;
     const exerciseModalTitle = exerciseModal ? exerciseModal.querySelector("h2") : null;
+    const exerciseTypeManagerModal = document.getElementById("exerciseTypeManagerModal");
+    const closeExerciseTypeManagerBtn = document.getElementById("closeExerciseTypeManagerBtn");
     const exerciseAmountInput = document.getElementById("exerciseAmountInput");
     const exerciseAmountLabel = document.getElementById("exerciseAmountLabel");
     const exerciseDateTimeFields = document.getElementById("exerciseDateTimeFields");
@@ -568,12 +570,17 @@
 
         if (manageExerciseTypesBtn) {
             manageExerciseTypesBtn.addEventListener("click", function () {
-                const isVisible = exerciseTypeManager && exerciseTypeManager.style.display !== "none";
-                if (exerciseTypeManager) {
-                    exerciseTypeManager.style.display = isVisible ? "none" : "block";
-                }
-                if (!isVisible) {
+                if (exerciseTypeManagerModal) {
                     renderExerciseTypeManager();
+                    exerciseTypeManagerModal.style.display = "block";
+                }
+            });
+        }
+
+        if (closeExerciseTypeManagerBtn) {
+            closeExerciseTypeManagerBtn.addEventListener("click", function () {
+                if (exerciseTypeManagerModal) {
+                    exerciseTypeManagerModal.style.display = "none";
                 }
             });
         }
