@@ -4776,7 +4776,7 @@ button:active,
 
 .exercise-type-manager-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(100px, auto) auto;
     align-items: center;
     gap: 8px;
     padding: 6px 0;
@@ -4792,6 +4792,14 @@ button:active,
     min-height: 40px;
     margin: 0;
     padding: 6px 9px;
+    font-size: 0.85rem;
+}
+
+.exercise-type-unit-select {
+    width: auto;
+    min-width: 100px;
+    margin: 0;
+    padding: 6px 8px;
     font-size: 0.85rem;
 }
 

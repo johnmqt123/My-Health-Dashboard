@@ -32,6 +32,7 @@
     const newExerciseTypeInput = document.getElementById("newExerciseTypeInput");
     const addExerciseTypeBtn = document.getElementById("addExerciseTypeBtn");
     const exerciseTypeManagerList = document.getElementById("exerciseTypeManagerList");
+    const newExerciseTypeUnit = document.getElementById("newExerciseTypeUnit");
     const cancelExerciseBtn = document.getElementById("cancelExerciseBtn");
     const deleteExerciseBtn = document.getElementById("deleteExerciseBtn");
     const exerciseDetailModal = document.getElementById("exerciseDetailModal");
@@ -45,27 +46,91 @@
     let activeDetailIndex = null;
     let lockedScrollTop = 0;
     const EXERCISE_TYPES_STORAGE_KEY = "exerciseTypes";
+    const EXERCISE_UNITS = ["minutes", "miles", "laps", "reps"];
     const DEFAULT_EXERCISE_TYPES = [
-        "Stationary Bike",
-        "E-Bike Ride",
-        "Walking",
-        "Running",
-        "Swimming",
-        "Strength Training",
-        "Hiking"
+        { name: "Stationary Bike", unit: "minutes" },
+        { name: "E-Bike Ride", unit: "miles" },
+        { name: "Walking", unit: "miles" },
+        { name: "Running", unit: "miles" },
+        { name: "Swimming", unit: "laps" },
+        { name: "Strength Training", unit: "minutes" },
+        { name: "Hiking", unit: "miles" }
     ];
     let exerciseTypes = loadData(EXERCISE_TYPES_STORAGE_KEY, null);
 
-    if (!Array.isArray(exerciseTypes)) {
-        exerciseTypes = DEFAULT_EXERCISE_TYPES.slice();
+    function getDefaultExerciseUnit(name) {
+        const defaultType = DEFAULT_EXERCISE_TYPES.find(function (type) {
+            return type.name.toLowerCase() === String(name || "").trim().toLowerCase();
+        });
+        return defaultType ? defaultType.unit : "minutes";
+    }
+
+    function normalizeExerciseType(item) {
+        const isLegacyString = typeof item === "string";
+        const name = String(isLegacyString ? item : item && item.name || "").replace(/\s+/g, " ").trim();
+        if (!name) {
+            return null;
+        }
+
+        const unit = item && !isLegacyString && EXERCISE_UNITS.indexOf(item.unit) >= 0
+            ? item.unit
+            : getDefaultExerciseUnit(name);
+        return { name: name, unit: unit };
+    }
+
+    function normalizeExerciseTypes(items) {
+        if (!Array.isArray(items)) {
+            return DEFAULT_EXERCISE_TYPES.map(function (type) {
+                return { name: type.name, unit: type.unit };
+            });
+        }
+
+        const seen = new Set();
+        return items.map(normalizeExerciseType).filter(function (type) {
+            if (!type) {
+                return false;
+            }
+            const key = type.name.toLowerCase();
+            if (seen.has(key)) {
+                return false;
+            }
+            seen.add(key);
+            return true;
+        });
+    }
+
+    const rawExerciseTypes = exerciseTypes;
+    exerciseTypes = normalizeExerciseTypes(exerciseTypes);
+    if (JSON.stringify(rawExerciseTypes) !== JSON.stringify(exerciseTypes)) {
+        saveData(EXERCISE_TYPES_STORAGE_KEY, exerciseTypes);
     }
 
     function saveExerciseTypes() {
         saveData(EXERCISE_TYPES_STORAGE_KEY, exerciseTypes);
     }
 
-    function getExerciseUnit(type) {
-        return type === "E-Bike Ride" ? "miles" : "minutes";
+    function getExerciseTypeDefinition(name) {
+        return exerciseTypes.find(function (type) {
+            return type.name === name;
+        }) || null;
+    }
+
+    function getExerciseUnitLabel(unit) {
+        return {
+            minutes: "Duration (minutes)",
+            miles: "Distance (miles)",
+            laps: "Laps",
+            reps: "Reps"
+        }[unit] || "Duration (minutes)";
+    }
+
+    function getExerciseUnitOptionLabel(unit) {
+        return {
+            minutes: "Minutes",
+            miles: "Miles",
+            laps: "Laps",
+            reps: "Reps"
+        }[unit] || "Minutes";
     }
 
     function renderExerciseTypeButtons() {
@@ -78,9 +143,9 @@
             const button = document.createElement("button");
             button.type = "button";
             button.className = "exercise-type-btn";
-            button.dataset.exerciseType = type;
-            button.textContent = type;
-            button.classList.toggle("selected", type === activeExerciseType);
+            button.dataset.exerciseType = type.name;
+            button.textContent = type.name;
+            button.classList.toggle("selected", type.name === activeExerciseType);
             exerciseTypeList.appendChild(button);
         });
     }
@@ -92,17 +157,35 @@
 
         exerciseTypeManagerList.className = "exercise-type-manager-list";
         exerciseTypeManagerList.innerHTML = "";
-        exerciseTypes.forEach(function (type) {
+        exerciseTypes.forEach(function (type, index) {
             const row = document.createElement("div");
             row.className = "exercise-type-manager-row";
             const label = document.createElement("span");
-            label.textContent = type;
+            label.textContent = type.name;
+            const unitSelect = document.createElement("select");
+            unitSelect.className = "exercise-type-unit-select";
+            unitSelect.setAttribute("aria-label", type.name + " primary unit");
+            EXERCISE_UNITS.forEach(function (unit) {
+                const option = document.createElement("option");
+                option.value = unit;
+                option.textContent = getExerciseUnitOptionLabel(unit);
+                option.selected = type.unit === unit;
+                unitSelect.appendChild(option);
+            });
+            unitSelect.addEventListener("change", function () {
+                exerciseTypes[index].unit = unitSelect.value;
+                saveExerciseTypes();
+                if (exerciseTypes[index].name === activeExerciseType) {
+                    selectExerciseType(activeExerciseType);
+                }
+            });
             const removeButton = document.createElement("button");
             removeButton.type = "button";
             removeButton.textContent = "Remove";
-            removeButton.dataset.exerciseType = type;
+            removeButton.dataset.exerciseType = type.name;
             removeButton.disabled = exerciseTypes.length <= 1;
             row.appendChild(label);
+            row.appendChild(unitSelect);
             row.appendChild(removeButton);
             exerciseTypeManagerList.appendChild(row);
         });
@@ -253,16 +336,17 @@
     }
 
     function selectExerciseType(type) {
-        if (type && exerciseTypes.indexOf(type) < 0) {
-            exerciseTypes.push(type);
+        if (type && !getExerciseTypeDefinition(type)) {
+            exerciseTypes.push(normalizeExerciseType(type));
         }
-        activeExerciseType = type && exerciseTypes.indexOf(type) >= 0
+        activeExerciseType = type && getExerciseTypeDefinition(type)
             ? type
-            : exerciseTypes[0] || "Stationary Bike";
-        activeExerciseUnit = getExerciseUnit(activeExerciseType);
+            : (exerciseTypes[0] ? exerciseTypes[0].name : "Stationary Bike");
+        const definition = getExerciseTypeDefinition(activeExerciseType);
+        activeExerciseUnit = definition ? definition.unit : "minutes";
 
         if (exerciseAmountLabel) {
-            exerciseAmountLabel.textContent = activeExerciseUnit === "miles" ? "Miles" : "Minutes";
+            exerciseAmountLabel.textContent = getExerciseUnitLabel(activeExerciseUnit);
         }
         if (exerciseAmountInput) {
             exerciseAmountInput.type = "number";
@@ -593,16 +677,24 @@
                     return;
                 }
                 if (exerciseTypes.some(function (existing) {
-                    return existing.toLowerCase() === type.toLowerCase();
+                    return existing.name.toLowerCase() === type.toLowerCase();
                 })) {
                     alert("That exercise type already exists.");
                     return;
                 }
-                exerciseTypes.push(type);
+                const unit = newExerciseTypeUnit ? newExerciseTypeUnit.value : "";
+                if (EXERCISE_UNITS.indexOf(unit) < 0) {
+                    alert("Please select a primary unit.");
+                    return;
+                }
+                exerciseTypes.push({ name: type, unit: unit });
                 saveExerciseTypes();
                 renderExerciseTypeButtons();
                 renderExerciseTypeManager();
                 newExerciseTypeInput.value = "";
+                if (newExerciseTypeUnit) {
+                    newExerciseTypeUnit.value = "minutes";
+                }
             });
         }
 
@@ -617,12 +709,12 @@
                     return;
                 }
                 exerciseTypes = exerciseTypes.filter(function (existing) {
-                    return existing !== type;
+                    return existing.name !== type;
                 });
                 saveExerciseTypes();
                 if (activeExerciseType === type) {
-                    activeExerciseType = exerciseTypes[0];
-                    activeExerciseUnit = getExerciseUnit(activeExerciseType);
+                    activeExerciseType = exerciseTypes[0].name;
+                    activeExerciseUnit = exerciseTypes[0].unit;
                 }
                 renderExerciseTypeButtons();
                 renderExerciseTypeManager();
