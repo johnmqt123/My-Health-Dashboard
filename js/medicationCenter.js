@@ -112,6 +112,7 @@ const AS_NEEDED_DOSE_UNITS = [
 ];
 let asNeededAvailableMedications = [];
 let expandedAsNeededMedicationName = "";
+let expandedAsNeededHistoryMedicationName = "";
 let editingAsNeededMedicationIndex = -1;
 let editingAsNeededHistoryIndex = -1;
 let medicationEditorLockedScrollTop = 0;
@@ -780,11 +781,14 @@ function renderAsNeededMedicationHistory() {
         const historyIndex = asNeededMedicationHistory.lastIndexOf(latest);
         const dose = getAsNeededOccurrenceDose(latest);
         const noteText = latest.note ? " — " + latest.note : "";
+        const isExpanded = getAsNeededMedicationCompareKey(medicationName) ===
+            getAsNeededMedicationCompareKey(expandedAsNeededHistoryMedicationName);
 
-        return "<div class=\"as-needed-entry\"><div class=\"history-entry-header\"><strong>" + medicationName +
-            "</strong></div><div class=\"history-entry-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
+        return "<div class=\"as-needed-entry" + (isExpanded ? " is-expanded" : "") + "\"><button type=\"button\" class=\"as-needed-history-toggle\" aria-expanded=\"" +
+            (isExpanded ? "true" : "false") + "\" aria-label=\"" + (isExpanded ? "Collapse " : "Expand ") + medicationName +
+            "\"><strong>" + medicationName + "</strong><span class=\"as-needed-history-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
             " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
-            "</div><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
+            "</span><span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
             historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" +
             medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
     }).join("");
@@ -2257,6 +2261,19 @@ if (saveAsNeededMedicationBtn) {
 
 if (asNeededLastTakenDisplay) {
     asNeededLastTakenDisplay.addEventListener("click", function (event) {
+        const toggleButton = event.target.closest(".as-needed-history-toggle");
+        if (toggleButton && asNeededLastTakenDisplay.contains(toggleButton)) {
+            const entry = toggleButton.closest(".as-needed-entry");
+            const medicationName = entry
+                ? entry.querySelector("strong").textContent
+                : "";
+            const isSameMedication = getAsNeededMedicationCompareKey(expandedAsNeededHistoryMedicationName) ===
+                getAsNeededMedicationCompareKey(medicationName);
+            expandedAsNeededHistoryMedicationName = isSameMedication ? "" : medicationName;
+            renderAsNeededMedicationHistory();
+            return;
+        }
+
         const editButton = event.target.closest(".as-needed-edit-btn");
         if (editButton) {
             const historyIndex = Number(editButton.getAttribute("data-index"));

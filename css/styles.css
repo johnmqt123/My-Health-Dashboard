@@ -2257,21 +2257,72 @@ button.history-action-btn {
 #asNeededMedicationContent .as-needed-entry {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    gap: 0;
     padding: 8px 0;
     border-bottom: 1px solid #e2e8f0;
 }
 
-#asNeededMedicationContent .as-needed-entry .history-entry-header,
-#asNeededMedicationContent .as-needed-entry .history-entry-meta,
-#asNeededMedicationContent .as-needed-entry .history-entry-actions {
+#asNeededMedicationContent .as-needed-history-heading {
+    margin: 14px 0 8px;
+    color: var(--text);
+    font-size: 1rem;
+}
+
+#asNeededMedicationContent .as-needed-history-toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     width: 100%;
+    min-height: 40px;
+    padding: 6px 24px 6px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    box-shadow: none;
+}
+
+#asNeededMedicationContent .as-needed-history-toggle:hover,
+#asNeededMedicationContent .as-needed-history-toggle:active {
+    background: transparent;
+    transform: none;
+}
+
+#asNeededMedicationContent .as-needed-history-toggle:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#asNeededMedicationContent .as-needed-history-meta {
+    display: block;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-weight: 400;
+}
+
+#asNeededMedicationContent .as-needed-history-chevron {
+    position: absolute;
+    top: 50%;
+    right: 2px;
+    color: var(--muted);
+    font-size: 1.2rem;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+#asNeededMedicationContent .as-needed-entry.is-expanded .as-needed-history-chevron {
+    transform: translateY(-50%) rotate(90deg);
 }
 
 #asNeededMedicationContent .as-needed-entry .history-entry-actions {
-    margin-top: 0;
+    display: none;
+    width: 100%;
+    margin-top: 8px;
+}
+
+#asNeededMedicationContent .as-needed-entry.is-expanded .history-entry-actions {
+    display: flex;
 }
 
 #asNeededMedicationContent .as-needed-entry:last-child {
