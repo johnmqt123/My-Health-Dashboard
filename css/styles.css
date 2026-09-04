@@ -2271,7 +2271,8 @@ button.history-action-btn {
 #asNeededMedicationContent .as-needed-history-toggle {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
     width: 100%;
     min-height: 40px;
     padding: 6px 24px 6px 0;
@@ -2281,6 +2282,12 @@ button.history-action-btn {
     color: var(--text);
     text-align: left;
     box-shadow: none;
+}
+
+#asNeededMedicationContent .as-needed-history-toggle > strong,
+#asNeededMedicationContent .as-needed-history-meta {
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
 #asNeededMedicationContent .as-needed-history-toggle:hover,
@@ -2304,7 +2311,7 @@ button.history-action-btn {
 #asNeededMedicationContent .as-needed-history-chevron {
     position: absolute;
     top: 50%;
-    right: 2px;
+    right: 7px;
     color: var(--muted);
     font-size: 1.2rem;
     line-height: 1;
