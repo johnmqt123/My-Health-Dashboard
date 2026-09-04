@@ -97,7 +97,6 @@ let asNeededMedicationHistory =
 const AS_NEEDED_AVAILABLE_MEDICATIONS_KEY =
     "asNeededAvailableMedications";
 const AS_NEEDED_DEFAULT_MEDICATIONS = [
-    "ALA",
     "Tylenol"
 ];
 const AS_NEEDED_DOSE_UNITS = [
@@ -112,6 +111,7 @@ const AS_NEEDED_DOSE_UNITS = [
     "application"
 ];
 let asNeededAvailableMedications = [];
+let expandedAsNeededMedicationName = "";
 let editingAsNeededMedicationIndex = -1;
 let editingAsNeededHistoryIndex = -1;
 let medicationEditorLockedScrollTop = 0;
@@ -340,6 +340,15 @@ function renderAsNeededAvailableMedicationList() {
     asNeededAvailableMedications.forEach(function (definition, index) {
         const row = document.createElement("div");
         row.className = "as-needed-available-row";
+        const isExpanded = getAsNeededMedicationCompareKey(definition.name) ===
+            getAsNeededMedicationCompareKey(expandedAsNeededMedicationName);
+        row.classList.toggle("is-expanded", isExpanded);
+
+        const toggleButton = document.createElement("button");
+        toggleButton.type = "button";
+        toggleButton.className = "as-needed-available-toggle";
+        toggleButton.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+        toggleButton.setAttribute("aria-label", (isExpanded ? "Collapse " : "Expand ") + definition.name);
 
         const name = document.createElement("span");
         name.className = "as-needed-available-name";
@@ -348,6 +357,11 @@ function renderAsNeededAvailableMedicationList() {
         const dose = document.createElement("span");
         dose.className = "as-needed-available-dose";
         dose.textContent = formatAsNeededDose(definition.defaultQuantity, definition.defaultUnit);
+        toggleButton.appendChild(name);
+        toggleButton.appendChild(dose);
+
+        const actions = document.createElement("div");
+        actions.className = "as-needed-available-actions";
 
         const editButton = document.createElement("button");
         editButton.type = "button";
@@ -361,10 +375,10 @@ function renderAsNeededAvailableMedicationList() {
         removeButton.textContent = "Remove from List";
         removeButton.setAttribute("data-medication", definition.name);
 
-        row.appendChild(name);
-        row.appendChild(dose);
-        row.appendChild(editButton);
-        row.appendChild(removeButton);
+        actions.appendChild(editButton);
+        actions.appendChild(removeButton);
+        row.appendChild(toggleButton);
+        row.appendChild(actions);
         asNeededAvailableMedicationList.appendChild(row);
     });
 }
@@ -2128,6 +2142,20 @@ if (cancelAsNeededAvailableMedicationBtn) {
 
 if (asNeededAvailableMedicationList) {
     asNeededAvailableMedicationList.addEventListener("click", function (event) {
+        const toggleButton = event.target.closest(".as-needed-available-toggle");
+        if (toggleButton && asNeededAvailableMedicationList.contains(toggleButton)) {
+            const row = toggleButton.closest(".as-needed-available-row");
+            const medicationName = row
+                ? row.querySelector(".as-needed-available-name")
+                    .textContent
+                : "";
+            const isSameMedication = getAsNeededMedicationCompareKey(expandedAsNeededMedicationName) ===
+                getAsNeededMedicationCompareKey(medicationName);
+            expandedAsNeededMedicationName = isSameMedication ? "" : medicationName;
+            renderAsNeededAvailableMedicationList();
+            return;
+        }
+
         const editButton = event.target.closest(".as-needed-available-edit-btn");
         if (editButton && asNeededAvailableMedicationList.contains(editButton)) {
             const index = Number(editButton.getAttribute("data-index"));
