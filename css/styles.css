@@ -2149,6 +2149,7 @@ button.history-action-btn {
 }
 
 #asNeededMedicationContent .as-needed-available-toggle {
+    position: relative;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     width: 100%;
@@ -2159,6 +2160,7 @@ button.history-action-btn {
     background: transparent;
     color: var(--text);
     text-align: left;
+    padding-right: 24px;
     box-shadow: none;
 }
 
@@ -2175,14 +2177,17 @@ button.history-action-btn {
 
 #asNeededMedicationContent .as-needed-available-toggle::after {
     content: "›";
+    position: absolute;
+    top: 50%;
+    right: 2px;
     color: var(--muted);
     font-size: 1.2rem;
     line-height: 1;
-    transform: rotate(0deg);
+    transform: translateY(-50%) rotate(0deg);
 }
 
 #asNeededMedicationContent .as-needed-available-row.is-expanded .as-needed-available-toggle::after {
-    transform: rotate(90deg);
+    transform: translateY(-50%) rotate(90deg);
 }
 
 #asNeededMedicationContent .as-needed-available-actions {
