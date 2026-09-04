@@ -27,7 +27,7 @@
     const exerciseNoteInput = document.getElementById("exerciseNoteInput");
     const saveExerciseBtn = document.getElementById("saveExerciseBtn");
     const exerciseTypeList = document.getElementById("exerciseTypeList");
-    const manageExerciseTypesBtn = document.getElementById("manageExerciseTypesBtn");
+    const manageExerciseTypesBtn = document.getElementById("manageExerciseTypesCardBtn");
     const exerciseTypeManager = document.getElementById("exerciseTypeManager");
     const newExerciseTypeInput = document.getElementById("newExerciseTypeInput");
     const addExerciseTypeBtn = document.getElementById("addExerciseTypeBtn");
