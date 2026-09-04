@@ -752,7 +752,9 @@ function renderAsNeededMedicationHistory() {
     }
 
     if (!asNeededMedicationHistory.length) {
-        asNeededLastTakenDisplay.textContent = "No as-needed medications logged yet.";
+        asNeededLastTakenDisplay.innerHTML =
+            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+            "<p class=\"as-needed-history-empty\">No as-needed medications logged yet.</p>";
         return;
     }
 
@@ -772,11 +774,15 @@ function renderAsNeededMedicationHistory() {
     });
 
     if (!medicationNames.length) {
-        asNeededLastTakenDisplay.textContent = "No as-needed medications logged yet.";
+        asNeededLastTakenDisplay.innerHTML =
+            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+            "<p class=\"as-needed-history-empty\">No as-needed medications logged yet.</p>";
         return;
     }
 
-    asNeededLastTakenDisplay.innerHTML = medicationNames.map(function (medicationName) {
+    asNeededLastTakenDisplay.innerHTML =
+        "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+        medicationNames.map(function (medicationName) {
         const latest = latestByMedication[medicationName];
         const historyIndex = asNeededMedicationHistory.lastIndexOf(latest);
         const dose = getAsNeededOccurrenceDose(latest);
@@ -791,7 +797,7 @@ function renderAsNeededMedicationHistory() {
             "</span><span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
             historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" +
             medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
-    }).join("");
+        }).join("");
 }
 
 function resetAsNeededMedicationForm() {

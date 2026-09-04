@@ -2268,6 +2268,15 @@ button.history-action-btn {
     font-size: 1rem;
 }
 
+#asNeededMedicationContent #asNeededLastTakenDisplay .as-needed-history-heading {
+    margin-top: 0;
+}
+
+#asNeededMedicationContent .as-needed-history-empty {
+    margin: 0;
+    color: var(--muted);
+}
+
 #asNeededMedicationContent .as-needed-history-toggle {
     position: relative;
     display: grid;
