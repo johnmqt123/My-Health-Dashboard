@@ -74,7 +74,8 @@
             <div class="dashboard-actions">
                 <button id="nutritionLogFoodButton" class="dashboard-action" type="button">Log Food</button>
                 <button id="nutritionHistoryButton" class="dashboard-action" type="button">📊 History</button>
-                <button id="nutritionGoalsReferenceButton" class="dashboard-action dashboard-action--full" type="button">🎯 Nutrition Goals &amp; Reference</button>
+                <button id="nutritionGoalsReferenceButton" class="dashboard-action" type="button">🎯 Nutrition Goals</button>
+                <button id="nutritionFoodReferenceButton" class="dashboard-action" type="button">🍎 Food Reference</button>
             </div>
         </div>
 
@@ -87,7 +88,7 @@
         </div>
 
         <div class="summary-card history-section" id="nutritionGoalsReferenceSection" style="display: none;">
-            <h2 class="history-section-header">🎯 Nutrition Goals &amp; Reference</h2>
+            <h2 class="history-section-header">🎯 Nutrition Goals</h2>
             <div id="nutritionGoalsReferenceContent" class="history-display history-stack"></div>
         </div>
 
@@ -720,6 +721,47 @@
 
         <button id="saveNutritionBtn">Save</button>
         <button id="cancelNutritionBtn">Cancel</button>
+    </div>
+</div>
+<div id="nutritionFoodReferenceModal" class="modal" style="display: none;">
+    <div class="modal-content nutrition-food-reference-modal-content">
+        <h2>Food Reference</h2>
+        <div id="nutritionFoodReferenceList" class="nutrition-food-reference-list"></div>
+
+        <h3 id="nutritionFoodReferenceFormTitle">Add Food Reference</h3>
+        <label for="nutritionFoodReferenceNameInput">Food Name</label>
+        <input id="nutritionFoodReferenceNameInput" type="text" maxlength="120">
+
+        <label for="nutritionFoodReferenceServingAmountInput">Serving Amount</label>
+        <input id="nutritionFoodReferenceServingAmountInput" type="number" min="0.01" step="0.01" inputmode="decimal">
+
+        <label for="nutritionFoodReferenceServingUnitInput">Serving Unit</label>
+        <select id="nutritionFoodReferenceServingUnitInput">
+            <option value="cup">cup</option>
+            <option value="tablespoon">tablespoon</option>
+            <option value="teaspoon">teaspoon</option>
+            <option value="ounce">ounce</option>
+            <option value="gram">gram</option>
+            <option value="piece">piece</option>
+            <option value="stick">stick</option>
+            <option value="cracker">cracker</option>
+            <option value="slice">slice</option>
+            <option value="serving">serving</option>
+            <option value="other">other</option>
+        </select>
+
+        <label for="nutritionFoodReferenceCaloriesInput">Calories per Reference Serving</label>
+        <input id="nutritionFoodReferenceCaloriesInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <label for="nutritionFoodReferenceProteinInput">Protein per Reference Serving</label>
+        <input id="nutritionFoodReferenceProteinInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <label for="nutritionFoodReferenceCarbsInput">Carbohydrates per Reference Serving</label>
+        <input id="nutritionFoodReferenceCarbsInput" type="number" min="0" step="0.1" inputmode="decimal">
+
+        <button id="saveNutritionFoodReferenceBtn" type="button">Add Food Reference</button>
+        <button id="cancelNutritionFoodReferenceBtn" type="button">Cancel</button>
+        <button id="closeNutritionFoodReferenceBtn" type="button">Close</button>
     </div>
 </div>
 <div id="nutritionDailyGoalsModal" class="modal" style="display: none;">

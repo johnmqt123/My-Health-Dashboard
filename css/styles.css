@@ -773,6 +773,64 @@ header p {
     transform: none;
 }
 
+.nutrition-food-reference-modal-content {
+    max-height: min(88vh, 720px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nutrition-food-reference-list {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.nutrition-food-reference-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--dashboard-card-border);
+}
+
+.nutrition-food-reference-main {
+    min-width: 0;
+}
+
+.nutrition-food-reference-main strong,
+.nutrition-food-reference-main span {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+.nutrition-food-reference-main span {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 0.85rem;
+    line-height: 1.35;
+}
+
+.nutrition-food-reference-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.nutrition-food-reference-actions button {
+    width: auto;
+    min-height: 40px;
+    margin: 0;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+.nutrition-food-reference-actions .nutrition-food-reference-delete {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    box-shadow: none;
+}
+
 #weightHistoryDisplay.weight-history-list {
     gap: 6px;
 }

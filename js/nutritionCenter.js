@@ -13,10 +13,23 @@
     const nutritionLogFoodButton = document.getElementById("nutritionLogFoodButton");
     const nutritionHistoryButton = document.getElementById("nutritionHistoryButton");
     const nutritionGoalsReferenceButton = document.getElementById("nutritionGoalsReferenceButton");
+    const nutritionFoodReferenceButton = document.getElementById("nutritionFoodReferenceButton");
     const nutritionHistorySection = document.getElementById("nutritionHistorySection");
     const nutritionHistoryDisplay = document.getElementById("nutritionHistoryDisplay");
     const nutritionGoalsReferenceSection = document.getElementById("nutritionGoalsReferenceSection");
     const nutritionGoalsReferenceContent = document.getElementById("nutritionGoalsReferenceContent");
+    const nutritionFoodReferenceModal = document.getElementById("nutritionFoodReferenceModal");
+    const nutritionFoodReferenceList = document.getElementById("nutritionFoodReferenceList");
+    const nutritionFoodReferenceFormTitle = document.getElementById("nutritionFoodReferenceFormTitle");
+    const nutritionFoodReferenceNameInput = document.getElementById("nutritionFoodReferenceNameInput");
+    const nutritionFoodReferenceServingAmountInput = document.getElementById("nutritionFoodReferenceServingAmountInput");
+    const nutritionFoodReferenceServingUnitInput = document.getElementById("nutritionFoodReferenceServingUnitInput");
+    const nutritionFoodReferenceCaloriesInput = document.getElementById("nutritionFoodReferenceCaloriesInput");
+    const nutritionFoodReferenceProteinInput = document.getElementById("nutritionFoodReferenceProteinInput");
+    const nutritionFoodReferenceCarbsInput = document.getElementById("nutritionFoodReferenceCarbsInput");
+    const saveNutritionFoodReferenceBtn = document.getElementById("saveNutritionFoodReferenceBtn");
+    const cancelNutritionFoodReferenceBtn = document.getElementById("cancelNutritionFoodReferenceBtn");
+    const closeNutritionFoodReferenceBtn = document.getElementById("closeNutritionFoodReferenceBtn");
     const nutritionLogModal = document.getElementById("nutritionLogModal");
     const nutritionLogModalContent = nutritionLogModal ? nutritionLogModal.querySelector(".modal-content") : null;
     const nutritionDescriptionInput = document.getElementById("nutritionDescriptionInput");
@@ -70,6 +83,12 @@
     let activeNutritionEntryId = null;
     let expandedNutritionEntryId = null;
     let nutritionEntryIdCounter = 0;
+    const nutritionFoodReferenceStorageKey = "nutritionFoodReference";
+    const nutritionFoodReferenceServingUnits = [
+        "cup", "tablespoon", "teaspoon", "ounce", "gram", "piece", "stick", "cracker", "slice", "serving", "other"
+    ];
+    let nutritionFoodReferences = [];
+    let editingNutritionFoodReferenceId = null;
 
     const nutritionFoodInputs = [
         nutritionDescriptionInput,
@@ -381,6 +400,121 @@
         }
 
         return JSON.parse(JSON.stringify(value));
+    }
+
+    function normalizeNutritionFoodReference(item) {
+        if (!item || typeof item !== "object") {
+            return null;
+        }
+
+        const name = getTrimmedTextOrEmpty(item.name);
+        const unit = nutritionFoodReferenceServingUnits.indexOf(item.serving && item.serving.unit) >= 0
+            ? item.serving.unit
+            : "other";
+        const amount = getNumberOrNull(item.serving && item.serving.amount);
+        if (!name || amount === null || amount <= 0) {
+            return null;
+        }
+
+        return {
+            id: getTrimmedTextOrEmpty(item.id) || createNutritionEntryId(),
+            name: name,
+            serving: {
+                amount: amount,
+                unit: unit
+            },
+            calories: Math.max(0, getNumber(item.calories)),
+            protein: Math.max(0, getNumber(item.protein)),
+            carbs: Math.max(0, getNumber(item.carbs))
+        };
+    }
+
+    function loadNutritionFoodReferences() {
+        const stored = loadData(nutritionFoodReferenceStorageKey, []);
+        return Array.isArray(stored)
+            ? stored.map(normalizeNutritionFoodReference).filter(function (item) { return !!item; })
+            : [];
+    }
+
+    function saveNutritionFoodReferences() {
+        saveData(nutritionFoodReferenceStorageKey, nutritionFoodReferences);
+    }
+
+    function sortNutritionFoodReferences() {
+        nutritionFoodReferences.sort(function (left, right) {
+            return left.name.localeCompare(right.name, undefined, { sensitivity: "base" });
+        });
+    }
+
+    function resetNutritionFoodReferenceForm() {
+        editingNutritionFoodReferenceId = null;
+        if (nutritionFoodReferenceFormTitle) nutritionFoodReferenceFormTitle.textContent = "Add Food Reference";
+        if (nutritionFoodReferenceNameInput) nutritionFoodReferenceNameInput.value = "";
+        if (nutritionFoodReferenceServingAmountInput) nutritionFoodReferenceServingAmountInput.value = "1";
+        if (nutritionFoodReferenceServingUnitInput) nutritionFoodReferenceServingUnitInput.value = "serving";
+        if (nutritionFoodReferenceCaloriesInput) nutritionFoodReferenceCaloriesInput.value = "";
+        if (nutritionFoodReferenceProteinInput) nutritionFoodReferenceProteinInput.value = "";
+        if (nutritionFoodReferenceCarbsInput) nutritionFoodReferenceCarbsInput.value = "";
+        if (saveNutritionFoodReferenceBtn) saveNutritionFoodReferenceBtn.textContent = "Add Food Reference";
+    }
+
+    function renderNutritionFoodReferences() {
+        if (!nutritionFoodReferenceList) return;
+        sortNutritionFoodReferences();
+        if (!nutritionFoodReferences.length) {
+            nutritionFoodReferenceList.innerHTML = "<p class=\"history-empty\">No food references yet.</p>";
+            return;
+        }
+
+        nutritionFoodReferenceList.innerHTML = nutritionFoodReferences.map(function (item) {
+            const serving = item.serving.amount + " " + item.serving.unit;
+            return '<div class="nutrition-food-reference-row" data-food-reference-id="' + escapeHtml(item.id) + '">' +
+                '<div class="nutrition-food-reference-main"><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(serving) + " · " + escapeHtml(String(item.calories)) + " Kcal · " + escapeHtml(String(item.protein)) + " g Protein · " + escapeHtml(String(item.carbs)) + " g Carbs</span></div>" +
+                '<div class="nutrition-food-reference-actions"><button type="button" class="nutrition-food-reference-edit">Edit</button><button type="button" class="nutrition-food-reference-delete">Delete</button></div>' +
+                '</div>';
+        }).join("");
+    }
+
+    function openNutritionFoodReferenceModal() {
+        resetNutritionFoodReferenceForm();
+        renderNutritionFoodReferences();
+        if (nutritionFoodReferenceModal) nutritionFoodReferenceModal.style.display = "flex";
+    }
+
+    function closeNutritionFoodReferenceModal() {
+        if (nutritionFoodReferenceModal) nutritionFoodReferenceModal.style.display = "none";
+        resetNutritionFoodReferenceForm();
+    }
+
+    function saveNutritionFoodReference() {
+        const name = nutritionFoodReferenceNameInput ? nutritionFoodReferenceNameInput.value.trim() : "";
+        const amount = nutritionFoodReferenceServingAmountInput ? Number(nutritionFoodReferenceServingAmountInput.value) : NaN;
+        const unit = nutritionFoodReferenceServingUnitInput ? nutritionFoodReferenceServingUnitInput.value : "";
+        const calories = nutritionFoodReferenceCaloriesInput ? Number(nutritionFoodReferenceCaloriesInput.value) : NaN;
+        const protein = nutritionFoodReferenceProteinInput ? Number(nutritionFoodReferenceProteinInput.value) : NaN;
+        const carbs = nutritionFoodReferenceCarbsInput ? Number(nutritionFoodReferenceCarbsInput.value) : NaN;
+
+        if (!name || !Number.isFinite(amount) || amount <= 0 || nutritionFoodReferenceServingUnits.indexOf(unit) < 0 ||
+            !Number.isFinite(calories) || calories < 0 || !Number.isFinite(protein) || protein < 0 || !Number.isFinite(carbs) || carbs < 0) {
+            alert("Enter a food name, serving, and non-negative nutrition values.");
+            return;
+        }
+
+        const item = {
+            id: editingNutritionFoodReferenceId || createNutritionEntryId(),
+            name: name,
+            serving: { amount: amount, unit: unit },
+            calories: calories,
+            protein: protein,
+            carbs: carbs
+        };
+        const index = nutritionFoodReferences.findIndex(function (existing) { return existing.id === item.id; });
+        if (index >= 0) nutritionFoodReferences[index] = item;
+        else nutritionFoodReferences.push(item);
+        sortNutritionFoodReferences();
+        saveNutritionFoodReferences();
+        renderNutritionFoodReferences();
+        resetNutritionFoodReferenceForm();
     }
 
     function hasAllAuthoritativeMilestoneKeys(milestones) {
@@ -2471,6 +2605,8 @@
         nutritionHistory = normalizeSavedNutritionHistory(nutritionHistory);
         rebuildNutritionTodayFromHistory();
         saveNutritionData();
+        nutritionFoodReferences = loadNutritionFoodReferences();
+        sortNutritionFoodReferences();
         renderTodaySummary();
         renderHistoryFramework();
         renderNutritionGoalsReference();
@@ -2486,6 +2622,54 @@
 
         if (nutritionLogFoodButton) {
             nutritionLogFoodButton.addEventListener("click", openNutritionLog);
+        }
+
+        if (nutritionFoodReferenceButton) {
+            nutritionFoodReferenceButton.addEventListener("click", function () {
+                openNutritionFoodReferenceModal();
+            });
+        }
+
+        if (saveNutritionFoodReferenceBtn) {
+            saveNutritionFoodReferenceBtn.addEventListener("click", saveNutritionFoodReference);
+        }
+
+        if (cancelNutritionFoodReferenceBtn) {
+            cancelNutritionFoodReferenceBtn.addEventListener("click", resetNutritionFoodReferenceForm);
+        }
+
+        if (closeNutritionFoodReferenceBtn) {
+            closeNutritionFoodReferenceBtn.addEventListener("click", closeNutritionFoodReferenceModal);
+        }
+
+        if (nutritionFoodReferenceList) {
+            nutritionFoodReferenceList.addEventListener("click", function (event) {
+                const row = event.target.closest(".nutrition-food-reference-row");
+                if (!row) return;
+                const id = row.getAttribute("data-food-reference-id");
+                const item = nutritionFoodReferences.find(function (entry) { return entry.id === id; });
+                if (!item) return;
+
+                if (event.target.closest(".nutrition-food-reference-edit")) {
+                    editingNutritionFoodReferenceId = id;
+                    nutritionFoodReferenceNameInput.value = item.name;
+                    nutritionFoodReferenceServingAmountInput.value = item.serving.amount;
+                    nutritionFoodReferenceServingUnitInput.value = item.serving.unit;
+                    nutritionFoodReferenceCaloriesInput.value = item.calories;
+                    nutritionFoodReferenceProteinInput.value = item.protein;
+                    nutritionFoodReferenceCarbsInput.value = item.carbs;
+                    nutritionFoodReferenceFormTitle.textContent = "Edit Food Reference";
+                    saveNutritionFoodReferenceBtn.textContent = "Save Food Reference";
+                    return;
+                }
+
+                if (event.target.closest(".nutrition-food-reference-delete")) {
+                    if (!window.confirm("Delete this food reference?\n\n" + item.name)) return;
+                    nutritionFoodReferences = nutritionFoodReferences.filter(function (entry) { return entry.id !== id; });
+                    saveNutritionFoodReferences();
+                    renderNutritionFoodReferences();
+                }
+            });
         }
 
         if (cancelNutritionBtn) {
@@ -2571,7 +2755,7 @@
         }
 
         if (nutritionGoalsReferenceButton) {
-            nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals & Reference";
+            nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals";
             nutritionGoalsReferenceButton.addEventListener("click", function () {
                 if (!nutritionGoalsReferenceSection) {
                     return;
@@ -2579,13 +2763,13 @@
 
                 if (nutritionGoalsReferenceSection.style.display === "block") {
                     nutritionGoalsReferenceSection.style.display = "none";
-                    nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals & Reference";
+                    nutritionGoalsReferenceButton.textContent = "🎯 Nutrition Goals";
                     return;
                 }
 
                 renderNutritionGoalsReference();
                 nutritionGoalsReferenceSection.style.display = "block";
-                nutritionGoalsReferenceButton.textContent = "🎯 Hide Goals & Reference";
+                nutritionGoalsReferenceButton.textContent = "🎯 Hide Nutrition Goals";
 
                 if (typeof window.scrollMedicationCenterTo === "function") {
                     window.scrollMedicationCenterTo(nutritionGoalsReferenceButton);
