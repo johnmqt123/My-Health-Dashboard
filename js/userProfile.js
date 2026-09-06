@@ -39,6 +39,7 @@ const userProfile = {
     const saveProfileQuickLinkBtn = document.getElementById("saveProfileQuickLinkBtn");
     const cancelProfileQuickLinkEditBtn = document.getElementById("cancelProfileQuickLinkEditBtn");
     const quickAccessGrid = document.querySelector(".quick-access-grid");
+    const dashboardQuickLinksCollapsedLimit = 6;
 
     let lockedScrollTop = 0;
     let lockedBodyStyles = null;
@@ -46,6 +47,7 @@ const userProfile = {
     let personalProfileInitialized = false;
     let editingQuickLinkIndex = -1;
     let expandedQuickLinkIndex = -1;
+    let dashboardQuickLinksExpanded = false;
 
     function getNumberOrNull(value) {
         const num = Number(value);
@@ -187,12 +189,13 @@ const userProfile = {
             return;
         }
 
-        quickAccessGrid.querySelectorAll('[data-user-quick-link="true"]').forEach(function (button) {
-            button.remove();
+        quickAccessGrid.querySelectorAll('[data-user-quick-link="true"], [data-quick-links-toggle="true"]').forEach(function (element) {
+            element.remove();
         });
 
         const links = getNormalizedQuickLinks(profile);
-        links.forEach(function (link) {
+        const visibleLinks = dashboardQuickLinksExpanded ? links : links.slice(0, dashboardQuickLinksCollapsedLimit);
+        visibleLinks.forEach(function (link) {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "quick-access-button";
@@ -202,6 +205,16 @@ const userProfile = {
             button.setAttribute("data-user-quick-link", "true");
             quickAccessGrid.appendChild(button);
         });
+
+        if (links.length > dashboardQuickLinksCollapsedLimit) {
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "quick-access-button quick-access-toggle";
+            toggle.textContent = dashboardQuickLinksExpanded ? "Less" : "More";
+            toggle.setAttribute("data-quick-links-toggle", "true");
+            toggle.setAttribute("aria-expanded", String(dashboardQuickLinksExpanded));
+            quickAccessGrid.appendChild(toggle);
+        }
     }
 
     function renderProfileQuickLinksList() {
@@ -585,6 +598,18 @@ const userProfile = {
 
         if (editQuickLinksButton) {
             editQuickLinksButton.addEventListener("click", openQuickLinksModal);
+        }
+
+        if (quickAccessGrid) {
+            quickAccessGrid.addEventListener("click", function (event) {
+                const toggle = event.target.closest('[data-quick-links-toggle="true"]');
+                if (!toggle) {
+                    return;
+                }
+
+                dashboardQuickLinksExpanded = !dashboardQuickLinksExpanded;
+                renderDashboardQuickLinks(loadPersonalProfile());
+            });
         }
 
         if (cancelProfileHeightBtn) {
