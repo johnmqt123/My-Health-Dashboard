@@ -4207,6 +4207,15 @@ button:active,
     outline-offset: 2px;
 }
 
+@media (hover: none) {
+    .quick-access-button:hover {
+        background: var(--quick-link-background);
+        border-color: var(--quick-link-border);
+        color: var(--quick-link-text);
+        box-shadow: none;
+    }
+}
+
 .quick-access-toggle {
     background: #f8fafc;
     color: var(--dashboard-quick-links-text);
