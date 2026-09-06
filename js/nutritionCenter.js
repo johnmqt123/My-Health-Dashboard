@@ -19,6 +19,7 @@
     const nutritionGoalsReferenceSection = document.getElementById("nutritionGoalsReferenceSection");
     const nutritionGoalsReferenceContent = document.getElementById("nutritionGoalsReferenceContent");
     const nutritionFoodReferenceModal = document.getElementById("nutritionFoodReferenceModal");
+    const nutritionFoodReferenceContent = document.getElementById("nutritionFoodReferenceContent");
     const nutritionFoodReferenceList = document.getElementById("nutritionFoodReferenceList");
     const nutritionFoodReferenceFormTitle = document.getElementById("nutritionFoodReferenceFormTitle");
     const nutritionFoodReferenceNameInput = document.getElementById("nutritionFoodReferenceNameInput");
@@ -533,12 +534,17 @@
     function openNutritionFoodReferenceModal() {
         resetNutritionFoodReferenceForm();
         renderNutritionFoodReferences();
-        if (nutritionFoodReferenceModal) nutritionFoodReferenceModal.style.display = "flex";
+        if (!nutritionFoodReferenceModal) return;
+        nutritionFoodReferenceModal.style.display = "flex";
+        if (nutritionFoodReferenceContent) nutritionFoodReferenceContent.scrollTop = 0;
+        lockNutritionModalBackgroundScroll();
     }
 
     function closeNutritionFoodReferenceModal() {
-        if (nutritionFoodReferenceModal) nutritionFoodReferenceModal.style.display = "none";
+        if (!nutritionFoodReferenceModal) return;
+        nutritionFoodReferenceModal.style.display = "none";
         resetNutritionFoodReferenceForm();
+        unlockNutritionModalBackgroundScroll();
     }
 
     function saveNutritionFoodReference() {

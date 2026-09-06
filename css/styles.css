@@ -773,10 +773,57 @@ header p {
     transform: none;
 }
 
-.nutrition-food-reference-modal-content {
-    max-height: min(88vh, 720px);
+#nutritionFoodReferenceModal .nutrition-food-reference-modal-content {
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+@supports not (height: 100dvh) {
+    #nutritionFoodReferenceModal .nutrition-food-reference-modal-content {
+        max-height: calc(100vh - 24px);
+    }
+}
+
+.nutrition-food-reference-header {
+    flex: 0 0 auto;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 14px 14px 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.nutrition-food-reference-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.3;
+}
+
+#closeNutritionFoodReferenceBtn {
+    width: auto;
+    margin: 0;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+}
+
+.nutrition-food-reference-content {
+    flex: 1 1 auto;
+    min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    padding: 12px 14px max(14px, env(safe-area-inset-bottom));
 }
 
 .nutrition-food-reference-list {
