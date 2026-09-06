@@ -458,6 +458,55 @@
         if (saveNutritionFoodReferenceBtn) saveNutritionFoodReferenceBtn.textContent = "Add Food Reference";
     }
 
+    function getNutritionFoodReferenceCopyText(item) {
+        const serving = item.serving.amount + " " + item.serving.unit;
+        return item.name + " — " + serving + "\n" +
+            "Calories: " + item.calories + "\n" +
+            "Protein: " + item.protein + " g\n" +
+            "Carbohydrates: " + item.carbs + " g";
+    }
+
+    async function copyNutritionFoodReference(item, row) {
+        const copyText = getNutritionFoodReferenceCopyText(item);
+        let copied = false;
+
+        try {
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+                await navigator.clipboard.writeText(copyText);
+                copied = true;
+            }
+        } catch (error) {
+            copied = false;
+        }
+
+        if (!copied) {
+            const fallbackInput = document.createElement("textarea");
+            fallbackInput.value = copyText;
+            fallbackInput.setAttribute("readonly", "");
+            fallbackInput.style.position = "fixed";
+            fallbackInput.style.opacity = "0";
+            document.body.appendChild(fallbackInput);
+            fallbackInput.select();
+            try {
+                copied = document.execCommand("copy");
+            } catch (error) {
+                copied = false;
+            }
+            fallbackInput.remove();
+        }
+
+        const status = row.querySelector(".nutrition-food-reference-copy-status");
+        if (!status) return;
+        status.textContent = copied ? "Copied" : "Copy unavailable";
+        status.classList.toggle("is-error", !copied);
+        window.setTimeout(function () {
+            if (status.isConnected) {
+                status.textContent = "";
+                status.classList.remove("is-error");
+            }
+        }, 2200);
+    }
+
     function renderNutritionFoodReferences() {
         if (!nutritionFoodReferenceList) return;
         sortNutritionFoodReferences();
@@ -469,8 +518,14 @@
         nutritionFoodReferenceList.innerHTML = nutritionFoodReferences.map(function (item) {
             const serving = item.serving.amount + " " + item.serving.unit;
             return '<div class="nutrition-food-reference-row" data-food-reference-id="' + escapeHtml(item.id) + '">' +
-                '<div class="nutrition-food-reference-main"><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(serving) + " · " + escapeHtml(String(item.calories)) + " Kcal · " + escapeHtml(String(item.protein)) + " g Protein · " + escapeHtml(String(item.carbs)) + " g Carbs</span></div>" +
-                '<div class="nutrition-food-reference-actions"><button type="button" class="nutrition-food-reference-edit">Edit</button><button type="button" class="nutrition-food-reference-delete">Delete</button></div>' +
+                '<button type="button" class="nutrition-food-reference-toggle" aria-expanded="false">' +
+                    '<span class="nutrition-food-reference-chevron" aria-hidden="true">▶</span>' +
+                    '<span class="nutrition-food-reference-main"><strong>' + escapeHtml(item.name) + '</strong><span>' + escapeHtml(serving) + "</span></span>" +
+                '</button>' +
+                '<div class="nutrition-food-reference-details" hidden>' +
+                    '<div class="nutrition-food-reference-nutrition"><span>Calories: ' + escapeHtml(String(item.calories)) + '</span><span>Protein: ' + escapeHtml(String(item.protein)) + ' g</span><span>Carbohydrates: ' + escapeHtml(String(item.carbs)) + ' g</span></div>' +
+                    '<div class="nutrition-food-reference-actions"><button type="button" class="nutrition-food-reference-edit">Edit</button><button type="button" class="nutrition-food-reference-copy">Copy Nutrition</button><button type="button" class="nutrition-food-reference-delete">Delete</button><span class="nutrition-food-reference-copy-status" aria-live="polite"></span></div>' +
+                '</div>' +
                 '</div>';
         }).join("");
     }
@@ -2649,6 +2704,21 @@
                 const id = row.getAttribute("data-food-reference-id");
                 const item = nutritionFoodReferences.find(function (entry) { return entry.id === id; });
                 if (!item) return;
+
+                const toggle = event.target.closest(".nutrition-food-reference-toggle");
+                if (toggle) {
+                    const details = row.querySelector(".nutrition-food-reference-details");
+                    const expanded = toggle.getAttribute("aria-expanded") === "true";
+                    toggle.setAttribute("aria-expanded", String(!expanded));
+                    toggle.querySelector(".nutrition-food-reference-chevron").textContent = expanded ? "▶" : "▼";
+                    details.hidden = expanded;
+                    return;
+                }
+
+                if (event.target.closest(".nutrition-food-reference-copy")) {
+                    copyNutritionFoodReference(item, row);
+                    return;
+                }
 
                 if (event.target.closest(".nutrition-food-reference-edit")) {
                     editingNutritionFoodReferenceId = id;
