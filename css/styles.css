@@ -828,7 +828,7 @@ header p {
 
 .nutrition-food-reference-list {
     display: grid;
-    gap: 8px;
+    gap: 4px;
     margin-bottom: 16px;
 }
 
@@ -837,14 +837,14 @@ header p {
     border-bottom: 1px solid var(--dashboard-card-border);
 }
 
-.nutrition-food-reference-toggle {
+#nutritionFoodReferenceModal .nutrition-food-reference-toggle {
     display: flex;
     width: 100%;
     min-height: 44px;
     align-items: center;
     gap: 8px;
     margin: 0;
-    padding: 8px 0;
+    padding: 4px 0;
     border: 0;
     background: transparent;
     color: inherit;
@@ -852,8 +852,8 @@ header p {
     box-shadow: none;
 }
 
-.nutrition-food-reference-toggle:hover,
-.nutrition-food-reference-toggle:active {
+#nutritionFoodReferenceModal .nutrition-food-reference-toggle:hover,
+#nutritionFoodReferenceModal .nutrition-food-reference-toggle:active {
     background: transparent;
     color: inherit;
     transform: none;
@@ -876,7 +876,7 @@ header p {
 }
 
 .nutrition-food-reference-main span {
-    margin-top: 3px;
+    margin-top: 2px;
     color: var(--muted);
     font-size: 0.85rem;
     line-height: 1.35;
