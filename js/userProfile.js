@@ -176,9 +176,101 @@ const userProfile = {
         return !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
     }
 
+    function getQuickLinkVisibleViewportBounds() {
+        // On iOS the keyboard shrinks visualViewport without shrinking the layout viewport,
+        // so the visible area must be read from visualViewport, not innerHeight.
+        if (window.visualViewport) {
+            const top = window.visualViewport.offsetTop || 0;
+            return { top: top, bottom: top + window.visualViewport.height };
+        }
+
+        return { top: 0, bottom: window.innerHeight };
+    }
+
+    function getQuickLinksScrollContainer() {
+        return quickLinksModal ? quickLinksModal.querySelector(".modal-content") : null;
+    }
+
+    function updateQuickLinkKeyboardAwareHeight() {
+        // .modal-content's max-height is set in vh/px, which iOS does not shrink when the
+        // keyboard opens (only visualViewport shrinks), so the container never gains real
+        // overflow on its own. Cap it to the space actually visible above the keyboard so
+        // the existing scroll container can genuinely scroll the focused field into view.
+        const scrollContainer = getQuickLinksScrollContainer();
+        if (!scrollContainer || !window.visualViewport) {
+            return;
+        }
+
+        const modalOuterPadding = 32;
+        const keyboardLikelyOpen = window.visualViewport.height < window.innerHeight - 1;
+
+        if (!keyboardLikelyOpen) {
+            scrollContainer.style.maxHeight = "";
+            return;
+        }
+
+        const availableHeight = Math.max(200, Math.round(window.visualViewport.height) - modalOuterPadding);
+        scrollContainer.style.maxHeight = availableHeight + "px";
+    }
+
+    function resetQuickLinkKeyboardAwareHeight() {
+        const scrollContainer = getQuickLinksScrollContainer();
+        if (scrollContainer) {
+            scrollContainer.style.maxHeight = "";
+        }
+    }
+
     function scrollQuickLinkFieldIntoView(field) {
-        if (document.activeElement === field) {
-            field.scrollIntoView({ block: "center", behavior: "smooth" });
+        if (!field || document.activeElement !== field) {
+            return;
+        }
+
+        const scrollContainer = getQuickLinksScrollContainer();
+        if (!scrollContainer) {
+            return;
+        }
+
+        updateQuickLinkKeyboardAwareHeight();
+
+        const margin = 16;
+        const visible = getQuickLinkVisibleViewportBounds();
+        const fieldRect = field.getBoundingClientRect();
+
+        let delta = 0;
+        if (fieldRect.bottom > visible.bottom - margin) {
+            delta = fieldRect.bottom - (visible.bottom - margin);
+        } else if (fieldRect.top < visible.top + margin) {
+            delta = fieldRect.top - (visible.top + margin);
+        }
+
+        if (delta !== 0) {
+            scrollContainer.scrollTop += delta;
+        }
+    }
+
+    function scheduleQuickLinkFieldReposition(field) {
+        // The iOS keyboard opens over ~250-300ms and can fire more than one
+        // visualViewport resize event, so keep re-correcting for a short window
+        // instead of reacting once to a single guessed timing.
+        const deadline = Date.now() + 700;
+
+        function attempt() {
+            scrollQuickLinkFieldIntoView(field);
+            if (Date.now() < deadline && document.activeElement === field) {
+                window.requestAnimationFrame(attempt);
+            }
+        }
+
+        window.requestAnimationFrame(attempt);
+
+        if (window.visualViewport) {
+            const onViewportResize = function () {
+                scrollQuickLinkFieldIntoView(field);
+            };
+            window.visualViewport.addEventListener("resize", onViewportResize);
+            window.setTimeout(function () {
+                window.visualViewport.removeEventListener("resize", onViewportResize);
+            }, 700);
         }
     }
 
@@ -187,23 +279,7 @@ const userProfile = {
             return;
         }
 
-        const field = event.target;
-
-        if (window.visualViewport) {
-            const onViewportResize = function () {
-                window.visualViewport.removeEventListener("resize", onViewportResize);
-                scrollQuickLinkFieldIntoView(field);
-            };
-            window.visualViewport.addEventListener("resize", onViewportResize);
-            window.setTimeout(function () {
-                window.visualViewport.removeEventListener("resize", onViewportResize);
-                scrollQuickLinkFieldIntoView(field);
-            }, 400);
-        } else {
-            window.setTimeout(function () {
-                scrollQuickLinkFieldIntoView(field);
-            }, 300);
-        }
+        scheduleQuickLinkFieldReposition(event.target);
     }
 
     function clearQuickLinkEditor() {
@@ -414,6 +490,7 @@ const userProfile = {
         }
 
         quickLinksModal.style.display = "none";
+        resetQuickLinkKeyboardAwareHeight();
         unlockProfileHeightModalBackgroundScroll();
     }
 
