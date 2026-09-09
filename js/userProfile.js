@@ -40,6 +40,7 @@ const userProfile = {
     const cancelProfileQuickLinkEditBtn = document.getElementById("cancelProfileQuickLinkEditBtn");
     const quickAccessGrid = document.querySelector(".quick-access-grid");
     const dashboardQuickLinksCollapsedLimit = 6;
+    const quickLinkKeyboardAwareFields = [profileQuickLinkNameInput, profileQuickLinkUrlInput].filter(Boolean);
 
     let lockedScrollTop = 0;
     let lockedBodyStyles = null;
@@ -169,6 +170,40 @@ const userProfile = {
 
         profile.quickLinks.links = links;
         return profile;
+    }
+
+    function isCoarseTouchViewport() {
+        return !!(window.matchMedia && window.matchMedia("(hover: none) and (pointer: coarse)").matches);
+    }
+
+    function scrollQuickLinkFieldIntoView(field) {
+        if (document.activeElement === field) {
+            field.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+    }
+
+    function handleQuickLinkFieldFocus(event) {
+        if (!isCoarseTouchViewport()) {
+            return;
+        }
+
+        const field = event.target;
+
+        if (window.visualViewport) {
+            const onViewportResize = function () {
+                window.visualViewport.removeEventListener("resize", onViewportResize);
+                scrollQuickLinkFieldIntoView(field);
+            };
+            window.visualViewport.addEventListener("resize", onViewportResize);
+            window.setTimeout(function () {
+                window.visualViewport.removeEventListener("resize", onViewportResize);
+                scrollQuickLinkFieldIntoView(field);
+            }, 400);
+        } else {
+            window.setTimeout(function () {
+                scrollQuickLinkFieldIntoView(field);
+            }, 300);
+        }
     }
 
     function clearQuickLinkEditor() {
@@ -599,6 +634,10 @@ const userProfile = {
         if (editQuickLinksButton) {
             editQuickLinksButton.addEventListener("click", openQuickLinksModal);
         }
+
+        quickLinkKeyboardAwareFields.forEach(function (field) {
+            field.addEventListener("focus", handleQuickLinkFieldFocus);
+        });
 
         if (quickAccessGrid) {
             quickAccessGrid.addEventListener("click", function (event) {
