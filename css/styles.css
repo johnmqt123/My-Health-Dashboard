@@ -454,9 +454,14 @@ header p {
 }
 
 #dailyDiaryHistorySection {
-    /* The inner #dailyDiaryHistoryDisplay is the intended scroll container. */
+    /* Diary History is ordinary page content; the main page is the only scroll surface. */
     max-height: none;
     overflow: visible;
+}
+
+#dailyDiaryHistoryDisplay {
+    max-height: none;
+    overflow-y: visible;
 }
 
 #medicationCenterSection,
