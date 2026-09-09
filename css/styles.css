@@ -453,6 +453,12 @@ header p {
     overflow: hidden;
 }
 
+#dailyDiaryHistorySection {
+    /* The inner #dailyDiaryHistoryDisplay is the intended scroll container. */
+    max-height: none;
+    overflow: visible;
+}
+
 #medicationCenterSection,
 #medicationCenterSection .briefing,
 #medicationCenterSection .briefing .card {
