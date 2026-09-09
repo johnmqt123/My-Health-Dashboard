@@ -159,11 +159,14 @@
             return dateKey;
         }
 
-        return parsed.toLocaleDateString([], {
+        const datePart = parsed.toLocaleDateString([], {
             month: "long",
             day: "numeric",
             year: "numeric"
         });
+        const weekdayPart = parsed.toLocaleDateString([], { weekday: "long" });
+
+        return datePart + " — " + weekdayPart;
     }
 
     function getPreviewText(textValue) {
