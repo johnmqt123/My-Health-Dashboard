@@ -9,6 +9,7 @@
     const dailyDiaryOpenTodayButton = document.getElementById("dailyDiaryOpenTodayButton");
     const dailyDiaryHistoryButton = document.getElementById("dailyDiaryHistoryButton");
     const dailyDiaryHistorySection = document.getElementById("dailyDiaryHistorySection");
+        const dailyDiaryHideHistoryButton = document.getElementById("dailyDiaryHideHistoryButton");
     const dailyDiaryFilterToggle = document.getElementById("dailyDiaryFilterToggle");
     const dailyDiaryFilterPanel = document.getElementById("dailyDiaryFilterPanel");
     const dailyDiaryHistoryDisplay = document.getElementById("dailyDiaryHistoryDisplay");
@@ -531,6 +532,30 @@
         openEditorForDate(dateKey);
     }
 
+    function hideHistory() {
+        if (!dailyDiaryHistorySection || !dailyDiaryHistoryButton) {
+            return;
+        }
+
+        expandedHistoryDate = null;
+        resetHistoryScroll();
+        dailyDiaryHistorySection.style.display = "none";
+        dailyDiaryHistoryButton.textContent = "📊 History";
+        dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
+
+        if (typeof window.scrollMedicationCenterTo === "function" && dailyDiaryCard) {
+            window.scrollMedicationCenterTo(dailyDiaryCard);
+            return;
+        }
+
+        if (dailyDiaryCard) {
+            dailyDiaryCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }
+
     function toggleHistory() {
         if (!dailyDiaryHistorySection || !dailyDiaryHistoryButton) {
             return;
@@ -557,23 +582,7 @@
             return;
         }
 
-        expandedHistoryDate = null;
-        resetHistoryScroll();
-        dailyDiaryHistorySection.style.display = "none";
-        dailyDiaryHistoryButton.textContent = "📊 History";
-        dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
-
-        if (typeof window.scrollMedicationCenterTo === "function" && dailyDiaryCard) {
-            window.scrollMedicationCenterTo(dailyDiaryCard);
-            return;
-        }
-
-        if (dailyDiaryCard) {
-            dailyDiaryCard.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-        }
+        hideHistory();
     }
 
     function applyDiaryFilterChanges() {
@@ -612,6 +621,9 @@
 
         const willShow = dailyDiaryFilterPanel.hidden;
         dailyDiaryFilterPanel.hidden = !willShow;
+        if (!willShow) {
+            clearDiaryFilters();
+        }
         dailyDiaryFilterToggle.setAttribute("aria-expanded", String(willShow));
         dailyDiaryFilterToggle.textContent = willShow ? "Hide Search & Filter" : "Search & Filter";
     }
@@ -648,6 +660,10 @@
             dailyDiaryHistoryButton.textContent = "📊 History";
             dailyDiaryHistoryButton.setAttribute("aria-expanded", "false");
             dailyDiaryHistoryButton.addEventListener("click", toggleHistory);
+        }
+
+        if (dailyDiaryHideHistoryButton) {
+            dailyDiaryHideHistoryButton.addEventListener("click", hideHistory);
         }
 
         if (dailyDiaryFilterToggle && dailyDiaryFilterPanel) {
