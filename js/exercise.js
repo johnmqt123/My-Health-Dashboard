@@ -522,15 +522,23 @@
 
     function displayExerciseLog() {
         if (!exerciseDisplay) return;
-        if (exerciseLog.length === 0) {
+            if (exerciseHistory.length === 0) {
             exerciseDisplay.textContent = "No exercise logged yet.";
             return;
         }
 
-        const latest = exerciseLog[exerciseLog.length - 1];
+            const latest = exerciseHistory[exerciseHistory.length - 1];
+            const parsedDate = parseHistoryDate(latest);
+            const formattedDate = parsedDate
+                ? parsedDate.toLocaleDateString([], {
+                    month: "long",
+                    day: "numeric",
+                    year: "numeric"
+                })
+                : (latest.date || "Unknown Date");
         exerciseDisplay.innerHTML =
             "Last Exercise: <strong>" + latest.type + "</strong> - " +
-            latest.amount + " " + latest.unit;
+                latest.amount + " " + latest.unit + "<br>" + formattedDate;
     }
 
     function refreshExerciseData() {
