@@ -2052,6 +2052,14 @@ header p {
     color: var(--text);
 }
 
+.nutrition-day-detail-meta {
+    flex: 0 0 auto;
+    color: var(--muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .nutrition-day-detail-body {
     display: grid;
     gap: 6px;

@@ -40,6 +40,7 @@
     const nutritionCarbsInput = document.getElementById("nutritionCarbsInput");
     const nutritionFatInput = document.getElementById("nutritionFatInput");
     const nutritionDateInput = document.getElementById("nutritionDateInput");
+    const nutritionTimeInput = document.getElementById("nutritionTimeInput");
     const nutritionNoteInput = document.getElementById("nutritionNoteInput");
     const saveNutritionBtn = document.getElementById("saveNutritionBtn");
     const cancelNutritionBtn = document.getElementById("cancelNutritionBtn");
@@ -979,6 +980,24 @@
         return trimmed;
     }
 
+    function formatNutritionEntryTime(entry) {
+        const rawTime = entry && entry.time ? String(entry.time).trim() : "";
+        const match = /^([0-9]{1,2}):([0-9]{2})$/.exec(rawTime);
+        if (!match) {
+            return "";
+        }
+
+        const parsed = new Date(2000, 0, 1, Number(match[1]), Number(match[2]));
+        if (Number.isNaN(parsed.getTime())) {
+            return "";
+        }
+
+        return parsed.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        });
+    }
+
     function roundNutritionValue(value) {
         const rounded = Math.round(value * 10) / 10;
         return Number.isInteger(rounded) ? rounded : rounded;
@@ -1046,6 +1065,7 @@
             fallbackDateLabel: source.date || parent.date || "",
             description: normalizeFoodDescription(source),
             meal: normalizeFoodMeal(source),
+            time: source.time !== undefined ? String(source.time).trim() : "",
             calories: getNumberFromKeys(source, ["calories", "kcal"]),
             protein: getNumberFromKeys(source, ["protein", "proteinG", "protein_g"]),
             carbs: getNumberFromKeys(source, ["carbs", "carbohydrates", "carbohydrate", "carbsG", "carbohydratesG"]),
@@ -2164,6 +2184,13 @@
         const entryHtml = dayData.entries
             .map(function (entry) {
                 const isExpanded = entry.id === expandedNutritionEntryId;
+                const formattedTime = formatNutritionEntryTime(entry);
+                const metaText = formattedTime && entry.meal
+                    ? formattedTime + " · " + entry.meal
+                    : (formattedTime || entry.meal || "");
+                const metaHtml = metaText
+                    ? '<span class="nutrition-day-detail-meta">' + escapeHtml(metaText) + "</span>"
+                    : "";
                 const mealHtml = entry.meal
                     ? '<div class="nutrition-day-detail-notes"><span class="nutrition-day-detail-label">Meal</span><span>' + escapeHtml(entry.meal) + "</span></div>"
                     : "";
@@ -2173,6 +2200,7 @@
 
                 return '<div class="nutrition-day-detail-entry">' +
                     '<button type="button" class="nutrition-day-detail-toggle" aria-expanded="' + (isExpanded ? "true" : "false") + '" data-entry-id="' + escapeHtml(entry.id) + '">' +
+                        metaHtml +
                         '<span class="nutrition-day-detail-description">' + escapeHtml(entry.description) + "</span>" +
                         '<span class="nutrition-day-detail-chevron" aria-hidden="true">' + (isExpanded ? "⌄" : "›") + "</span>" +
                     "</button>" +
@@ -2263,6 +2291,7 @@
         if (nutritionCarbsInput) nutritionCarbsInput.value = "";
         if (nutritionFatInput) nutritionFatInput.value = "";
         if (nutritionDateInput) nutritionDateInput.value = getCurrentDateInputValue();
+        if (nutritionTimeInput) nutritionTimeInput.value = "";
         if (nutritionNoteInput) nutritionNoteInput.value = "";
     }
 
@@ -2278,6 +2307,7 @@
         if (nutritionCarbsInput) nutritionCarbsInput.value = entry.carbs === undefined ? "" : entry.carbs;
         if (nutritionFatInput) nutritionFatInput.value = entry.fat === undefined ? "" : entry.fat;
         if (nutritionDateInput) nutritionDateInput.value = entry.dayKey || getCurrentDateInputValue();
+        if (nutritionTimeInput) nutritionTimeInput.value = entry.time || "";
         if (nutritionNoteInput) nutritionNoteInput.value = entry.notes || "";
     }
 
@@ -2481,7 +2511,9 @@
         const carbs = nutritionCarbsInput ? nutritionCarbsInput.value.trim() : "";
         const fat = nutritionFatInput ? nutritionFatInput.value.trim() : "";
         const date = nutritionDateInput && nutritionDateInput.value ? nutritionDateInput.value : getCurrentDateInputValue();
+        const enteredTime = nutritionTimeInput ? nutritionTimeInput.value.trim() : "";
         const note = nutritionNoteInput ? nutritionNoteInput.value.trim() : "";
+        const isEditing = !!activeNutritionEntryId;
 
         if (!description) {
             alert("Please enter a food description.");
@@ -2505,7 +2537,7 @@
             carbs: roundNutritionValue(getNumber(carbs)),
             fat: roundNutritionValue(getNumber(fat || 0)),
             date: date,
-            time: getCurrentTimeValue()
+            time: isEditing ? enteredTime : (enteredTime || getCurrentTimeValue())
         };
 
         if (meal) {
