@@ -111,3 +111,19 @@ Completed, obsolete, and duplicate ideas have been removed from the active backl
 * When an idea is vague, keep it brief until the application provides enough context to define it properly.
 * Major new ideas discovered during development should be added deliberately rather than accumulating large numbers of unreviewed entries.
 
+### Future Quick Links / Browser Investigation
+
+* **Consider moving John's Assistant from Safari to Chrome on iPhone**
+
+  * Investigate whether John's Assistant can be added to the iPhone Home Screen from Chrome and retain the convenient app-like Home Screen experience currently provided through Safari.
+  * Determine whether Chrome provides any advantages for John's Assistant, particularly because Chrome is the user's primary browser on the Windows laptop and would provide better cross-device synchronization of bookmarks, history, and open tabs.
+  * Before making any change, verify:
+
+    * Home Screen icon behavior
+    * App-like/full-screen behavior
+    * John's Assistant functionality on iPhone
+    * Quick Links behavior
+    * Ability to open Quick Links in separate Chrome tabs
+    * Cross-device Chrome synchronization
+  * Keep the current Safari/Home Screen setup unchanged unless testing confirms Chrome provides an equal or better experience.
+  * This is a future investigation only and is separate from the planned Quick Links change to open external links in new Safari tabs.
