@@ -510,6 +510,63 @@ header p {
     outline-offset: 2px;
 }
 
+#bpHistorySection {
+    /* Blood Pressure History is ordinary page content; the main page is the only scroll surface. */
+    max-height: none;
+    overflow: visible;
+}
+
+#bpHistoryDisplay {
+    max-height: none;
+    overflow-y: visible;
+}
+
+#bpHistorySection .bp-history-sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px 0 8px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--archive-accent-border);
+}
+
+#bpHistorySection .bp-history-sticky-header .history-section-header {
+    min-width: 0;
+    padding: 0 0 0 10px;
+    border-bottom: 0;
+}
+
+#bpHistorySection .bp-history-hide-button {
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--archive-accent-border);
+    border-radius: 8px;
+    background: #f8fafc;
+    color: var(--archive-accent-text);
+    font-size: 0.9rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+#bpHistorySection .bp-history-hide-button:hover,
+#bpHistorySection .bp-history-hide-button:active {
+    background: #efc1c1;
+    border-color: var(--archive-accent);
+    transform: none;
+}
+
+#bpHistorySection .bp-history-hide-button:focus-visible {
+    outline: 2px solid var(--archive-accent);
+    outline-offset: 2px;
+}
+
 #medicationCenterSection,
 #medicationCenterSection .briefing,
 #medicationCenterSection .briefing .card {
@@ -2809,6 +2866,15 @@ button.history-action-btn {
 #dailyDiaryHistorySection #dailyDiaryFilterToggle:hover,
 #dailyDiaryHistorySection #dailyDiaryFilterToggle:active,
 #dailyDiaryHistorySection #dailyDiaryFilterToggle:focus-visible {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: var(--text);
+    transform: none;
+}
+
+#bpHistorySection #bpFilterToggle:hover,
+#bpHistorySection #bpFilterToggle:active,
+#bpHistorySection #bpFilterToggle:focus-visible {
     background: #e2e8f0;
     border-color: #cbd5e1;
     color: var(--text);

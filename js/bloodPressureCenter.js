@@ -29,6 +29,7 @@
     const bpCard = document.getElementById("bpCard");
     const bpHistoryButton = document.getElementById("bpHistoryButton");
     const bpHistorySection = document.getElementById("bpHistorySection");
+    const bpHideHistoryButton = document.getElementById("bpHideHistoryButton");
     const bpFilterToggle = document.getElementById("bpFilterToggle");
     const bpFilterPanel = document.getElementById("bpFilterPanel");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
@@ -621,25 +622,30 @@
         }
     }
 
+    function hideHistory() {
+        if (!bpHistorySection || !bpHistoryButton) return;
+
+        bpHistorySection.style.display = "none";
+        bpHistoryButton.textContent = "📊 History";
+
+        if (typeof window.scrollMedicationCenterTo === "function" && bpCard) {
+            window.scrollMedicationCenterTo(bpCard);
+            return;
+        }
+
+        if (bpCard) {
+            bpCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        }
+    }
+
     function toggleHistory() {
         if (!bpHistorySection || !bpHistoryButton || !bpHistoryDisplay) return;
 
         if (bpHistorySection.style.display === "block") {
-            bpHistorySection.style.display = "none";
-            bpHistoryButton.textContent = "📊 History";
-
-            if (typeof window.scrollMedicationCenterTo === "function" && bpCard) {
-                window.scrollMedicationCenterTo(bpCard);
-                return;
-            }
-
-            if (bpCard) {
-                bpCard.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-            }
-
+            hideHistory();
             return;
         }
 
@@ -690,6 +696,10 @@
         if (bpHistoryButton) {
             bpHistoryButton.textContent = "📊 History";
             bpHistoryButton.addEventListener("click", toggleHistory);
+        }
+
+        if (bpHideHistoryButton) {
+            bpHideHistoryButton.addEventListener("click", hideHistory);
         }
 
         if (bpFilterToggle && bpFilterPanel) {
