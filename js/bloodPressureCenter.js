@@ -97,6 +97,18 @@
         return month + "/" + day + "/" + year;
     }
 
+    function formatBloodPressureCopyTime(entry) {
+        const parsed = parseHistoryDate(entry);
+        if (!parsed || !entry || !entry.time) {
+            return "";
+        }
+
+        return parsed.toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit"
+        });
+    }
+
     function getBloodPressureDateKey(entry) {
         const parsed = parseBloodPressureDateValue(entry && entry.date ? entry.date : "");
         if (!parsed) {
@@ -163,7 +175,9 @@
 
     function buildSelectedBpCopyText(entries) {
         return entries.map(function (entry) {
-            return formatBloodPressureCopyDate(entry) + "  " + String(entry.systolic || "--") + "/" + String(entry.diastolic || "--") + "  " + String(entry.pulse || "--");
+            const copyTime = formatBloodPressureCopyTime(entry);
+            const timeSegment = copyTime ? copyTime + "  " : "";
+            return formatBloodPressureCopyDate(entry) + "  " + timeSegment + String(entry.systolic || "--") + "/" + String(entry.diastolic || "--") + "  " + String(entry.pulse || "--");
         }).join("\n");
     }
 
