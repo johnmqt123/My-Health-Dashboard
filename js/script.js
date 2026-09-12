@@ -465,6 +465,7 @@ initWeightCenter();
 initBloodPressureCenter();
 initDailyDiaryCenter();
 initZepboundCenter();
+initCpapSupplies();
 
 const wakeUpButton = document.getElementById("logButton");
 const medStatus = document.getElementById("medStatus");

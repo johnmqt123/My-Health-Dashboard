@@ -5263,6 +5263,18 @@ body.diary-editor-open {
     width: 100%;
 }
 
+html.cpap-modal-open,
+body.cpap-modal-open {
+    overflow: hidden;
+}
+
+body.cpap-modal-open {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+}
+
 #stationaryBikeBtn,
 #ebikeRideBtn {
     --exercise-accent: #087f8c;

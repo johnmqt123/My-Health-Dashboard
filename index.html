@@ -412,6 +412,18 @@
 </div>
     </section>
 </div>
+<div class="card dashboard-card cpap-supplies-card">
+    <div class="dashboard-card-header">
+        <h2 class="dashboard-card-title">CPAP Supplies</h2>
+    </div>
+    <p><strong>CPAP Machine:</strong> <span id="cpapMachineDisplay">Not recorded</span></p>
+    <p><strong>Mask Frame:</strong> <span id="cpapMaskFrameDisplay">Not recorded</span></p>
+    <p><strong>Mask Cushion:</strong> <span id="cpapMaskCushionDisplay">Not recorded</span></p>
+    <p><strong>Hose/Tubing:</strong> <span id="cpapHoseTubingDisplay">Not recorded</span></p>
+    <p><strong>Disposable Filter:</strong> <span id="cpapDisposableFilterDisplay">Not recorded</span></p>
+    <p><strong>Water Tank:</strong> <span id="cpapWaterTankDisplay">Not recorded</span></p>
+    <button id="editCpapSuppliesButton" type="button">Edit CPAP Supplies</button>
+</div>
 <div class="card dashboard-card personal-profile-card">
     <div class="dashboard-card-header">
         <h2 class="dashboard-card-title">Personal Profile</h2>
@@ -525,6 +537,32 @@
         <input id="profileHeightInchesInput" type="number" min="0" max="11" step="1" inputmode="numeric">
         <button id="saveProfileHeightBtn">Save</button>
         <button id="cancelProfileHeightBtn">Cancel</button>
+    </div>
+</div>
+<div id="cpapSuppliesModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>CPAP Supplies</h2>
+
+        <label for="cpapMachineDateInput">CPAP Machine (Date Received/Started)</label>
+        <input id="cpapMachineDateInput" type="date">
+
+        <label for="cpapMaskFrameDateInput">Mask Frame (Date Last Changed)</label>
+        <input id="cpapMaskFrameDateInput" type="date">
+
+        <label for="cpapMaskCushionDateInput">Mask Cushion (Date Last Changed)</label>
+        <input id="cpapMaskCushionDateInput" type="date">
+
+        <label for="cpapHoseTubingDateInput">Hose/Tubing (Date Last Changed)</label>
+        <input id="cpapHoseTubingDateInput" type="date">
+
+        <label for="cpapDisposableFilterDateInput">Disposable Filter (Date Last Changed)</label>
+        <input id="cpapDisposableFilterDateInput" type="date">
+
+        <label for="cpapWaterTankDateInput">Water Tank (Date Last Changed)</label>
+        <input id="cpapWaterTankDateInput" type="date">
+
+        <button id="saveCpapSuppliesBtn">Save</button>
+        <button id="cancelCpapSuppliesBtn">Cancel</button>
     </div>
 </div>
 <div id="quickLinksModal" class="modal" style="display: none;">
@@ -862,6 +900,7 @@
 <script src="js/nutritionCenter.js?v=67732a7"></script>
 <script src="js/weightCenter.js?v=67732a7"></script>
 <script src="js/bloodPressureCenter.js?v=67732a7"></script>
+<script src="js/cpapSupplies.js?v=67732a7"></script>
 <script src="js/dailyDiary.js?v=67732a8"></script>
 <script src="js/injectionCenter.js?v=67732a7"></script>
 <script src="js/zepboundCenter.js?v=67732a7"></script>
