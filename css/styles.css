@@ -120,11 +120,6 @@ header p {
     gap: 14px;
 }
 
-.briefing + #medicationCenterSection + .cpap-supplies-card,
-.cpap-supplies-card + .personal-profile-card {
-    margin-top: 14px;
-}
-
 .card,
 .summary-card {
     background: var(--surface);
@@ -372,7 +367,12 @@ header p {
     --card-accent-background: #e7f6f7;
     --card-accent-border: #abdfe2;
     --card-accent-text: #076875;
+    margin-top: 14px;
     border-left: 4px solid var(--card-accent);
+}
+
+.cpap-supplies-card + .personal-profile-card {
+    margin-top: 14px;
 }
 
 .cpap-supplies-card .dashboard-card-header {
