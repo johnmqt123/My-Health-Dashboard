@@ -362,6 +362,45 @@ header p {
     --card-accent-text: #076875;
 }
 
+.cpap-supplies-card {
+    --card-accent: #087f8c;
+    --card-accent-background: #e7f6f7;
+    --card-accent-border: #abdfe2;
+    --card-accent-text: #076875;
+    border-left: 4px solid var(--card-accent);
+}
+
+.cpap-supplies-card .dashboard-card-header {
+    background: var(--card-accent-background);
+    border: 1px solid var(--card-accent-border);
+    border-radius: 10px 10px 0 0;
+    border-bottom-color: var(--card-accent-border);
+}
+
+.cpap-supplies-card .dashboard-card-title {
+    color: var(--card-accent-text);
+}
+
+.cpap-supplies-card > button {
+    background: var(--card-accent-background);
+    border: 1px solid var(--card-accent-border);
+    color: var(--card-accent-text);
+    box-shadow: none;
+}
+
+.cpap-supplies-card > button:hover,
+.cpap-supplies-card > button:active {
+    background: var(--card-accent-border);
+    border-color: var(--card-accent);
+    color: var(--card-accent-text);
+    transform: none;
+}
+
+.cpap-supplies-card > button:focus-visible {
+    outline: 2px solid var(--card-accent);
+    outline-offset: 2px;
+}
+
 #bpCard {
     --card-accent: #c45151;
     --card-accent-background: #fceeee;
