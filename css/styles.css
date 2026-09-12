@@ -120,6 +120,11 @@ header p {
     gap: 14px;
 }
 
+.briefing + #medicationCenterSection + .cpap-supplies-card,
+.cpap-supplies-card + .personal-profile-card {
+    margin-top: 14px;
+}
+
 .card,
 .summary-card {
     background: var(--surface);
