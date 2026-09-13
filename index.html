@@ -13,25 +13,27 @@
 <div class="container">
 
     <header class="welcome-card">
-        <div class="welcome-card-scenic">
-            <div class="welcome-scenic-backdrop">
-                <img class="welcome-card-photo" src="assets/welcome/welcome-scenic.jpg" alt="Upper Peninsula shore with lighthouse and sailboat">
-                <div class="welcome-photo-wave" aria-hidden="true">
-                    <svg viewBox="0 0 1000 60" preserveAspectRatio="none">
-                        <path d="M0,28 C160,52 340,8 520,32 C700,54 840,12 1000,24 L1000,60 L0,60 Z" fill="var(--dashboard-card-surface, #ffffff)"></path>
-                    </svg>
-                </div>
-            </div>
-            <div class="welcome-scenic-content">
-                <div class="welcome-card-intro">
-                    <h1 id="greeting">Hello, John</h1>
-                    <p class="welcome-card-subtitle">Your Personal Assistant</p>
-                </div>
-                <p id="today" class="welcome-card-date"></p>
+        <!-- Integrated Scenic Backdrop & Flowing Transition -->
+        <div class="welcome-scenic-layer" aria-hidden="true">
+            <img class="welcome-card-photo" src="assets/welcome/welcome-scenic.jpg" alt="Upper Peninsula shore with lighthouse and sailboat">
+            <div class="welcome-wave-transition">
+                <svg viewBox="0 0 1200 80" preserveAspectRatio="none">
+                    <path d="M0,35 C240,65 480,10 720,42 C940,68 1080,20 1200,32 L1200,80 L0,80 Z" fill="var(--dashboard-card-surface, #ffffff)"></path>
+                </svg>
             </div>
         </div>
 
-        <div class="welcome-card-deck">
+        <!-- Upper Content: Greeting, Subtitle, and Date -->
+        <div class="welcome-upper-row">
+            <div class="welcome-heading-group">
+                <h1 id="greeting">Hello, John</h1>
+                <p class="welcome-card-subtitle">Your Personal Assistant</p>
+            </div>
+            <p id="today" class="welcome-card-date"></p>
+        </div>
+
+        <!-- Lower Light Deck: NEXT DUE & U.P. Area -->
+        <div class="welcome-lower-deck">
             <div class="welcome-next-due">
                 <span id="atAGlanceHeading">NEXT DUE</span>
                 <p id="summaryBreakfastStatus">🍳 Breakfast medications pending</p>
