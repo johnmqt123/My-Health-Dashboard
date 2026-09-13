@@ -13,26 +13,31 @@
 <div class="container">
 
     <header class="welcome-card">
-        <div class="welcome-card-info">
+        <div class="welcome-card-intro">
             <p class="welcome-card-kicker">John's Assistant</p>
             <h1 id="greeting">Hello, John</h1>
             <p class="welcome-card-subtitle">Your Personal Assistant.</p>
-            <p id="today"></p>
+        </div>
 
-            <div class="welcome-next-due">
-                <span id="atAGlanceHeading">NEXT DUE</span>
-                <p id="summaryBreakfastStatus">🍳 Breakfast medications pending</p>
+        <p id="today" class="welcome-card-date"></p>
+
+        <div class="welcome-photo-frame">
+            <img class="welcome-card-photo" src="assets/welcome/welcome-scenic.jpg" alt="Upper Peninsula shore with lighthouse and sailboat">
+            <div class="welcome-photo-wave" aria-hidden="true">
+                <svg viewBox="0 0 500 50" preserveAspectRatio="none">
+                    <path d="M0,22 C140,48 310,6 500,28 L500,50 L0,50 Z" fill="var(--dashboard-card-surface, #ffffff)"></path>
+                </svg>
             </div>
         </div>
 
-        <div class="welcome-card-media">
-            <div class="welcome-photo-frame">
-                <img class="welcome-card-photo" src="assets/welcome/welcome-scenic.jpg" alt="Upper Peninsula shore with lighthouse and sailboat">
-            </div>
-            <div class="welcome-up-badge">
-                <img class="welcome-up-silhouette" src="assets/welcome/upper-peninsula-silhouette.svg" alt="">
-                <span class="welcome-up-label">The UP, My Happy Place</span>
-            </div>
+        <div class="welcome-next-due">
+            <span id="atAGlanceHeading">NEXT DUE</span>
+            <p id="summaryBreakfastStatus">🍳 Breakfast medications pending</p>
+        </div>
+
+        <div class="welcome-up-badge">
+            <img class="welcome-up-silhouette" src="assets/welcome/upper-peninsula-silhouette.svg" alt="">
+            <span class="welcome-up-label">The UP, My Happy Place</span>
         </div>
     </header>
 
