@@ -1,4 +1,6 @@
 
+const WELCOME_DISPLAY_NAME = "Yooper";
+
 function initializeHome() {
     updateGreeting();
     updateDate();
@@ -7,21 +9,14 @@ function initializeHome() {
 function updateGreeting() {
     const greeting = document.getElementById("greeting");
     const hour = new Date().getHours();
-    const profile = typeof window.personalProfileData !== "undefined" &&
-        typeof window.personalProfileData.loadProfile === "function"
-        ? window.personalProfileData.loadProfile()
-        : {};
-    const firstName = typeof profile.firstName === "string"
-        ? profile.firstName.trim()
-        : "";
-    const greetingSuffix = firstName ? ", " + firstName : "";
+    const greetingSuffix = ", " + WELCOME_DISPLAY_NAME;
 
     if (hour < 12) {
-        greeting.textContent = "Good Morning" + greetingSuffix;
+        greeting.textContent = "Good morning" + greetingSuffix;
     } else if (hour < 18) {
-        greeting.textContent = "Good Afternoon" + greetingSuffix;
+        greeting.textContent = "Good afternoon" + greetingSuffix;
     } else {
-        greeting.textContent = "Good Evening" + greetingSuffix;
+        greeting.textContent = "Good evening" + greetingSuffix;
     }
 }
 

@@ -5,27 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>John's Assistant</title>
 
-    <link rel="stylesheet" href="css/styles.css?v=67732a8">
+    <link rel="stylesheet" href="css/styles.css?v=67732a9">
 </head>
 
 <body>
 
 <div class="container">
 
-    <header>
-        <h1 id="greeting">Hello, John</h1>
-        <p id="today"></p>
+    <header class="welcome-card">
+        <div class="welcome-card-visual" aria-hidden="true">
+            <img class="welcome-card-photo" src="assets/welcome/welcome-scenic.jpg" alt="">
+            <div class="welcome-card-overlay"></div>
+            <img class="welcome-up-silhouette" src="assets/welcome/upper-peninsula-silhouette.svg" alt="">
+            <div class="welcome-up-label">The UP, My Happy Place</div>
+        </div>
 
-        <h2 id="atAGlanceHeading">Coming Up</h2>
-        <hr class="dashboardDivider">
-        
-       
+        <div class="welcome-card-content">
+            <div class="welcome-card-copy">
+                <p class="welcome-card-kicker">John's Assistant</p>
+                <h1 id="greeting">Hello, John</h1>
+                <p class="welcome-card-subtitle">Your Personal Assistant.</p>
+                <p id="today"></p>
+            </div>
 
-    
-
-    
-    <p id="summaryBreakfastStatus">🍳 Breakfast medications pending</p>
-
+            <div class="welcome-next-due">
+                <span id="atAGlanceHeading">NEXT DUE</span>
+                <p id="summaryBreakfastStatus">🍳 Breakfast medications pending</p>
+            </div>
+        </div>
     </header>
 
     <section class="briefing">
@@ -907,6 +914,6 @@
 <script src="js/medicationCenter.js?v=67732a7"></script>
 <script src="js/home.js?v=67732a7"></script>
 <script src="js/dailyRoutine.js?v=67732a7"></script>
-<script src="js/script.js?v=67732a7"></script>
+<script src="js/script.js?v=67732a8"></script>
 </body>
 </html>

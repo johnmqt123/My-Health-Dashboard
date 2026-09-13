@@ -1157,6 +1157,7 @@ function updateAtAGlanceStatus() {
                 return {
                     key: defaults.id,
                     label: eventData && eventData.name ? eventData.name : defaults.summaryLabel,
+                    time: normalizedTime,
                     minutes: Number.isFinite(minutes) ? minutes : 9999,
                     index: index
                 };
@@ -1178,11 +1179,13 @@ function updateAtAGlanceStatus() {
 
         if (nextPeriod) {
             summaryMedicationStatus.innerHTML =
-                'Next due: <button type="button" class="summary-medication-link" data-period-key="' +
+                '<button type="button" class="summary-medication-link" data-period-key="' +
                 nextPeriod.key +
                 '">' +
-                nextPeriod.label +
-                ' Medications</button>';
+                nextPeriod.label + ' Medications <span aria-hidden="true">›</span></button>' +
+                '<span class="summary-medication-time">Today at ' +
+                formatClockTimeLabel(nextPeriod.time) +
+                '</span>';
             return;
         }
 
