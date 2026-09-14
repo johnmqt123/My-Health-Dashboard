@@ -9,14 +9,13 @@ function initializeHome() {
 function updateGreeting() {
     const greeting = document.getElementById("greeting");
     const hour = new Date().getHours();
-    const greetingSuffix = ", " + WELCOME_DISPLAY_NAME;
 
     if (hour < 12) {
-        greeting.textContent = "Good morning" + greetingSuffix;
+        greeting.textContent = "Good morning,\n" + WELCOME_DISPLAY_NAME;
     } else if (hour < 18) {
-        greeting.textContent = "Good afternoon" + greetingSuffix;
+        greeting.textContent = "Good afternoon,\n" + WELCOME_DISPLAY_NAME;
     } else {
-        greeting.textContent = "Good evening" + greetingSuffix;
+        greeting.textContent = "Good evening,\n" + WELCOME_DISPLAY_NAME;
     }
 }
 
