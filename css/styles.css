@@ -132,13 +132,13 @@ header {
 
 .welcome-wave-transition {
     position: absolute;
-    top: 48%;
+    top: 52%;
     left: 0;
     width: 100%;
-    height: 52%;
+    height: 28%;
     line-height: 0;
     pointer-events: none;
-    z-index: 3;
+    z-index: 2;
 }
 
 .welcome-wave-transition svg {
@@ -5626,8 +5626,8 @@ body.cpap-modal-open {
     }
 
     .welcome-wave-transition {
-        top: 44%;
-        height: 56%;
+        top: 50%;
+        height: 30%;
     }
 
     .welcome-upper-row {
