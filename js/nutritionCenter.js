@@ -42,6 +42,7 @@
     const nutritionDateInput = document.getElementById("nutritionDateInput");
     const nutritionTimeInput = document.getElementById("nutritionTimeInput");
     const nutritionNoteInput = document.getElementById("nutritionNoteInput");
+    const nutritionLogValidationMessage = document.getElementById("nutritionLogValidationMessage");
     const saveNutritionBtn = document.getElementById("saveNutritionBtn");
     const cancelNutritionBtn = document.getElementById("cancelNutritionBtn");
     const nutritionDailyGoalsModal = document.getElementById("nutritionDailyGoalsModal");
@@ -2265,6 +2266,10 @@
         if (nutritionDateInput) nutritionDateInput.value = getCurrentDateInputValue();
         if (nutritionTimeInput) nutritionTimeInput.value = "";
         if (nutritionNoteInput) nutritionNoteInput.value = "";
+        if (nutritionLogValidationMessage) {
+            nutritionLogValidationMessage.textContent = "";
+            nutritionLogValidationMessage.hidden = true;
+        }
     }
 
     function populateNutritionForm(entry) {
@@ -2383,7 +2388,10 @@
         }
 
         if (!protein || !carbs) {
-            alert("Please enter protein and carbohydrates.");
+            if (nutritionLogValidationMessage) {
+                nutritionLogValidationMessage.textContent = "Please enter protein and carbohydrates.";
+                nutritionLogValidationMessage.hidden = false;
+            }
             return null;
         }
 
@@ -2662,6 +2670,17 @@
                 refreshNutritionData();
             });
         }
+
+        [nutritionProteinInput, nutritionCarbsInput].forEach(function (input) {
+            if (!input || !nutritionLogValidationMessage) {
+                return;
+            }
+
+            input.addEventListener("input", function () {
+                nutritionLogValidationMessage.textContent = "";
+                nutritionLogValidationMessage.hidden = true;
+            });
+        });
 
         if (nutritionHistoryButton) {
             nutritionHistoryButton.textContent = "📊 History";

@@ -5353,6 +5353,14 @@ button:active,
     resize: vertical;
 }
 
+.nutrition-log-validation-message {
+    margin: 0 0 12px;
+    color: #b42318;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    text-align: left;
+}
+
 .modal-content button {
     display: block;
     width: 100%;
