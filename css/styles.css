@@ -173,13 +173,6 @@ header {
     overflow-wrap: anywhere;
 }
 
-.welcome-card-subtitle {
-    margin: 0;
-    color: #334e68;
-    font-size: clamp(0.95rem, 1.2vw, 1.1rem);
-    font-weight: 500;
-}
-
 .welcome-card #today,
 .welcome-card-date {
     margin: 4px 0 0;
@@ -5643,10 +5636,6 @@ body.cpap-modal-open {
     .welcome-card #greeting {
         font-size: clamp(1.4rem, 6vw, 1.75rem);
         line-height: 1.15;
-    }
-
-    .welcome-card-subtitle {
-        font-size: 0.85rem;
     }
 
     .welcome-card #today,
