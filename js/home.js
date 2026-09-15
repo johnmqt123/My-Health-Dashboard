@@ -4,6 +4,20 @@ const WELCOME_DISPLAY_NAME = "Yooper";
 function initializeHome() {
     updateGreeting();
     updateDate();
+    updateDailyMessage();
+}
+
+function updateDailyMessage() {
+    const dailyMessage = document.querySelector(".welcome-up-label");
+    if (!dailyMessage) {
+        return;
+    }
+
+    const savedMessage = window.personalProfileData &&
+        typeof window.personalProfileData.getDailyMessage === "function"
+        ? window.personalProfileData.getDailyMessage()
+        : "";
+    dailyMessage.textContent = savedMessage || "Enter your daily message";
 }
 
 function updateGreeting() {

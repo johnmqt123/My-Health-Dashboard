@@ -29,6 +29,7 @@ const userProfile = {
     const profileHeightModal = document.getElementById("profileHeightModal");
     const quickLinksModal = document.getElementById("quickLinksModal");
     const profileFirstNameInput = document.getElementById("profileFirstNameInput");
+    const profileDailyMessageInput = document.getElementById("profileDailyMessageInput");
     const profileHeightFeetInput = document.getElementById("profileHeightFeetInput");
     const profileHeightInchesInput = document.getElementById("profileHeightInchesInput");
     const saveProfileHeightBtn = document.getElementById("saveProfileHeightBtn");
@@ -431,6 +432,14 @@ const userProfile = {
         return profile.firstName.trim();
     }
 
+    function getDailyMessageFromProfile(profile) {
+        if (!profile || typeof profile.dailyMessage !== "string") {
+            return "";
+        }
+
+        return profile.dailyMessage.trim();
+    }
+
     function renderProfileFirstName() {
         if (!profileFirstNameDisplay) {
             return;
@@ -508,6 +517,9 @@ const userProfile = {
         if (profileFirstNameInput) {
             profileFirstNameInput.value = getFirstNameFromProfile(profile);
         }
+        if (profileDailyMessageInput) {
+            profileDailyMessageInput.value = getDailyMessageFromProfile(profile);
+        }
         renderProfileHeight();
 
         if (savedHeight === null) {
@@ -550,6 +562,7 @@ const userProfile = {
 
     function saveProfileHeight() {
         const firstName = profileFirstNameInput ? profileFirstNameInput.value.trim() : "";
+        const dailyMessage = profileDailyMessageInput ? profileDailyMessageInput.value.trim() : "";
         const feet = getNumberOrNull(profileHeightFeetInput ? profileHeightFeetInput.value.trim() : "");
         const inches = getNumberOrNull(profileHeightInchesInput ? profileHeightInchesInput.value.trim() : "");
         const feetText = profileHeightFeetInput ? profileHeightFeetInput.value.trim() : "";
@@ -568,6 +581,11 @@ const userProfile = {
 
         const profile = loadPersonalProfile();
         profile.firstName = firstName;
+        if (dailyMessage) {
+            profile.dailyMessage = dailyMessage;
+        } else {
+            delete profile.dailyMessage;
+        }
         if (hasHeightInput) {
             const totalHeightInches = (feet * 12) + inches;
             if (totalHeightInches <= 0) {
@@ -582,6 +600,9 @@ const userProfile = {
         closeProfileHeightModal();
         if (typeof window.updateGreeting === "function") {
             window.updateGreeting();
+        }
+        if (typeof window.updateDailyMessage === "function") {
+            window.updateDailyMessage();
         }
     }
 
@@ -805,6 +826,9 @@ const userProfile = {
         },
         getHeightInches: function () {
             return getHeightInchesFromProfile(loadPersonalProfile());
+        },
+        getDailyMessage: function () {
+            return getDailyMessageFromProfile(loadPersonalProfile());
         },
         formatHeightForDisplay: formatHeightForDisplay
     };
