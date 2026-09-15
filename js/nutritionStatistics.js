@@ -179,6 +179,12 @@
 
     function renderChart(range, result) {
         const metric = chartMetric.value;
+        const units = {
+            calories: "Kcal",
+            protein: "g",
+            carbs: "g",
+            weight: "lb"
+        };
         const values = [];
         const labels = [];
         for (let cursor = new Date(range.start); cursor <= range.end; cursor = addDays(cursor, 1)) {
@@ -203,11 +209,28 @@
         }
         const width = 720;
         const height = 240;
-        const padX = 42;
-        const padY = 24;
-        const min = Math.min.apply(null, valid);
-        const max = Math.max.apply(null, valid);
-        const span = max === min ? 1 : max - min;
+        const plotLeft = 58;
+        const plotRight = 678;
+        const plotTop = 20;
+        const plotBottom = 204;
+        const rawMin = Math.min.apply(null, valid);
+        const rawMax = Math.max.apply(null, valid);
+        const scaleMin = metric === "weight" ? rawMin : 0;
+        const scaleSpan = rawMax - scaleMin;
+        const roughStep = scaleSpan > 0 ? scaleSpan / 4 : Math.max(Math.abs(rawMax) / 4, 1);
+        const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+        const normalizedStep = roughStep / magnitude;
+        const stepFactor = normalizedStep <= 1 ? 1 : normalizedStep <= 2 ? 2 : normalizedStep <= 5 ? 5 : 10;
+        const tickStep = stepFactor * magnitude;
+        const domainMin = metric === "weight"
+            ? Math.floor(rawMin / tickStep) * tickStep
+            : 0;
+        const domainMax = Math.ceil(Math.max(rawMax, domainMin + tickStep) / tickStep) * tickStep;
+        const span = domainMax - domainMin || tickStep;
+        const tickValues = [];
+        for (let tick = domainMin; tick <= domainMax + tickStep / 100; tick += tickStep) {
+            tickValues.push(Number(tick.toFixed(10)));
+        }
         const segments = [];
         let currentSegment = [];
         values.forEach(function (value, index) {
@@ -216,21 +239,41 @@
                 currentSegment = [];
                 return;
             }
-            const x = padX + (index / Math.max(1, values.length - 1)) * (width - padX * 2);
-            const y = height - padY - ((value - min) / span) * (height - padY * 2);
+            const x = plotLeft + (index / Math.max(1, values.length - 1)) * (plotRight - plotLeft);
+            const y = plotBottom - ((value - domainMin) / span) * (plotBottom - plotTop);
             currentSegment.push(x.toFixed(1) + "," + y.toFixed(1));
         });
         if (currentSegment.length) segments.push(currentSegment);
         const lines = segments.map(function (segment) {
             return '<polyline class="nutrition-statistics-line" points="' + segment.join(" ") + '"></polyline>';
         }).join("");
-        const labelStart = formatDate(labels[0]);
-        const labelEnd = formatDate(labels[labels.length - 1]);
-        chart.innerHTML = '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="' + metric + ' trend from ' + labelStart + ' to ' + labelEnd + '">' +
-            '<line class="nutrition-statistics-axis" x1="42" y1="216" x2="678" y2="216"></line>' +
+        const dateTickCount = values.length <= 31 ? 4 : values.length <= 90 ? 6 : 6;
+        const dateTicks = [];
+        for (let tickIndex = 0; tickIndex < dateTickCount; tickIndex += 1) {
+            const index = Math.round(tickIndex * (labels.length - 1) / (dateTickCount - 1));
+            if (dateTicks.indexOf(index) === -1) {
+                dateTicks.push(index);
+            }
+        }
+        const dateLabels = dateTicks.map(function (index) {
+            const date = parseDayKey(labels[index]);
+            return '<text class="nutrition-statistics-chart-label" x="' +
+                (plotLeft + (index / Math.max(1, labels.length - 1)) * (plotRight - plotLeft)).toFixed(1) +
+                '" y="235" text-anchor="middle">' +
+                date.toLocaleDateString([], { month: "short", day: "numeric" }) +
+                '</text>';
+        }).join("");
+        const yAxis = tickValues.map(function (tick) {
+            const y = plotBottom - ((tick - domainMin) / span) * (plotBottom - plotTop);
+            return '<line class="nutrition-statistics-grid-line" x1="' + plotLeft + '" y1="' + y.toFixed(1) + '" x2="' + plotRight + '" y2="' + y.toFixed(1) + '"></line>' +
+                '<text class="nutrition-statistics-chart-label nutrition-statistics-y-label" x="4" y="' + (y + 4).toFixed(1) + '">' +
+                formatNumber(tick, tickStep < 1 ? 1 : 0) + ' ' + units[metric] + '</text>';
+        }).join("");
+        chart.innerHTML = '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="' + metric + ' trend from ' + formatDate(labels[0]) + ' to ' + formatDate(labels[labels.length - 1]) + '">' +
+            yAxis +
+            '<line class="nutrition-statistics-axis" x1="' + plotLeft + '" y1="' + plotBottom + '" x2="' + plotRight + '" y2="' + plotBottom + '"></line>' +
             lines +
-            '<text class="nutrition-statistics-chart-label" x="42" y="235">' + labelStart + '</text>' +
-            '<text class="nutrition-statistics-chart-label" x="678" y="235" text-anchor="end">' + labelEnd + '</text>' +
+            dateLabels +
             '</svg>';
     }
 
