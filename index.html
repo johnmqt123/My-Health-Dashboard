@@ -91,6 +91,7 @@
             <div class="dashboard-actions">
                 <button id="nutritionLogFoodButton" class="dashboard-action" type="button">Log Food</button>
                 <button id="nutritionHistoryButton" class="dashboard-action" type="button">📊 History</button>
+                <button id="nutritionStatisticsButton" class="dashboard-action" type="button">📈 Nutrition Statistics</button>
                 <button id="nutritionGoalsReferenceButton" class="dashboard-action" type="button">🎯 Nutrition Goals</button>
                 <button id="nutritionFoodReferenceButton" class="dashboard-action" type="button">🍎 Food Reference</button>
             </div>
@@ -108,6 +109,62 @@
             <h2 class="history-section-header">🎯 Nutrition Goals</h2>
             <div id="nutritionGoalsReferenceContent" class="history-display history-stack"></div>
         </div>
+
+        <section class="summary-card nutrition-statistics-section" id="nutritionStatisticsSection" hidden>
+            <div class="nutrition-statistics-header">
+                <div>
+                    <h2 class="history-section-header">Nutrition Statistics</h2>
+                    <p id="nutritionStatisticsRangeLabel" class="nutrition-statistics-range-label"></p>
+                </div>
+                <button id="nutritionStatisticsCloseButton" type="button" class="nutrition-statistics-close-button">Close</button>
+            </div>
+
+            <div class="nutrition-statistics-range-controls">
+                <label for="nutritionStatisticsRangeSelect">Date range</label>
+                <select id="nutritionStatisticsRangeSelect">
+                    <option value="30">30 Days</option>
+                    <option value="60">60 Days</option>
+                    <option value="90" selected>90 Days</option>
+                    <option value="180">6 Months</option>
+                    <option value="365">1 Year</option>
+                    <option value="custom">Custom</option>
+                </select>
+                <div id="nutritionStatisticsCustomDates" class="nutrition-statistics-custom-dates" hidden>
+                    <label for="nutritionStatisticsStartDate">Start date</label>
+                    <input id="nutritionStatisticsStartDate" type="date">
+                    <label for="nutritionStatisticsEndDate">End date</label>
+                    <input id="nutritionStatisticsEndDate" type="date">
+                    <button id="nutritionStatisticsApplyCustomButton" type="button">Apply</button>
+                </div>
+            </div>
+
+            <div id="nutritionStatisticsEmptyState" class="nutrition-statistics-empty-state" hidden></div>
+            <div id="nutritionStatisticsReport" hidden>
+                <div class="nutrition-statistics-grid">
+                    <section class="nutrition-statistics-block">
+                        <h3>Nutrition</h3>
+                        <div id="nutritionStatisticsNutritionMetrics" class="nutrition-statistics-metrics"></div>
+                    </section>
+                    <section class="nutrition-statistics-block">
+                        <h3>Weight</h3>
+                        <div id="nutritionStatisticsWeightMetrics" class="nutrition-statistics-metrics"></div>
+                    </section>
+                </div>
+                <section class="nutrition-statistics-chart-block">
+                    <div class="nutrition-statistics-chart-header">
+                        <h3>Trend</h3>
+                        <label for="nutritionStatisticsChartMetric">Metric</label>
+                        <select id="nutritionStatisticsChartMetric">
+                            <option value="calories">Calories</option>
+                            <option value="protein">Protein</option>
+                            <option value="carbs">Carbohydrates</option>
+                            <option value="weight">Weight</option>
+                        </select>
+                    </div>
+                    <div id="nutritionStatisticsChart" class="nutrition-statistics-chart" role="img" aria-label="Nutrition trend chart"></div>
+                </section>
+            </div>
+        </section>
 
         <div class="card dashboard-card" id="weightCard">
             <div class="dashboard-card-header">
@@ -920,6 +977,7 @@
 <script src="js/exercise.js?v=67732a7"></script>
 <script src="js/nutritionCenter.js?v=67732a7"></script>
 <script src="js/weightCenter.js?v=67732a7"></script>
+<script src="js/nutritionStatistics.js?v=67732a7"></script>
 <script src="js/bloodPressureCenter.js?v=67732a7"></script>
 <script src="js/cpapSupplies.js?v=67732a7"></script>
 <script src="js/dailyDiary.js?v=67732a8"></script>

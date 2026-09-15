@@ -462,6 +462,7 @@ if (document.getElementById("dailyRoutineList")) {
 initExerciseCenter();
 initNutritionCenter();
 initWeightCenter();
+initNutritionStatistics();
 initBloodPressureCenter();
 initDailyDiaryCenter();
 initZepboundCenter();

@@ -2950,5 +2950,17 @@
         }
     }
 
+    window.nutritionStatisticsData = {
+        getHistoryEntries: function () {
+            return (Array.isArray(nutritionHistory) ? nutritionHistory : [])
+                .reduce(function (entries, rawEntry) {
+                    return entries.concat(extractFoodEntries(rawEntry));
+                }, [])
+                .map(function (entry) {
+                    return Object.assign({}, entry);
+                });
+        }
+    };
+
     window.initNutritionCenter = initNutritionCenter;
 })();

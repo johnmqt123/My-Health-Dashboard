@@ -134,7 +134,12 @@
         getHeightInches: getWeightCenterHeightInches,
         calculateBmiFromWeight: calculateWeightCenterBmi,
         getBmiCategory: getWeightCenterBmiCategory,
-        getCurrentWeightAndBmi: getWeightCenterCurrentMetrics
+        getCurrentWeightAndBmi: getWeightCenterCurrentMetrics,
+        getHistoryEntries: function () {
+            return (Array.isArray(weightHistory) ? weightHistory : []).map(function (entry) {
+                return Object.assign({}, entry);
+            });
+        }
     };
 
     let weightLog = loadData("weightLog", {});
