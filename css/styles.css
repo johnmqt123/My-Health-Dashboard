@@ -4824,6 +4824,8 @@ button:active,
 .nutrition-statistics-section {
     margin-top: 14px;
     padding: 16px;
+    max-height: none;
+    overflow: visible;
 }
 
 .nutrition-statistics-header,
