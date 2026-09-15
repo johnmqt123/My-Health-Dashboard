@@ -5380,6 +5380,22 @@ button:active,
     -webkit-overflow-scrolling: touch;
 }
 
+@media (hover: none) and (pointer: coarse) and (max-width: 430px) {
+    #nutritionLogModal {
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    #nutritionLogModal .modal-content {
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
+}
+
 #weightModal .modal-content {
     max-height: min(82dvh, 620px);
     padding-bottom: 10px;
