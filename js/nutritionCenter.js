@@ -2298,6 +2298,14 @@
         return !(isCoarsePointer && isSmallViewport);
     }
 
+    function isMobileNutritionLogEditor() {
+        return !!(
+            window.matchMedia &&
+            window.matchMedia("(hover: none) and (pointer: coarse)").matches &&
+            window.innerWidth <= 430
+        );
+    }
+
     function isNutritionLogModalOpen() {
         return !!(nutritionLogModal && nutritionLogModal.style.display === "flex");
     }
@@ -2322,8 +2330,10 @@
             title.textContent = "Log Food";
         }
         nutritionLogModal.style.display = "flex";
-        resetNutritionLogScrollToTop();
-        lockNutritionModalBackgroundScroll();
+        if (!isMobileNutritionLogEditor()) {
+            resetNutritionLogScrollToTop();
+            lockNutritionModalBackgroundScroll();
+        }
 
         if (nutritionDescriptionInput && shouldAutofocusNutritionDescription()) {
             requestAnimationFrame(function () {
@@ -2350,8 +2360,10 @@
             title.textContent = "Edit Food Entry";
         }
         nutritionLogModal.style.display = "flex";
-        resetNutritionLogScrollToTop();
-        lockNutritionModalBackgroundScroll();
+        if (!isMobileNutritionLogEditor()) {
+            resetNutritionLogScrollToTop();
+            lockNutritionModalBackgroundScroll();
+        }
     }
 
     function closeNutritionLogModal() {
@@ -2360,8 +2372,10 @@
         }
 
         nutritionLogModal.style.display = "none";
-        resetNutritionLogScrollToTop();
-        unlockNutritionModalBackgroundScroll();
+        if (!isMobileNutritionLogEditor()) {
+            resetNutritionLogScrollToTop();
+            unlockNutritionModalBackgroundScroll();
+        }
         activeNutritionEntryId = null;
     }
 
