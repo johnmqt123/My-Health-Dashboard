@@ -223,7 +223,9 @@ const userProfile = {
     }
 
     function handleQuickLinksModalViewportResize() {
-        updateQuickLinkKeyboardAwareHeight();
+        if (!isCoarseTouchViewport()) {
+            updateQuickLinkKeyboardAwareHeight();
+        }
 
         const focusedField = quickLinkKeyboardAwareFields.find(function (field) {
             return document.activeElement === field;
@@ -259,7 +261,9 @@ const userProfile = {
             return;
         }
 
-        updateQuickLinkKeyboardAwareHeight();
+        if (!isCoarseTouchViewport()) {
+            updateQuickLinkKeyboardAwareHeight();
+        }
 
         const margin = 16;
         const visible = getQuickLinkVisibleViewportBounds();
