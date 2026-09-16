@@ -555,7 +555,7 @@ const userProfile = {
         quickLinksModal.style.display = "flex";
         lockProfileHeightModalBackgroundScroll();
 
-        if (profileQuickLinkNameInput) {
+        if (profileQuickLinkNameInput && !isCoarseTouchViewport()) {
             profileQuickLinkNameInput.focus({ preventScroll: true });
         }
     }
