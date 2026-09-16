@@ -50,6 +50,7 @@ const userProfile = {
     let editingQuickLinkIndex = -1;
     let expandedQuickLinkIndex = -1;
     let dashboardQuickLinksExpanded = false;
+    let quickLinksModalViewportResizeHandler = null;
 
     function getNumberOrNull(value) {
         const num = Number(value);
@@ -219,6 +220,33 @@ const userProfile = {
         if (scrollContainer) {
             scrollContainer.style.maxHeight = "";
         }
+    }
+
+    function handleQuickLinksModalViewportResize() {
+        updateQuickLinkKeyboardAwareHeight();
+
+        const focusedField = quickLinkKeyboardAwareFields.find(function (field) {
+            return document.activeElement === field;
+        });
+        if (focusedField) {
+            scrollQuickLinkFieldIntoView(focusedField);
+        }
+    }
+
+    function addQuickLinksModalViewportResizeListener() {
+        if (!isCoarseTouchViewport() || !window.visualViewport || quickLinksModalViewportResizeHandler) {
+            return;
+        }
+
+        quickLinksModalViewportResizeHandler = handleQuickLinksModalViewportResize;
+        window.visualViewport.addEventListener("resize", quickLinksModalViewportResizeHandler);
+    }
+
+    function removeQuickLinksModalViewportResizeListener() {
+        if (window.visualViewport && quickLinksModalViewportResizeHandler) {
+            window.visualViewport.removeEventListener("resize", quickLinksModalViewportResizeHandler);
+        }
+        quickLinksModalViewportResizeHandler = null;
     }
 
     function scrollQuickLinkFieldIntoView(field) {
@@ -499,6 +527,7 @@ const userProfile = {
         }
 
         quickLinksModal.style.display = "none";
+        removeQuickLinksModalViewportResizeListener();
         resetQuickLinkKeyboardAwareHeight();
         unlockProfileHeightModalBackgroundScroll();
     }
@@ -554,6 +583,7 @@ const userProfile = {
         clearQuickLinkEditor();
         quickLinksModal.style.display = "flex";
         lockProfileHeightModalBackgroundScroll();
+        addQuickLinksModalViewportResizeListener();
 
         if (profileQuickLinkNameInput && !isCoarseTouchViewport()) {
             profileQuickLinkNameInput.focus({ preventScroll: true });
