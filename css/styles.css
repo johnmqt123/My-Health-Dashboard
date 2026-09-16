@@ -5596,6 +5596,20 @@ button:active,
         padding-bottom: max(20px, env(safe-area-inset-bottom));
         overscroll-behavior-y: contain;
     }
+
+    #quickLinksModal {
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    #quickLinksModal .modal-content {
+        width: 100%;
+        max-width: none;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        padding-bottom: max(20px, env(safe-area-inset-bottom));
+    }
 }
 
 #weightModal .modal-content {
