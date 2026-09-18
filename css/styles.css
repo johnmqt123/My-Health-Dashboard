@@ -918,6 +918,50 @@ header p {
     color: var(--dashboard-primary-accent-text);
 }
 
+#medicationCenterSection #medCard,
+#medicationCenterSection #breakfastCard,
+#medicationCenterSection #middayCard,
+#medicationCenterSection #dinnerCard,
+#medicationCenterSection #eveningCard {
+    border: 1px solid var(--dashboard-primary-accent-border);
+    border-left: 5px solid var(--dashboard-primary-accent);
+    box-shadow: 0 2px 8px rgba(31, 78, 121, 0.12);
+}
+
+#medicationCenterSection #medCard > h2,
+#medicationCenterSection #breakfastCard > h2,
+#medicationCenterSection #middayCard > h2,
+#medicationCenterSection #dinnerCard > h2,
+#medicationCenterSection #eveningCard > h2 {
+    background: var(--dashboard-primary-accent-background);
+    border-color: var(--dashboard-primary-accent-border);
+}
+
+#medicationCenterSection .main-injectable-medication-card {
+    border: 1px solid #c7def7;
+    border-left: 5px solid var(--accent);
+    background: #fbfdff;
+    box-shadow: 0 2px 8px rgba(0, 120, 212, 0.08);
+}
+
+#medicationCenterSection .main-injectable-medication-card > h2 {
+    background: #eef6ff;
+    border-color: #c7def7;
+}
+
+#medicationCenterSection #asNeededMedicationCard {
+    border: 1px solid #9fb8d0;
+    border-left: 5px solid var(--primary-hover);
+    background: #f8fbff;
+    box-shadow: 0 3px 10px rgba(22, 63, 95, 0.16);
+}
+
+#medicationCenterSection #asNeededMedicationCard > h2 {
+    background: #e4edf6;
+    border-color: #9fb8d0;
+    color: var(--primary-hover);
+}
+
 #medicationCenterSection .briefing > .card .approx-time {
     color: var(--muted);
 }
