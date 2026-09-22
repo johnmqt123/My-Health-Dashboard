@@ -853,6 +853,7 @@ header p {
 #medicationCenterSection .medication-center-sticky-header > h2 {
     color: #ffffff;
     margin-bottom: 10px;
+    padding-left: 4px;
 }
 
 #medicationCenterSection .medication-center-sticky-header .feature-actions {
@@ -944,7 +945,8 @@ header p {
     border: 1px solid #9fc5e8;
     border-left: 6px solid #0078d4;
     background: #f5faff;
-    box-shadow: 0 2px 8px rgba(0, 120, 212, 0.12);
+    padding: 16px 14px 14px;
+    box-shadow: 0 3px 10px rgba(0, 120, 212, 0.16);
 }
 
 #medicationCenterSection .main-injectable-medication-card > h2 {
@@ -963,6 +965,7 @@ header p {
 #medicationCenterSection #asNeededMedicationCard > h2 {
     background: #2563a6;
     border-color: #1f4e79;
+    border-radius: 10px;
     color: #ffffff;
 }
 
