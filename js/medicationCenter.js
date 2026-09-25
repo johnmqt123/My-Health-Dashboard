@@ -92,6 +92,12 @@ const asNeededMedicationUnit =
 const asNeededMedicationModalTitle =
     document.getElementById("asNeededMedicationModalTitle");
 
+const asNeededDateTimeFields =
+    document.getElementById("asNeededDateTimeFields");
+
+const asNeededDateTimeInput =
+    document.getElementById("asNeededDateTimeInput");
+
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 const AS_NEEDED_AVAILABLE_MEDICATIONS_KEY =
@@ -855,6 +861,13 @@ function resetAsNeededMedicationForm() {
         asNeededMedicationNote.value = "";
     }
 
+    if (asNeededDateTimeFields) {
+        asNeededDateTimeFields.style.display = "none";
+    }
+    if (asNeededDateTimeInput) {
+        asNeededDateTimeInput.value = "";
+    }
+
     updateAsNeededMedicationNameInputVisibility();
 }
 
@@ -890,6 +903,13 @@ function openAsNeededMedicationModal(historyIndex) {
             asNeededMedicationCount.value = String(dose.quantity);
             asNeededMedicationUnit.value = dose.unit;
             asNeededMedicationNote.value = entry.note || "";
+
+            if (asNeededDateTimeFields) {
+                asNeededDateTimeFields.style.display = "block";
+            }
+            if (asNeededDateTimeInput) {
+                asNeededDateTimeInput.value = entry.dateTime;
+            }
         }
     }
 
@@ -2290,11 +2310,16 @@ if (saveAsNeededMedicationBtn) {
         const existingEntry = editingAsNeededHistoryIndex >= 0
             ? asNeededMedicationHistory[editingAsNeededHistoryIndex]
             : null;
+        const editedDateTime = editingAsNeededHistoryIndex >= 0 && asNeededDateTimeInput && asNeededDateTimeInput.value
+            ? asNeededDateTimeInput.value
+            : "";
         const entry = {
             medication: medicationName,
-            dateTime: existingEntry && existingEntry.dateTime
-                ? existingEntry.dateTime
-                : getDefaultDateTimeValue(),
+            dateTime: editedDateTime
+                ? editedDateTime
+                : (existingEntry && existingEntry.dateTime
+                    ? existingEntry.dateTime
+                    : getDefaultDateTimeValue()),
             quantity: quantity,
             unit: normalizeAsNeededDoseUnit(
                 asNeededMedicationUnit ? asNeededMedicationUnit.value : "tablet"

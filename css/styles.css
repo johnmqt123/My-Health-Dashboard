@@ -5699,6 +5699,15 @@ button:active,
     margin-top: 10px;
 }
 
+#asNeededDateTimeFields {
+    display: grid;
+    gap: 0;
+}
+
+#asNeededDateTimeFields label {
+    margin-top: 10px;
+}
+
 html.nutrition-modal-open,
 body.nutrition-modal-open {
     overflow: hidden;
