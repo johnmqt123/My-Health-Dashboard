@@ -969,6 +969,10 @@ header p {
     color: #ffffff;
 }
 
+#medicationCenterSection #asNeededMedicationCard > h2 .medication-heading-chevron {
+    color: #ffffff;
+}
+
 #medicationCenterSection .briefing > .card .approx-time {
     color: var(--muted);
 }
