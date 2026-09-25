@@ -923,8 +923,15 @@ function openAsNeededMedicationModal(historyIndex) {
         asNeededMedicationModal.style.display = "block";
     }
 
+    const asNeededMedicationModalContent = asNeededMedicationModal
+        ? asNeededMedicationModal.querySelector(".modal-content")
+        : null;
+    if (asNeededMedicationModalContent) {
+        asNeededMedicationModalContent.scrollTop = 0;
+    }
+
     if (editingAsNeededHistoryIndex >= 0 && asNeededMedicationCount) {
-        asNeededMedicationCount.focus();
+        asNeededMedicationCount.focus({ preventScroll: true });
     } else if (asNeededMedicationChoice && asNeededMedicationChoice.value === "custom" && asNeededMedicationNameInput) {
         asNeededMedicationNameInput.focus();
     } else if (asNeededMedicationChoice) {
