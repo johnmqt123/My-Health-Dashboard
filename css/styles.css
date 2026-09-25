@@ -1006,7 +1006,7 @@ header p {
     outline-offset: 2px;
 }
 
-#logAsNeededMedicationButton {
+#medicationCenterSection .briefing > .card > button#logAsNeededMedicationButton {
     background: var(--accent);
     border: 1px solid var(--accent);
     color: #ffffff;
@@ -1014,15 +1014,15 @@ header p {
     box-shadow: 0 2px 6px rgba(0, 120, 212, 0.3);
 }
 
-#logAsNeededMedicationButton:hover,
-#logAsNeededMedicationButton:active {
+#medicationCenterSection .briefing > .card > button#logAsNeededMedicationButton:hover,
+#medicationCenterSection .briefing > .card > button#logAsNeededMedicationButton:active {
     background: var(--accent-hover);
     border-color: var(--accent-hover);
     color: #ffffff;
     transform: none;
 }
 
-#logAsNeededMedicationButton:focus-visible {
+#medicationCenterSection .briefing > .card > button#logAsNeededMedicationButton:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
