@@ -329,6 +329,18 @@ function renderAsNeededMedicationChoices() {
     updateAsNeededMedicationNameInputVisibility();
 }
 
+function removeHistoricalMedicationOptions() {
+    if (!asNeededMedicationChoice) {
+        return;
+    }
+
+    asNeededMedicationChoice
+        .querySelectorAll("[data-historical-medication=\"true\"]")
+        .forEach(function (option) {
+            option.remove();
+        });
+}
+
 function confirmAsNeededMedicationRemove(medicationName) {
     return window.confirm(
         "Remove As-Needed Medication?\n\nAre you sure you want to remove " +
@@ -816,6 +828,8 @@ function renderAsNeededMedicationHistory() {
 }
 
 function resetAsNeededMedicationForm() {
+    removeHistoricalMedicationOptions();
+
     if (asNeededMedicationChoice) {
         if (asNeededAvailableMedications.length) {
             asNeededMedicationChoice.value = asNeededAvailableMedications[0].name;
@@ -853,7 +867,24 @@ function openAsNeededMedicationModal(historyIndex) {
         if (!entry) {
             editingAsNeededHistoryIndex = -1;
         } else {
-            asNeededMedicationChoice.value = entry.medication;
+            const historicalMedicationName = normalizeAsNeededMedicationName(entry.medication);
+            const hasHistoricalMedicationOption = Array.from(asNeededMedicationChoice.options)
+                .some(function (option) {
+                    return option.value === historicalMedicationName;
+                });
+
+            if (historicalMedicationName && !hasHistoricalMedicationOption) {
+                const historicalOption = document.createElement("option");
+                historicalOption.value = historicalMedicationName;
+                historicalOption.textContent = historicalMedicationName + " (historical)";
+                historicalOption.dataset.historicalMedication = "true";
+                asNeededMedicationChoice.insertBefore(
+                    historicalOption,
+                    asNeededMedicationChoice.querySelector("option[value=\"custom\"]")
+                );
+            }
+
+            asNeededMedicationChoice.value = historicalMedicationName;
             updateAsNeededMedicationNameInputVisibility();
             const dose = getAsNeededOccurrenceDose(entry);
             asNeededMedicationCount.value = String(dose.quantity);
@@ -885,6 +916,7 @@ function closeAsNeededMedicationModal() {
     if (asNeededMedicationModal) {
         asNeededMedicationModal.style.display = "none";
     }
+    removeHistoricalMedicationOptions();
 }
 
 function updateAsNeededMedicationNameInputVisibility() {
