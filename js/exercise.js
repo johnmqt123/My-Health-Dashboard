@@ -572,19 +572,34 @@
         const grouped = {};
         const orderedMonths = [];
 
-        exerciseHistory.slice().reverse().forEach(function (entry, index) {
-            const originalIndex = exerciseHistory.length - 1 - index;
-            const monthKey = formatMonthHeader(entry);
+        const sortedEntries = exerciseHistory
+            .map(function (entry, index) {
+                return { entry: entry, index: index };
+            })
+            .sort(function (a, b) {
+                const dateA = parseHistoryDate(a.entry);
+                const dateB = parseHistoryDate(b.entry);
+                const timeA = dateA ? dateA.getTime() : null;
+                const timeB = dateB ? dateB.getTime() : null;
+
+                if (timeA !== null && timeB !== null && timeA !== timeB) {
+                    return timeB - timeA;
+                }
+                if (timeA !== timeB) {
+                    return timeA === null ? 1 : -1;
+                }
+                return b.index - a.index;
+            });
+
+        sortedEntries.forEach(function (item) {
+            const monthKey = formatMonthHeader(item.entry);
 
             if (!grouped[monthKey]) {
                 grouped[monthKey] = [];
                 orderedMonths.push(monthKey);
             }
 
-            grouped[monthKey].push({
-                entry: entry,
-                index: originalIndex
-            });
+            grouped[monthKey].push(item);
         });
 
         orderedMonths.forEach(function (monthKey) {
