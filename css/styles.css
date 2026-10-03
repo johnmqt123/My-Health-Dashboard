@@ -3663,13 +3663,15 @@ button:active,
     }
 }
 
-#scheduleHistoryModal {
+#scheduleHistoryModal,
+#scheduleHistoryEditModal {
     align-items: flex-start;
     padding-top: max(12px, env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
 
-#scheduleHistoryModal .schedule-history-modal-content {
+#scheduleHistoryModal .schedule-history-modal-content,
+#scheduleHistoryEditModal .schedule-history-modal-content {
     max-width: 460px;
     max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
@@ -3681,7 +3683,8 @@ button:active,
 }
 
 @supports not (height: 100dvh) {
-    #scheduleHistoryModal .schedule-history-modal-content {
+    #scheduleHistoryModal .schedule-history-modal-content,
+    #scheduleHistoryEditModal .schedule-history-modal-content {
         max-height: calc(100vh - 24px);
     }
 }
@@ -3698,8 +3701,22 @@ button:active,
 }
 
 .schedule-history-modal-header button,
-#scheduleHistoryModal .daily-diary-show-more-button {
+#scheduleHistoryModal .daily-diary-show-more-button,
+#scheduleHistoryModal .history-action-btn,
+#scheduleHistoryEditModal .schedule-notes-modal-actions button {
     min-height: 44px;
+}
+
+#scheduleHistoryEditModal label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+#scheduleHistoryEditModal input[type="datetime-local"] {
+    width: 100%;
+    min-height: 44px;
+    font-size: 16px;
 }
 
 #scheduleHistoryModal .history-display {

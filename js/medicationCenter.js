@@ -1151,10 +1151,19 @@ const scheduleHistoryModalTitle = document.getElementById("scheduleHistoryModalT
 const scheduleHistoryDisplay = document.getElementById("scheduleHistoryDisplay");
 const scheduleHistoryShowMoreButton = document.getElementById("scheduleHistoryShowMoreButton");
 const closeScheduleHistoryModalBtn = document.getElementById("closeScheduleHistoryModalBtn");
+const scheduleHistoryEditModal = document.getElementById("scheduleHistoryEditModal");
+const scheduleHistoryEditModalTitle = document.getElementById("scheduleHistoryEditModalTitle");
+const scheduleHistoryEditDateTimeInput = document.getElementById("scheduleHistoryEditDateTimeInput");
+const saveScheduleHistoryEditBtn = document.getElementById("saveScheduleHistoryEditBtn");
+const cancelScheduleHistoryEditBtn = document.getElementById("cancelScheduleHistoryEditBtn");
 
 const SCHEDULE_HISTORY_INITIAL_COUNT = 14;
 const SCHEDULE_HISTORY_SHOW_MORE_STEP = 30;
 let activeScheduleHistoryPeriod = "";
+let activeScheduleHistoryEventId = "";
+let activeScheduleHistoryName = "";
+let editingScheduleHistoryIndex = -1;
+let editingScheduleHistorySnapshot = null;
 let scheduleHistoryVisibleCount = SCHEDULE_HISTORY_INITIAL_COUNT;
 
 // Parses "Sat Oct 03 2026" and "9:02 AM" manually; Date string parsing is unreliable on Safari.
@@ -1199,6 +1208,12 @@ function formatScheduleHistoryDate(entry) {
     });
 }
 
+// Editing requires both a parseable date and a parseable clock time; never guess.
+function isScheduleHistoryEntryEditable(entry) {
+    return getScheduleHistoryEntryTimestamp(entry) !== null &&
+        !!window.medicationScheduleCompat.parseClockTimeTo24Hour(entry.time);
+}
+
 function getScheduleHistoryEntries(period) {
     const source = Array.isArray(medicationHistory) ? medicationHistory : [];
 
@@ -1215,8 +1230,6 @@ function getScheduleHistoryEntries(period) {
         }
 
         return right.index - left.index;
-    }).map(function (item) {
-        return item.entry;
     });
 }
 
@@ -1237,7 +1250,8 @@ function renderScheduleHistory() {
 
     const visibleEntries = entries.slice(0, scheduleHistoryVisibleCount);
 
-    scheduleHistoryDisplay.innerHTML = visibleEntries.map(function (entry) {
+    scheduleHistoryDisplay.innerHTML = visibleEntries.map(function (item) {
+        const entry = item.entry;
         const timeLabel = String(entry.time || "").trim() || "--";
         const wrapper = document.createElement("div");
         wrapper.className = "history-entry";
@@ -1245,6 +1259,19 @@ function renderScheduleHistory() {
         dateLine.className = "history-entry-body";
         dateLine.textContent = formatScheduleHistoryDate(entry) + " \u00b7 Logged at " + timeLabel;
         wrapper.appendChild(dateLine);
+
+        if (isScheduleHistoryEntryEditable(entry)) {
+            const actions = document.createElement("div");
+            actions.className = "history-entry-actions";
+            const editButton = document.createElement("button");
+            editButton.type = "button";
+            editButton.className = "history-action-btn edit schedule-history-edit-btn";
+            editButton.setAttribute("data-history-index", String(item.index));
+            editButton.textContent = "Edit";
+            actions.appendChild(editButton);
+            wrapper.appendChild(actions);
+        }
+
         return wrapper.outerHTML;
     }).join("");
 
@@ -1259,7 +1286,120 @@ function closeScheduleHistoryModal() {
     }
 
     scheduleHistoryModal.style.display = "none";
+    closeScheduleHistoryEditModal();
     activeScheduleHistoryPeriod = "";
+    activeScheduleHistoryEventId = "";
+}
+
+function pad2(value) {
+    return String(value).padStart(2, "0");
+}
+
+function closeScheduleHistoryEditModal() {
+    if (scheduleHistoryEditModal) {
+        scheduleHistoryEditModal.style.display = "none";
+    }
+    editingScheduleHistoryIndex = -1;
+    editingScheduleHistorySnapshot = null;
+}
+
+function openScheduleHistoryEditModal(index) {
+    const entry = Array.isArray(medicationHistory) ? medicationHistory[index] : null;
+
+    if (!scheduleHistoryEditModal || !scheduleHistoryEditDateTimeInput || !entry ||
+        entry.period !== activeScheduleHistoryPeriod || !isScheduleHistoryEntryEditable(entry)) {
+        return;
+    }
+
+    // Local components only; toISOString() would shift to UTC.
+    const original = new Date(getScheduleHistoryEntryTimestamp(entry));
+    scheduleHistoryEditDateTimeInput.value = original.getFullYear() + "-" +
+        pad2(original.getMonth() + 1) + "-" + pad2(original.getDate()) + "T" +
+        pad2(original.getHours()) + ":" + pad2(original.getMinutes());
+
+    editingScheduleHistoryIndex = index;
+    editingScheduleHistorySnapshot = { date: entry.date, period: entry.period, time: entry.time };
+
+    if (scheduleHistoryEditModalTitle) {
+        scheduleHistoryEditModalTitle.textContent = "Edit " + activeScheduleHistoryName + " Entry";
+    }
+
+    scheduleHistoryEditModal.style.display = "flex";
+}
+
+function saveScheduleHistoryEdit() {
+    const snapshot = editingScheduleHistorySnapshot;
+    const index = editingScheduleHistoryIndex;
+    const current = Array.isArray(medicationHistory) ? medicationHistory[index] : null;
+
+    if (!snapshot || !current || current.date !== snapshot.date ||
+        current.period !== snapshot.period || current.time !== snapshot.time) {
+        alert("This history entry changed and can no longer be edited. Please reopen History and try again.");
+        closeScheduleHistoryEditModal();
+        renderScheduleHistory();
+        return;
+    }
+
+    const match = String(scheduleHistoryEditDateTimeInput ? scheduleHistoryEditDateTimeInput.value : "")
+        .match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (!match) {
+        alert("Please enter a valid date and time.");
+        return;
+    }
+
+    const edited = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), Number(match[4]), Number(match[5]));
+    if (isNaN(edited.getTime()) || edited.getMonth() !== Number(match[2]) - 1) {
+        alert("Please enter a valid date and time.");
+        return;
+    }
+
+    const newDate = edited.toDateString();
+    const newTime = edited.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    });
+
+    const hasDuplicate = medicationHistory.some(function (entry, entryIndex) {
+        return entryIndex !== index && entry && entry.period === snapshot.period && entry.date === newDate;
+    });
+    if (hasDuplicate) {
+        alert("That schedule already has a history entry for this date.");
+        return;
+    }
+
+    current.date = newDate;
+    current.time = newTime;
+    localStorage.setItem("medicationHistory", JSON.stringify(medicationHistory));
+
+    const key = activeScheduleHistoryEventId;
+    const today = new Date().toDateString();
+    const log = medicationLog[key];
+    const oldMatchesLog = !!(log && log.logged && log.date === snapshot.date && log.time === snapshot.time);
+    let logChanged = false;
+
+    if (oldMatchesLog) {
+        if (newDate === today) {
+            medicationLog[key] = { logged: true, date: newDate, time: newTime };
+        } else if (newDate === snapshot.date) {
+            log.time = newTime;
+        } else {
+            medicationLog[key] = {};
+        }
+        logChanged = true;
+    } else if (newDate === today && !(log && log.logged && log.date === today)) {
+        medicationLog[key] = { logged: true, date: newDate, time: newTime };
+        logChanged = true;
+    }
+
+    if (logChanged) {
+        saveMedicationLog();
+        if (typeof window.refreshMedicationPeriodStatus === "function") {
+            window.refreshMedicationPeriodStatus(key);
+        }
+    }
+
+    closeScheduleHistoryEditModal();
+    renderScheduleHistory();
 }
 
 function openScheduleHistoryModal(eventId) {
@@ -1269,10 +1409,12 @@ function openScheduleHistoryModal(eventId) {
     }
 
     activeScheduleHistoryPeriod = window.medicationScheduleCompat.getMedicationHistoryPeriod(eventId);
+    activeScheduleHistoryEventId = eventId;
     scheduleHistoryVisibleCount = SCHEDULE_HISTORY_INITIAL_COUNT;
 
     const group = getMedicationScheduleGroupById(eventId);
     const displayName = group && group.name ? group.name : activeScheduleHistoryPeriod;
+    activeScheduleHistoryName = displayName;
     if (scheduleHistoryModalTitle) {
         scheduleHistoryModalTitle.textContent = displayName + " History";
     }
@@ -1312,6 +1454,45 @@ if (scheduleHistoryShowMoreButton) {
         scheduleHistoryVisibleCount += SCHEDULE_HISTORY_SHOW_MORE_STEP;
         renderScheduleHistory();
     });
+}
+
+if (scheduleHistoryDisplay) {
+    scheduleHistoryDisplay.addEventListener("click", function (event) {
+        const editButton = event.target.closest(".schedule-history-edit-btn");
+        if (!editButton || !scheduleHistoryDisplay.contains(editButton)) {
+            return;
+        }
+
+        const historyIndex = Number(editButton.getAttribute("data-history-index"));
+        if (Number.isInteger(historyIndex)) {
+            openScheduleHistoryEditModal(historyIndex);
+        }
+    });
+}
+
+if (scheduleHistoryEditModal) {
+    scheduleHistoryEditModal.addEventListener("touchmove", function (event) {
+        const content = scheduleHistoryEditModal.querySelector(".schedule-history-modal-content");
+        if (content && !content.contains(event.target)) {
+            event.preventDefault();
+        }
+    }, {
+        passive: false
+    });
+
+    scheduleHistoryEditModal.addEventListener("click", function (event) {
+        if (event.target === scheduleHistoryEditModal) {
+            closeScheduleHistoryEditModal();
+        }
+    });
+}
+
+if (saveScheduleHistoryEditBtn) {
+    saveScheduleHistoryEditBtn.addEventListener("click", saveScheduleHistoryEdit);
+}
+
+if (cancelScheduleHistoryEditBtn) {
+    cancelScheduleHistoryEditBtn.addEventListener("click", closeScheduleHistoryEditModal);
 }
 
 window.openMedicationScheduleHistoryModal = openScheduleHistoryModal;

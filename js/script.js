@@ -1826,3 +1826,30 @@ function saveMedicationLog() {
         JSON.stringify(medicationLog)
     );
 }
+
+function refreshMedicationPeriodStatus(legacyKey) {
+    const periodElements = {
+        wakeUp: { status: medStatus, button: wakeUpButton },
+        breakfast: { status: breakfastStatus, button: breakfastButton },
+        midday: { status: middayStatus, button: middayButton },
+        dinner: { status: dinnerStatus, button: dinnerButton },
+        evening: { status: eveningStatus, button: eveningButton }
+    };
+    const elements = periodElements[legacyKey];
+
+    if (!elements) {
+        return;
+    }
+
+    if (isMedicationPeriodLoggedToday(legacyKey)) {
+        elements.status.innerHTML =
+            "<strong>✅ Logged Today:</strong> " + medicationLog[legacyKey].time;
+    } else {
+        elements.status.textContent = "Not Logged";
+    }
+
+    elements.button.textContent = getMedicationActionButtonLabel(legacyKey);
+    updateAtAGlanceStatus();
+}
+
+window.refreshMedicationPeriodStatus = refreshMedicationPeriodStatus;
