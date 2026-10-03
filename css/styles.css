@@ -3702,9 +3702,71 @@ button:active,
 
 .schedule-history-modal-header button,
 #scheduleHistoryModal .daily-diary-show-more-button,
-#scheduleHistoryModal .history-action-btn,
 #scheduleHistoryEditModal .schedule-notes-modal-actions button {
     min-height: 44px;
+}
+
+#scheduleHistoryModal .history-entry.schedule-history-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    text-align: left;
+    color: var(--text);
+    font: inherit;
+    box-shadow: none;
+}
+
+#scheduleHistoryModal .history-entry.schedule-history-row:hover,
+#scheduleHistoryModal .history-entry.schedule-history-row:active {
+    background: #eef6ff;
+    border-color: #c7def7;
+    transform: none;
+}
+
+#scheduleHistoryModal .history-entry.schedule-history-row:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+#scheduleHistoryModal .schedule-history-row .history-entry-body {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+#scheduleHistoryModal #closeScheduleHistoryModalBtn,
+#scheduleHistoryEditModal #cancelScheduleHistoryEditBtn {
+    background: var(--dashboard-action-background);
+    border: 1px solid var(--dashboard-neutral-accent-border);
+    color: var(--dashboard-neutral-accent-text);
+    font-weight: 600;
+    box-shadow: none;
+}
+
+#scheduleHistoryEditModal #saveScheduleHistoryEditBtn {
+    background: var(--dashboard-primary-accent-background);
+    border: 2px solid var(--dashboard-primary-accent-border);
+    color: var(--dashboard-primary-accent-text);
+    font-weight: 700;
+    box-shadow: none;
+}
+
+#scheduleHistoryModal #closeScheduleHistoryModalBtn:hover,
+#scheduleHistoryModal #closeScheduleHistoryModalBtn:active,
+#scheduleHistoryEditModal #cancelScheduleHistoryEditBtn:hover,
+#scheduleHistoryEditModal #cancelScheduleHistoryEditBtn:active {
+    background: var(--dashboard-neutral-accent-background);
+    transform: none;
+}
+
+#scheduleHistoryEditModal #saveScheduleHistoryEditBtn:hover,
+#scheduleHistoryEditModal #saveScheduleHistoryEditBtn:active {
+    background: var(--dashboard-primary-accent-border);
+    transform: none;
 }
 
 #scheduleHistoryEditModal label {

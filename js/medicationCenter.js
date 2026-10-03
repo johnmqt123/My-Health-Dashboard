@@ -1253,26 +1253,34 @@ function renderScheduleHistory() {
     scheduleHistoryDisplay.innerHTML = visibleEntries.map(function (item) {
         const entry = item.entry;
         const timeLabel = String(entry.time || "").trim() || "--";
-        const wrapper = document.createElement("div");
-        wrapper.className = "history-entry";
-        const dateLine = document.createElement("div");
-        dateLine.className = "history-entry-body";
-        dateLine.textContent = formatScheduleHistoryDate(entry) + " \u00b7 Logged at " + timeLabel;
-        wrapper.appendChild(dateLine);
+        const rowText = formatScheduleHistoryDate(entry) + " \u00b7 Logged at " + timeLabel;
 
-        if (isScheduleHistoryEntryEditable(entry)) {
-            const actions = document.createElement("div");
-            actions.className = "history-entry-actions";
-            const editButton = document.createElement("button");
-            editButton.type = "button";
-            editButton.className = "history-action-btn edit schedule-history-edit-btn";
-            editButton.setAttribute("data-history-index", String(item.index));
-            editButton.textContent = "Edit";
-            actions.appendChild(editButton);
-            wrapper.appendChild(actions);
+        if (!isScheduleHistoryEntryEditable(entry)) {
+            const plainRow = document.createElement("div");
+            plainRow.className = "history-entry";
+            const plainText = document.createElement("div");
+            plainText.className = "history-entry-body";
+            plainText.textContent = rowText;
+            plainRow.appendChild(plainText);
+            return plainRow.outerHTML;
         }
 
-        return wrapper.outerHTML;
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "history-entry schedule-history-row";
+        row.setAttribute("data-history-index", String(item.index));
+        row.setAttribute("aria-label", "Edit " + rowText);
+        const text = document.createElement("span");
+        text.className = "history-entry-body";
+        text.textContent = rowText;
+        const chevron = document.createElement("span");
+        chevron.className = "medication-card-notes-chevron";
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.textContent = "\u203a";
+        row.appendChild(text);
+        row.appendChild(chevron);
+
+        return row.outerHTML;
     }).join("");
 
     if (scheduleHistoryShowMoreButton) {
@@ -1458,12 +1466,12 @@ if (scheduleHistoryShowMoreButton) {
 
 if (scheduleHistoryDisplay) {
     scheduleHistoryDisplay.addEventListener("click", function (event) {
-        const editButton = event.target.closest(".schedule-history-edit-btn");
-        if (!editButton || !scheduleHistoryDisplay.contains(editButton)) {
+        const editRow = event.target.closest(".schedule-history-row");
+        if (!editRow || !scheduleHistoryDisplay.contains(editRow)) {
             return;
         }
 
-        const historyIndex = Number(editButton.getAttribute("data-history-index"));
+        const historyIndex = Number(editRow.getAttribute("data-history-index"));
         if (Number.isInteger(historyIndex)) {
             openScheduleHistoryEditModal(historyIndex);
         }
