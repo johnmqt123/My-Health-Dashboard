@@ -1146,6 +1146,176 @@ window.closeMedicationManagementModal = closeMedicationManagementModal;
 window.isMedicationManagementModalOpen = isMedicationManagementModalOpen;
 window.openMedicationScheduleNotesModal = openScheduleNotesModal;
 
+const scheduleHistoryModal = document.getElementById("scheduleHistoryModal");
+const scheduleHistoryModalTitle = document.getElementById("scheduleHistoryModalTitle");
+const scheduleHistoryDisplay = document.getElementById("scheduleHistoryDisplay");
+const scheduleHistoryShowMoreButton = document.getElementById("scheduleHistoryShowMoreButton");
+const closeScheduleHistoryModalBtn = document.getElementById("closeScheduleHistoryModalBtn");
+
+const SCHEDULE_HISTORY_INITIAL_COUNT = 14;
+const SCHEDULE_HISTORY_SHOW_MORE_STEP = 30;
+let activeScheduleHistoryPeriod = "";
+let scheduleHistoryVisibleCount = SCHEDULE_HISTORY_INITIAL_COUNT;
+
+// Parses "Sat Oct 03 2026" and "9:02 AM" manually; Date string parsing is unreliable on Safari.
+function getScheduleHistoryEntryTimestamp(entry) {
+    const dateMatch = String(entry && entry.date || "").match(/([A-Za-z]{3})\s+(\d{1,2})\s+(\d{4})/);
+    if (!dateMatch) {
+        return null;
+    }
+
+    const monthIndex = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"]
+        .indexOf(dateMatch[1].toLowerCase());
+    if (monthIndex < 0) {
+        return null;
+    }
+
+    const clock = window.medicationScheduleCompat &&
+        typeof window.medicationScheduleCompat.parseClockTimeTo24Hour === "function"
+        ? window.medicationScheduleCompat.parseClockTimeTo24Hour(entry.time)
+        : "";
+    const clockParts = clock ? clock.split(":") : ["0", "0"];
+
+    return new Date(
+        Number(dateMatch[3]),
+        monthIndex,
+        Number(dateMatch[2]),
+        Number(clockParts[0]),
+        Number(clockParts[1])
+    ).getTime();
+}
+
+function formatScheduleHistoryDate(entry) {
+    const timestamp = getScheduleHistoryEntryTimestamp(entry);
+    if (timestamp === null) {
+        return String(entry && entry.date || "Unknown date");
+    }
+
+    return new Date(timestamp).toLocaleDateString([], {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+    });
+}
+
+function getScheduleHistoryEntries(period) {
+    const source = Array.isArray(medicationHistory) ? medicationHistory : [];
+
+    return source.map(function (entry, index) {
+        return { entry: entry, index: index };
+    }).filter(function (item) {
+        return item.entry && item.entry.period === period;
+    }).sort(function (left, right) {
+        const leftTime = getScheduleHistoryEntryTimestamp(left.entry);
+        const rightTime = getScheduleHistoryEntryTimestamp(right.entry);
+
+        if (leftTime !== null && rightTime !== null && leftTime !== rightTime) {
+            return rightTime - leftTime;
+        }
+
+        return right.index - left.index;
+    }).map(function (item) {
+        return item.entry;
+    });
+}
+
+function renderScheduleHistory() {
+    if (!scheduleHistoryDisplay) {
+        return;
+    }
+
+    const entries = getScheduleHistoryEntries(activeScheduleHistoryPeriod);
+
+    if (!entries.length) {
+        scheduleHistoryDisplay.innerHTML = '<p class="history-empty">No history logged for this schedule yet.</p>';
+        if (scheduleHistoryShowMoreButton) {
+            scheduleHistoryShowMoreButton.hidden = true;
+        }
+        return;
+    }
+
+    const visibleEntries = entries.slice(0, scheduleHistoryVisibleCount);
+
+    scheduleHistoryDisplay.innerHTML = visibleEntries.map(function (entry) {
+        const timeLabel = String(entry.time || "").trim() || "--";
+        const wrapper = document.createElement("div");
+        wrapper.className = "history-entry";
+        const dateLine = document.createElement("div");
+        dateLine.className = "history-entry-body";
+        dateLine.textContent = formatScheduleHistoryDate(entry) + " \u00b7 Logged at " + timeLabel;
+        wrapper.appendChild(dateLine);
+        return wrapper.outerHTML;
+    }).join("");
+
+    if (scheduleHistoryShowMoreButton) {
+        scheduleHistoryShowMoreButton.hidden = entries.length <= visibleEntries.length;
+    }
+}
+
+function closeScheduleHistoryModal() {
+    if (!scheduleHistoryModal) {
+        return;
+    }
+
+    scheduleHistoryModal.style.display = "none";
+    activeScheduleHistoryPeriod = "";
+}
+
+function openScheduleHistoryModal(eventId) {
+    if (!scheduleHistoryModal || !window.medicationScheduleCompat ||
+        typeof window.medicationScheduleCompat.getMedicationHistoryPeriod !== "function") {
+        return;
+    }
+
+    activeScheduleHistoryPeriod = window.medicationScheduleCompat.getMedicationHistoryPeriod(eventId);
+    scheduleHistoryVisibleCount = SCHEDULE_HISTORY_INITIAL_COUNT;
+
+    const group = getMedicationScheduleGroupById(eventId);
+    const displayName = group && group.name ? group.name : activeScheduleHistoryPeriod;
+    if (scheduleHistoryModalTitle) {
+        scheduleHistoryModalTitle.textContent = displayName + " History";
+    }
+
+    renderScheduleHistory();
+    scheduleHistoryModal.style.display = "flex";
+
+    const content = scheduleHistoryModal.querySelector(".schedule-history-modal-content");
+    if (content) {
+        content.scrollTop = 0;
+    }
+}
+
+if (scheduleHistoryModal) {
+    scheduleHistoryModal.addEventListener("touchmove", function (event) {
+        const content = scheduleHistoryModal.querySelector(".schedule-history-modal-content");
+        if (content && !content.contains(event.target)) {
+            event.preventDefault();
+        }
+    }, {
+        passive: false
+    });
+
+    scheduleHistoryModal.addEventListener("click", function (event) {
+        if (event.target === scheduleHistoryModal) {
+            closeScheduleHistoryModal();
+        }
+    });
+}
+
+if (closeScheduleHistoryModalBtn) {
+    closeScheduleHistoryModalBtn.addEventListener("click", closeScheduleHistoryModal);
+}
+
+if (scheduleHistoryShowMoreButton) {
+    scheduleHistoryShowMoreButton.addEventListener("click", function () {
+        scheduleHistoryVisibleCount += SCHEDULE_HISTORY_SHOW_MORE_STEP;
+        renderScheduleHistory();
+    });
+}
+
+window.openMedicationScheduleHistoryModal = openScheduleHistoryModal;
+
 function buildMedicationList() {
 
     setMedicationScheduleListVisibility(true);

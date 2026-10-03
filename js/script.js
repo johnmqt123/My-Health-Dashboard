@@ -646,7 +646,14 @@ function renderMedicationListForSlot(slotConfig, eventData) {
         '<span class="medication-card-notes-preview">' + getNotePreviewText(notesText) + '</span>' +
         "</button>";
 
-    slotConfig.listElement.innerHTML = medicationsMarkup + notesMarkup;
+    const historyMarkup =
+        '<button type="button" class="medication-card-history-row" data-event-id="' + (eventData && eventData.id ? eventData.id : "") + '" aria-label="Open ' +
+        ((eventData && eventData.name ? String(eventData.name).trim() : slotConfig.defaultName) || "Schedule") +
+        ' history">' +
+        '<span class="medication-card-notes-head"><span>History</span><span class="medication-card-notes-chevron" aria-hidden="true">›</span></span>' +
+        "</button>";
+
+    slotConfig.listElement.innerHTML = medicationsMarkup + notesMarkup + historyMarkup;
 }
 
 function getNotePreviewText(noteValue) {
@@ -673,6 +680,15 @@ function ensureMedicationListNotesRowInteraction(slotConfig) {
     }
 
     slotConfig.listElement.addEventListener("click", function (event) {
+        const historyRow = event.target.closest(".medication-card-history-row");
+        if (historyRow && slotConfig.listElement.contains(historyRow)) {
+            const historyEventId = historyRow.dataset.eventId || "";
+            if (historyEventId && typeof window.openMedicationScheduleHistoryModal === "function") {
+                window.openMedicationScheduleHistoryModal(historyEventId);
+            }
+            return;
+        }
+
         const notesRow = event.target.closest(".medication-card-notes-row");
         if (!notesRow || !slotConfig.listElement.contains(notesRow)) {
             return;
