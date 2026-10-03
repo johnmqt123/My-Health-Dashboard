@@ -1369,6 +1369,10 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.breakfast = {};
 
 saveMedicationLog();
+localStorage.setItem(
+    "medicationHistory",
+    JSON.stringify(medicationHistory)
+);
 
     breakfastButton.textContent = getMedicationActionButtonLabel("breakfast");
 
@@ -1434,6 +1438,10 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.midday = {};
 
 saveMedicationLog();
+localStorage.setItem(
+    "medicationHistory",
+    JSON.stringify(medicationHistory)
+);
 
     middayButton.textContent = getMedicationActionButtonLabel("midday");
 
@@ -1497,6 +1505,10 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.dinner = {};
 
 saveMedicationLog();
+localStorage.setItem(
+    "medicationHistory",
+    JSON.stringify(medicationHistory)
+);
 
 dinnerButton.textContent = getMedicationActionButtonLabel("dinner");
 
@@ -1562,6 +1574,10 @@ medicationHistory = medicationHistory.filter(entry => {
 medicationLog.evening = {};
 
 saveMedicationLog();
+localStorage.setItem(
+    "medicationHistory",
+    JSON.stringify(medicationHistory)
+);
 
     eveningButton.textContent = getMedicationActionButtonLabel("evening");
 
