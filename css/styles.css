@@ -5731,9 +5731,29 @@ button:active,
 }
 
 .exercise-type-manager-list {
-    max-height: 240px;
+    max-height: none;
+    overflow-y: visible;
+}
+
+#exerciseTypeManagerModal {
+    align-items: flex-start;
+    padding-top: max(12px, env(safe-area-inset-top));
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+#exerciseTypeManagerModal .exercise-type-manager-modal-content {
+    max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    touch-action: pan-y;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+@supports not (height: 100dvh) {
+    #exerciseTypeManagerModal .exercise-type-manager-modal-content {
+        max-height: calc(100vh - 24px);
+    }
 }
 
 .exercise-type-manager-row {

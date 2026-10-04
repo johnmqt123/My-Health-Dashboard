@@ -679,7 +679,8 @@
             manageExerciseTypesBtn.addEventListener("click", function () {
                 if (exerciseTypeManagerModal) {
                     renderExerciseTypeManager();
-                    exerciseTypeManagerModal.style.display = "block";
+                    exerciseTypeManagerModal.style.display = "flex";
+                    lockExerciseModalBackgroundScroll();
 
                     const managerContent = exerciseTypeManagerModal.querySelector(".exercise-type-manager-modal-content");
                     if (managerContent) {
@@ -696,6 +697,7 @@
             closeExerciseTypeManagerBtn.addEventListener("click", function () {
                 if (exerciseTypeManagerModal) {
                     exerciseTypeManagerModal.style.display = "none";
+                    unlockExerciseModalBackgroundScroll();
                 }
             });
         }
@@ -905,6 +907,17 @@
             exerciseModal.addEventListener("touchmove", function (event) {
                 if (!exerciseModalContent) return;
                 if (!exerciseModalContent.contains(event.target)) {
+                    event.preventDefault();
+                }
+            }, {
+                passive: false
+            });
+        }
+
+        if (exerciseTypeManagerModal) {
+            exerciseTypeManagerModal.addEventListener("touchmove", function (event) {
+                const managerModalContent = exerciseTypeManagerModal.querySelector(".exercise-type-manager-modal-content");
+                if (managerModalContent && !managerModalContent.contains(event.target)) {
                     event.preventDefault();
                 }
             }, {
