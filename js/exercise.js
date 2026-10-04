@@ -680,6 +680,14 @@
                 if (exerciseTypeManagerModal) {
                     renderExerciseTypeManager();
                     exerciseTypeManagerModal.style.display = "block";
+
+                    const managerContent = exerciseTypeManagerModal.querySelector(".exercise-type-manager-modal-content");
+                    if (managerContent) {
+                        managerContent.scrollTop = 0;
+                    }
+                    if (exerciseTypeManagerList) {
+                        exerciseTypeManagerList.scrollTop = 0;
+                    }
                 }
             });
         }
