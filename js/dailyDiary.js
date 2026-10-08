@@ -1,5 +1,8 @@
 (function () {
     const DIARY_STORAGE_KEY = "dailyDiaryEntries";
+    const DIARY_DRAFT_STORAGE_KEY = "dailyDiaryDraft";
+    const DIARY_DRAFT_DEBOUNCE_MS = 400;
+    let diaryDraftTimer = null;
 
     let diaryEntries = loadData(DIARY_STORAGE_KEY, []);
 
@@ -339,6 +342,72 @@
         window.scrollTo(0, lockedScrollTop);
     }
 
+    function readDiaryDraft() {
+        try {
+            const draft = loadData(DIARY_DRAFT_STORAGE_KEY, null);
+            if (draft && typeof draft === "object" &&
+                typeof draft.date === "string" && typeof draft.text === "string") {
+                return draft;
+            }
+        } catch (error) {
+            return null;
+        }
+
+        return null;
+    }
+
+    function cancelDiaryDraftTimer() {
+        if (diaryDraftTimer !== null) {
+            window.clearTimeout(diaryDraftTimer);
+            diaryDraftTimer = null;
+        }
+    }
+
+    function saveDiaryDraft() {
+        cancelDiaryDraftTimer();
+
+        if (!editorActiveDate || !dailyDiaryEditorInput) {
+            return;
+        }
+
+        try {
+            const existing = readDiaryDraft();
+            // Never replace another date's unfinished draft.
+            if (existing && existing.date !== editorActiveDate) {
+                return;
+            }
+
+            saveData(DIARY_DRAFT_STORAGE_KEY, {
+                date: editorActiveDate,
+                text: dailyDiaryEditorInput.value
+            });
+        } catch (error) {
+            // Typing must keep working if storage is unavailable.
+        }
+    }
+
+    function scheduleDiaryDraftSave() {
+        cancelDiaryDraftTimer();
+        diaryDraftTimer = window.setTimeout(saveDiaryDraft, DIARY_DRAFT_DEBOUNCE_MS);
+    }
+
+    function clearDiaryDraftForActiveDate() {
+        cancelDiaryDraftTimer();
+
+        if (!editorActiveDate) {
+            return;
+        }
+
+        try {
+            const existing = readDiaryDraft();
+            if (existing && existing.date === editorActiveDate) {
+                localStorage.removeItem(DIARY_DRAFT_STORAGE_KEY);
+            }
+        } catch (error) {
+            // Storage failure must not block closing the editor.
+        }
+    }
+
     function openEditorForDate(dateKey) {
         if (!parseDateKey(dateKey) || !dailyDiaryEditorModal || !dailyDiaryEditorInput) {
             return;
@@ -349,6 +418,7 @@
         const todayKey = getLocalDateKey();
         const isToday = editorActiveDate === todayKey;
         const entry = getEntryByDate(editorActiveDate);
+        const draft = readDiaryDraft();
 
         if (dailyDiaryEditorTitle) {
             dailyDiaryEditorTitle.textContent = isToday ? "Today's Diary" : "Edit Diary Entry";
@@ -358,7 +428,9 @@
             dailyDiaryEditorDate.textContent = getFriendlyDateLabel(editorActiveDate, true);
         }
 
-        dailyDiaryEditorInput.value = entry ? String(entry.text || "") : "";
+        dailyDiaryEditorInput.value = draft && draft.date === editorActiveDate
+            ? draft.text
+            : (entry ? String(entry.text || "") : "");
         dailyDiaryEditorModal.style.display = "block";
         lockDiaryModalBackgroundScroll();
 
@@ -370,6 +442,7 @@
     }
 
     function closeEditor() {
+        cancelDiaryDraftTimer();
         unlockDiaryModalBackgroundScroll();
 
         if (!dailyDiaryEditorModal || !dailyDiaryEditorInput) {
@@ -398,6 +471,17 @@
         saveDiaryEntries();
         renderTodaySummary();
         renderHistory();
+        clearDiaryDraftForActiveDate();
+        closeEditor();
+    }
+
+    function handleEditorExplicitClose() {
+        clearDiaryDraftForActiveDate();
+        closeEditor();
+    }
+
+    function handleEditorBackdropClose() {
+        saveDiaryDraft();
         closeEditor();
     }
 
@@ -680,13 +764,22 @@
         dailyDiaryEditorSaveButton.addEventListener("click", handleEditorSave);
 
         if (dailyDiaryEditorCloseButton) {
-            dailyDiaryEditorCloseButton.addEventListener("click", closeEditor);
+            dailyDiaryEditorCloseButton.addEventListener("click", handleEditorExplicitClose);
         }
+
+        dailyDiaryEditorInput.addEventListener("input", scheduleDiaryDraftSave);
+
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "hidden") {
+                saveDiaryDraft();
+            }
+        });
+        window.addEventListener("pagehide", saveDiaryDraft);
 
         if (dailyDiaryEditorModal) {
             dailyDiaryEditorModal.addEventListener("click", function (event) {
                 if (event.target === dailyDiaryEditorModal) {
-                    closeEditor();
+                    handleEditorBackdropClose();
                 }
             });
         }
