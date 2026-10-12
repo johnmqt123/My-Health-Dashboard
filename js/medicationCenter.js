@@ -139,6 +139,7 @@ const AS_NEEDED_DOSE_UNITS = [
 let asNeededAvailableMedications = [];
 let asNeededUsingDefaultSamples = false;
 let expandedAsNeededMedicationName = "";
+let asNeededInactiveSectionExpanded = false;
 let expandedAsNeededHistoryMedicationName = "";
 let editingAsNeededMedicationIndex = -1;
 let editingAsNeededHistoryIndex = -1;
@@ -212,6 +213,12 @@ function getAsNeededMedicationDefinitionByName(name) {
     }) || null;
 }
 
+function getActiveAsNeededMedications() {
+    return asNeededAvailableMedications.filter(function (definition) {
+        return definition.active !== false;
+    });
+}
+
 function normalizeAsNeededMedicationDefinition(item) {
     const isLegacyName = typeof item === "string";
     const name = normalizeAsNeededMedicationName(isLegacyName ? item : item && item.name);
@@ -225,7 +232,8 @@ function normalizeAsNeededMedicationDefinition(item) {
             isLegacyName ? 1 : item.defaultQuantity,
             1
         ),
-        defaultUnit: normalizeAsNeededDoseUnit(isLegacyName ? "tablet" : item.defaultUnit)
+        defaultUnit: normalizeAsNeededDoseUnit(isLegacyName ? "tablet" : item.defaultUnit),
+        active: isLegacyName ? true : item.active !== false
     };
 }
 
@@ -255,11 +263,18 @@ function normalizeAsNeededMedicationDefinitions(items) {
 
 function saveAsNeededAvailableMedications() {
     const storedDefinitions = asNeededAvailableMedications.map(function (definition) {
-        if (definition.defaultQuantity === 1 && definition.defaultUnit === "tablet") {
+        if (definition.active !== false &&
+            definition.defaultQuantity === 1 &&
+            definition.defaultUnit === "tablet") {
             return definition.name;
         }
 
-        return definition;
+        return {
+            name: definition.name,
+            defaultQuantity: definition.defaultQuantity,
+            defaultUnit: definition.defaultUnit,
+            active: definition.active !== false
+        };
     });
     saveData(AS_NEEDED_AVAILABLE_MEDICATIONS_KEY, storedDefinitions);
 }
@@ -317,7 +332,9 @@ function renderAsNeededMedicationChoices() {
     const previousValue = asNeededMedicationChoice.value;
     asNeededMedicationChoice.innerHTML = "";
 
-    asNeededAvailableMedications.forEach(function (definition) {
+    const activeMedications = getActiveAsNeededMedications();
+
+    activeMedications.forEach(function (definition) {
         const option = document.createElement("option");
         option.value = definition.name;
         option.textContent = definition.name;
@@ -329,7 +346,7 @@ function renderAsNeededMedicationChoices() {
     customOption.textContent = "Other / custom medication";
     asNeededMedicationChoice.appendChild(customOption);
 
-    const hasPreviousValue = asNeededAvailableMedications.some(function (definition) {
+    const hasPreviousValue = activeMedications.some(function (definition) {
         return definition.name === previousValue;
     });
 
@@ -337,8 +354,8 @@ function renderAsNeededMedicationChoices() {
         asNeededMedicationChoice.value = "custom";
     } else if (hasPreviousValue) {
         asNeededMedicationChoice.value = previousValue;
-    } else if (asNeededAvailableMedications.length) {
-        asNeededMedicationChoice.value = asNeededAvailableMedications[0].name;
+    } else if (activeMedications.length) {
+        asNeededMedicationChoice.value = activeMedications[0].name;
     } else {
         asNeededMedicationChoice.value = "custom";
     }
@@ -358,11 +375,11 @@ function removeHistoricalMedicationOptions() {
         });
 }
 
-function confirmAsNeededMedicationRemove(medicationName) {
+function confirmAsNeededMedicationDeactivate(medicationName) {
     return window.confirm(
-        "Remove As-Needed Medication?\n\nAre you sure you want to remove " +
-        medicationName +
-        " from your available As-Needed medications?"
+        "Deactivate " + medicationName + "?\n\n" +
+        "It will no longer be offered when logging new As-Needed entries. " +
+        "Its history will be preserved, and you can reactivate it later."
     );
 }
 
@@ -379,7 +396,15 @@ function renderAsNeededAvailableMedicationList() {
 
     asNeededAvailableMedicationList.innerHTML = "";
 
+    const activeEntries = [];
+    const inactiveEntries = [];
     asNeededAvailableMedications.forEach(function (definition, index) {
+        (definition.active !== false ? activeEntries : inactiveEntries)
+            .push({ definition: definition, index: index });
+    });
+
+    function appendRow(container, definition, index) {
+        const isActive = definition.active !== false;
         const row = document.createElement("div");
         row.className = "as-needed-available-row";
         const isExpanded = getAsNeededMedicationCompareKey(definition.name) ===
@@ -412,18 +437,51 @@ function renderAsNeededAvailableMedicationList() {
         editButton.textContent = "Edit";
         editButton.setAttribute("data-index", String(index));
 
-        const removeButton = document.createElement("button");
-        removeButton.type = "button";
-        removeButton.className = "history-action-btn delete as-needed-available-remove-btn";
-        removeButton.textContent = "Remove from List";
-        removeButton.setAttribute("data-medication", definition.name);
+        const statusButton = document.createElement("button");
+        statusButton.type = "button";
+        statusButton.className = "history-action-btn edit as-needed-available-status-btn";
+        statusButton.textContent = isActive ? "Deactivate" : "Reactivate";
+        statusButton.setAttribute("data-medication", definition.name);
+        statusButton.setAttribute("data-set-active", isActive ? "false" : "true");
 
         actions.appendChild(editButton);
-        actions.appendChild(removeButton);
+        actions.appendChild(statusButton);
         row.appendChild(toggleButton);
         row.appendChild(actions);
-        asNeededAvailableMedicationList.appendChild(row);
+        container.appendChild(row);
+    }
+
+    if (!activeEntries.length) {
+        const empty = document.createElement("p");
+        empty.className = "as-needed-empty";
+        empty.textContent = "No active medications.";
+        asNeededAvailableMedicationList.appendChild(empty);
+    }
+
+    activeEntries.forEach(function (item) {
+        appendRow(asNeededAvailableMedicationList, item.definition, item.index);
     });
+
+    if (inactiveEntries.length) {
+        const inactiveGroup = document.createElement("div");
+        inactiveGroup.className = "as-needed-inactive-group";
+        inactiveGroup.classList.toggle("is-expanded", asNeededInactiveSectionExpanded);
+
+        const groupToggle = document.createElement("button");
+        groupToggle.type = "button";
+        groupToggle.className = "as-needed-inactive-toggle";
+        groupToggle.setAttribute("aria-expanded", asNeededInactiveSectionExpanded ? "true" : "false");
+        groupToggle.textContent = "Inactive medications (" + inactiveEntries.length + ")";
+        inactiveGroup.appendChild(groupToggle);
+
+        if (asNeededInactiveSectionExpanded) {
+            inactiveEntries.forEach(function (item) {
+                appendRow(inactiveGroup, item.definition, item.index);
+            });
+        }
+
+        asNeededAvailableMedicationList.appendChild(inactiveGroup);
+    }
 }
 
 function addAsNeededAvailableMedication() {
@@ -452,16 +510,22 @@ function addAsNeededAvailableMedication() {
         return;
     }
 
-    const isDuplicate = asNeededAvailableMedications.some(function (definition, index) {
+    const duplicateDefinition = asNeededAvailableMedications.find(function (definition, index) {
         return index !== editingAsNeededMedicationIndex &&
             getAsNeededMedicationCompareKey(definition.name) === compareKey;
     });
 
-    if (isDuplicate) {
+    if (duplicateDefinition) {
         setAsNeededAvailableMedicationStatus(
-            normalizedName + " is already available for logging.",
+            duplicateDefinition.active === false
+                ? duplicateDefinition.name + " is inactive. Reactivate it from Inactive medications instead."
+                : normalizedName + " is already available for logging.",
             true
         );
+        if (duplicateDefinition.active === false) {
+            asNeededInactiveSectionExpanded = true;
+            renderAsNeededAvailableMedicationList();
+        }
         newAsNeededMedicationInput.value = "";
         return;
     }
@@ -473,7 +537,8 @@ function addAsNeededAvailableMedication() {
     const definition = {
         name: normalizedName,
         defaultQuantity: defaultQuantity,
-        defaultUnit: defaultUnit
+        defaultUnit: defaultUnit,
+        active: existingDefinition ? existingDefinition.active !== false : true
     };
 
     if (editingAsNeededMedicationIndex >= 0) {
@@ -519,27 +584,30 @@ function addAsNeededAvailableMedication() {
     newAsNeededMedicationInput.focus();
 }
 
-function removeAsNeededAvailableMedication(medicationName) {
+function setAsNeededMedicationActive(medicationName, active) {
     const compareKey = getAsNeededMedicationCompareKey(medicationName);
-    const index = asNeededAvailableMedications.findIndex(function (definition) {
-        return getAsNeededMedicationCompareKey(definition.name) === compareKey;
+    const definition = asNeededAvailableMedications.find(function (item) {
+        return getAsNeededMedicationCompareKey(item.name) === compareKey;
     });
 
-    if (index < 0) {
+    if (!definition) {
+        return;
+    }
+
+    const label = definition.name;
+    if (!active && !confirmAsNeededMedicationDeactivate(label)) {
         return;
     }
 
     asNeededUsingDefaultSamples = false;
-    const label = asNeededAvailableMedications[index].name;
-    if (!confirmAsNeededMedicationRemove(label)) {
-        return;
-    }
-
-    asNeededAvailableMedications.splice(index, 1);
+    definition.active = !!active;
     saveAsNeededAvailableMedications();
     renderAsNeededAvailableMedicationList();
     renderAsNeededMedicationChoices();
-    setAsNeededAvailableMedicationStatus(label + " removed from available medications.", false);
+    setAsNeededAvailableMedicationStatus(
+        label + (active ? " reactivated and available for logging." : " deactivated. History preserved."),
+        false
+    );
 }
 
 function openAsNeededMedicationManager() {
@@ -1018,8 +1086,9 @@ function resetAsNeededMedicationForm() {
     removeHistoricalMedicationOptions();
 
     if (asNeededMedicationChoice) {
-        if (asNeededAvailableMedications.length) {
-            asNeededMedicationChoice.value = asNeededAvailableMedications[0].name;
+        const activeMedications = getActiveAsNeededMedications();
+        if (activeMedications.length) {
+            asNeededMedicationChoice.value = activeMedications[0].name;
         } else {
             asNeededMedicationChoice.value = "custom";
         }
@@ -1070,7 +1139,10 @@ function openAsNeededMedicationModal(historyIndex) {
             if (historicalMedicationName && !hasHistoricalMedicationOption) {
                 const historicalOption = document.createElement("option");
                 historicalOption.value = historicalMedicationName;
-                historicalOption.textContent = historicalMedicationName + " (historical)";
+                historicalOption.textContent = historicalMedicationName +
+                    (getAsNeededMedicationDefinitionByName(historicalMedicationName)
+                        ? " (inactive)"
+                        : " (historical)");
                 historicalOption.dataset.historicalMedication = "true";
                 asNeededMedicationChoice.insertBefore(
                     historicalOption,
@@ -2770,6 +2842,13 @@ if (cancelAsNeededAvailableMedicationBtn) {
 
 if (asNeededAvailableMedicationList) {
     asNeededAvailableMedicationList.addEventListener("click", function (event) {
+        const groupToggle = event.target.closest(".as-needed-inactive-toggle");
+        if (groupToggle && asNeededAvailableMedicationList.contains(groupToggle)) {
+            asNeededInactiveSectionExpanded = !asNeededInactiveSectionExpanded;
+            renderAsNeededAvailableMedicationList();
+            return;
+        }
+
         const toggleButton = event.target.closest(".as-needed-available-toggle");
         if (toggleButton && asNeededAvailableMedicationList.contains(toggleButton)) {
             const row = toggleButton.closest(".as-needed-available-row");
@@ -2814,13 +2893,15 @@ if (asNeededAvailableMedicationList) {
             return;
         }
 
-        const removeButton = event.target.closest(".as-needed-available-remove-btn");
-        if (!removeButton || !asNeededAvailableMedicationList.contains(removeButton)) {
+        const statusButton = event.target.closest(".as-needed-available-status-btn");
+        if (!statusButton || !asNeededAvailableMedicationList.contains(statusButton)) {
             return;
         }
 
-        const medicationName = removeButton.getAttribute("data-medication") || "";
-        removeAsNeededAvailableMedication(medicationName);
+        setAsNeededMedicationActive(
+            statusButton.getAttribute("data-medication") || "",
+            statusButton.getAttribute("data-set-active") === "true"
+        );
     });
 }
 

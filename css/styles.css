@@ -2961,7 +2961,7 @@ button.history-action-btn {
     align-self: center;
 }
 
-#asNeededMedicationContent .as-needed-available-remove-btn {
+#asNeededMedicationContent .as-needed-available-status-btn {
     flex: 0 0 auto;
     width: auto;
     min-height: 40px;
@@ -2994,7 +2994,6 @@ button.history-action-btn {
     outline-offset: 2px;
 }
 
-#asNeededMedicationContent .as-needed-available-remove-btn,
 #asNeededMedicationContent .as-needed-delete-btn {
     background: #fff1f2;
     border: 1px solid #fecdd3;
@@ -3003,8 +3002,6 @@ button.history-action-btn {
     font-weight: 600;
 }
 
-#asNeededMedicationContent .as-needed-available-remove-btn:hover,
-#asNeededMedicationContent .as-needed-available-remove-btn:active,
 #asNeededMedicationContent .as-needed-delete-btn:hover,
 #asNeededMedicationContent .as-needed-delete-btn:active {
     background: #fecdd3;
@@ -3013,10 +3010,58 @@ button.history-action-btn {
     transform: none;
 }
 
-#asNeededMedicationContent .as-needed-available-remove-btn:focus-visible,
 #asNeededMedicationContent .as-needed-delete-btn:focus-visible {
     outline: 2px solid #9f1239;
     outline-offset: 2px;
+}
+
+#asNeededMedicationContent .as-needed-inactive-group {
+    display: grid;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+#asNeededMedicationContent .as-needed-inactive-toggle {
+    position: relative;
+    width: 100%;
+    min-height: 40px;
+    padding: 6px 24px 6px 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: var(--muted);
+    font-weight: 600;
+    text-align: left;
+}
+
+#asNeededMedicationContent .as-needed-inactive-toggle:hover,
+#asNeededMedicationContent .as-needed-inactive-toggle:active {
+    background: transparent;
+    transform: none;
+}
+
+#asNeededMedicationContent .as-needed-inactive-toggle:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#asNeededMedicationContent .as-needed-inactive-toggle::after {
+    content: "›";
+    position: absolute;
+    top: 50%;
+    right: 2px;
+    font-size: 1.2rem;
+    line-height: 1;
+    transform: translateY(-50%) rotate(0deg);
+}
+
+#asNeededMedicationContent .as-needed-inactive-group.is-expanded .as-needed-inactive-toggle::after {
+    transform: translateY(-50%) rotate(90deg);
+}
+
+#asNeededMedicationContent .as-needed-inactive-group .as-needed-available-name {
+    color: var(--muted);
 }
 
 @media (max-width: 480px) {
@@ -3035,7 +3080,7 @@ button.history-action-btn {
     }
 
     #asNeededMedicationContent .as-needed-available-edit-btn,
-    #asNeededMedicationContent .as-needed-available-remove-btn {
+    #asNeededMedicationContent .as-needed-available-status-btn {
         grid-column: 1;
         width: 100%;
         justify-self: stretch;
@@ -3045,7 +3090,7 @@ button.history-action-btn {
         grid-row: 3;
     }
 
-    #asNeededMedicationContent .as-needed-available-remove-btn {
+    #asNeededMedicationContent .as-needed-available-status-btn {
         grid-row: 4;
     }
 }
