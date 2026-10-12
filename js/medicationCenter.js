@@ -1024,7 +1024,7 @@ function renderAsNeededMedicationHistory() {
 
     if (!asNeededMedicationHistory.length) {
         asNeededLastTakenDisplay.innerHTML =
-            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History — Last Taken</h3>" +
             "<p class=\"as-needed-history-empty\">No as-needed medications logged yet.</p>";
         return;
     }
@@ -1056,13 +1056,13 @@ function renderAsNeededMedicationHistory() {
 
     if (!medicationNames.length) {
         asNeededLastTakenDisplay.innerHTML =
-            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+            "<h3 class=\"as-needed-history-heading\">As-Needed Medication History — Last Taken</h3>" +
             "<p class=\"as-needed-history-empty\">No as-needed medications logged yet.</p>";
         return;
     }
 
     asNeededLastTakenDisplay.innerHTML =
-        "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
+        "<h3 class=\"as-needed-history-heading\">As-Needed Medication History — Last Taken</h3>" +
         medicationNames.map(function (medicationName) {
         const latestRecord = latestByMedication[medicationName];
         const latest = latestRecord.entry;
