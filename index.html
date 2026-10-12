@@ -451,6 +451,9 @@
             <h3 class="as-needed-history-heading">As-Needed Medication History</h3>
             <p class="as-needed-history-empty">No as-needed medications logged yet.</p>
         </div>
+        <button id="asNeededHistoryRow" type="button" class="medication-card-history-row" aria-label="Open as-needed history">
+            <span class="medication-card-notes-head"><span>History</span><span class="medication-card-notes-chevron" aria-hidden="true">›</span></span>
+        </button>
         <div id="asNeededAvailableMedicationsManager" class="as-needed-manager">
             <h3>Available As-Needed Medications</h3>
             <div id="asNeededAvailableMedicationList" class="as-needed-available-list">No medications added yet.</div>
@@ -521,6 +524,19 @@
 <button id="pageBackToTop" type="button" style="display: block; margin: 18px auto 8px;">
     ↑ Back to Top
 </button>
+<div id="asNeededHistoryModal" class="modal" style="display: none;">
+    <div class="modal-content schedule-history-modal-content">
+        <div class="schedule-history-modal-header">
+            <h2>As-Needed History</h2>
+            <button id="closeAsNeededHistoryModalBtn" type="button">Close</button>
+        </div>
+
+        <div id="asNeededHistoryDisplay" class="history-display history-stack"></div>
+        <div class="daily-diary-pagination-wrap">
+            <button id="asNeededHistoryShowMoreButton" class="daily-diary-show-more-button" type="button" hidden>Show More</button>
+        </div>
+    </div>
+</div>
 <div id="asNeededMedicationModal" class="modal" style="display: none;">
     <div class="modal-content">
         <h2 id="asNeededMedicationModalTitle">Log As-Needed Medication</h2>
@@ -566,6 +582,7 @@
 
         <button id="saveAsNeededMedicationBtn">Save</button>
         <button id="cancelAsNeededMedicationBtn">Cancel</button>
+        <button id="deleteAsNeededMedicationBtn" type="button" style="display: none;">Delete</button>
     </div>
 </div>
 <div id="weightModal" class="modal" style="display: none;">

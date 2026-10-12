@@ -3664,14 +3664,16 @@ button:active,
 }
 
 #scheduleHistoryModal,
-#scheduleHistoryEditModal {
+#scheduleHistoryEditModal,
+#asNeededHistoryModal {
     align-items: flex-start;
     padding-top: max(12px, env(safe-area-inset-top));
     padding-bottom: max(12px, env(safe-area-inset-bottom));
 }
 
 #scheduleHistoryModal .schedule-history-modal-content,
-#scheduleHistoryEditModal .schedule-history-modal-content {
+#scheduleHistoryEditModal .schedule-history-modal-content,
+#asNeededHistoryModal .schedule-history-modal-content {
     max-width: 460px;
     max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
     overflow-y: auto;
@@ -3684,7 +3686,8 @@ button:active,
 
 @supports not (height: 100dvh) {
     #scheduleHistoryModal .schedule-history-modal-content,
-    #scheduleHistoryEditModal .schedule-history-modal-content {
+    #scheduleHistoryEditModal .schedule-history-modal-content,
+    #asNeededHistoryModal .schedule-history-modal-content {
         max-height: calc(100vh - 24px);
     }
 }
@@ -3702,11 +3705,13 @@ button:active,
 
 .schedule-history-modal-header button,
 #scheduleHistoryModal .daily-diary-show-more-button,
+#asNeededHistoryModal .daily-diary-show-more-button,
 #scheduleHistoryEditModal .schedule-notes-modal-actions button {
     min-height: 44px;
 }
 
-#scheduleHistoryModal .history-entry.schedule-history-row {
+#scheduleHistoryModal .history-entry.schedule-history-row,
+#asNeededHistoryModal .history-entry.schedule-history-row {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -3722,23 +3727,46 @@ button:active,
 }
 
 #scheduleHistoryModal .history-entry.schedule-history-row:hover,
-#scheduleHistoryModal .history-entry.schedule-history-row:active {
+#scheduleHistoryModal .history-entry.schedule-history-row:active,
+#asNeededHistoryModal .history-entry.schedule-history-row:hover,
+#asNeededHistoryModal .history-entry.schedule-history-row:active {
     background: #eef6ff;
     border-color: #c7def7;
     transform: none;
 }
 
-#scheduleHistoryModal .history-entry.schedule-history-row:focus-visible {
+#scheduleHistoryModal .history-entry.schedule-history-row:focus-visible,
+#asNeededHistoryModal .history-entry.schedule-history-row:focus-visible {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
 }
 
-#scheduleHistoryModal .schedule-history-row .history-entry-body {
+#scheduleHistoryModal .schedule-history-row .history-entry-body,
+#asNeededHistoryModal .schedule-history-row .history-entry-body {
     min-width: 0;
     overflow-wrap: anywhere;
 }
 
+#asNeededHistoryModal .as-needed-history-row-text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+#asNeededHistoryModal .as-needed-history-row-text .history-entry-meta {
+    overflow-wrap: anywhere;
+}
+
+#asNeededMedicationModal #deleteAsNeededMedicationBtn {
+    background: #fff1f2;
+    border: 1px solid #fecdd3;
+    color: #9f1239;
+    font-weight: 600;
+    box-shadow: none;
+}
+
 #scheduleHistoryModal #closeScheduleHistoryModalBtn,
+#asNeededHistoryModal #closeAsNeededHistoryModalBtn,
 #scheduleHistoryEditModal #cancelScheduleHistoryEditBtn {
     background: var(--dashboard-action-background);
     border: 1px solid var(--dashboard-neutral-accent-border);
@@ -3757,6 +3785,8 @@ button:active,
 
 #scheduleHistoryModal #closeScheduleHistoryModalBtn:hover,
 #scheduleHistoryModal #closeScheduleHistoryModalBtn:active,
+#asNeededHistoryModal #closeAsNeededHistoryModalBtn:hover,
+#asNeededHistoryModal #closeAsNeededHistoryModalBtn:active,
 #scheduleHistoryEditModal #cancelScheduleHistoryEditBtn:hover,
 #scheduleHistoryEditModal #cancelScheduleHistoryEditBtn:active {
     background: var(--dashboard-neutral-accent-background);
@@ -3781,13 +3811,15 @@ button:active,
     font-size: 16px;
 }
 
-#scheduleHistoryModal .history-display {
+#scheduleHistoryModal .history-display,
+#asNeededHistoryModal .history-display {
     max-height: none;
     overflow: visible;
     padding-right: 0;
 }
 
-#scheduleHistoryModal .history-entry {
+#scheduleHistoryModal .history-entry,
+#asNeededHistoryModal .history-entry {
     padding: 10px 12px;
     border: 1px solid #dbe5f0;
     border-radius: 10px;

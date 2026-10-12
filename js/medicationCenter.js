@@ -98,6 +98,17 @@ const asNeededDateTimeFields =
 const asNeededDateTimeInput =
     document.getElementById("asNeededDateTimeInput");
 
+const asNeededHistoryRow = document.getElementById("asNeededHistoryRow");
+const asNeededHistoryModal = document.getElementById("asNeededHistoryModal");
+const asNeededHistoryDisplay = document.getElementById("asNeededHistoryDisplay");
+const asNeededHistoryShowMoreButton = document.getElementById("asNeededHistoryShowMoreButton");
+const closeAsNeededHistoryModalBtn = document.getElementById("closeAsNeededHistoryModalBtn");
+const deleteAsNeededMedicationBtn = document.getElementById("deleteAsNeededMedicationBtn");
+
+const AS_NEEDED_HISTORY_INITIAL_COUNT = 14;
+const AS_NEEDED_HISTORY_SHOW_MORE_STEP = 30;
+let asNeededHistoryVisibleCount = AS_NEEDED_HISTORY_INITIAL_COUNT;
+
 let asNeededMedicationHistory =
     loadData("asNeededMedicationHistory", []);
 const AS_NEEDED_AVAILABLE_MEDICATIONS_KEY =
@@ -773,6 +784,161 @@ function openScheduleNotesModal(eventId) {
     });
 }
 
+// Parses "YYYY-MM-DDTHH:MM" explicitly; returns null when missing or invalid.
+function getAsNeededHistoryTimestamp(entry) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(String(entry && entry.dateTime || ""));
+    if (!match) {
+        return null;
+    }
+
+    const year = Number(match[1]);
+    const month = Number(match[2]);
+    const day = Number(match[3]);
+    const hours = Number(match[4]);
+    const minutes = Number(match[5]);
+    const parsed = new Date(year, month - 1, day, hours, minutes);
+
+    if (parsed.getFullYear() !== year || parsed.getMonth() !== month - 1 ||
+        parsed.getDate() !== day || hours > 23 || minutes > 59) {
+        return null;
+    }
+
+    return parsed.getTime();
+}
+
+function isAsNeededHistoryModalOpen() {
+    return !!asNeededHistoryModal && asNeededHistoryModal.style.display === "flex";
+}
+
+function getAsNeededHistoryEntries() {
+    return asNeededMedicationHistory.map(function (entry, index) {
+        return { entry: entry, index: index, timestamp: getAsNeededHistoryTimestamp(entry) };
+    }).filter(function (item) {
+        return item.entry && typeof item.entry === "object";
+    }).sort(function (left, right) {
+        if (left.timestamp !== null && right.timestamp !== null) {
+            return left.timestamp !== right.timestamp
+                ? right.timestamp - left.timestamp
+                : right.index - left.index;
+        }
+
+        if (left.timestamp !== null) {
+            return -1;
+        }
+
+        if (right.timestamp !== null) {
+            return 1;
+        }
+
+        return left.index - right.index;
+    });
+}
+
+function renderAsNeededHistory() {
+    if (!asNeededHistoryDisplay) {
+        return;
+    }
+
+    const items = getAsNeededHistoryEntries();
+
+    if (!items.length) {
+        asNeededHistoryDisplay.innerHTML = '<p class="history-empty">No as-needed medications logged yet.</p>';
+        if (asNeededHistoryShowMoreButton) {
+            asNeededHistoryShowMoreButton.hidden = true;
+        }
+        return;
+    }
+
+    const visibleItems = items.slice(0, asNeededHistoryVisibleCount);
+
+    asNeededHistoryDisplay.innerHTML = "";
+    visibleItems.forEach(function (item) {
+        const entry = item.entry;
+        const dose = getAsNeededOccurrenceDose(entry);
+        const medicationName = normalizeAsNeededMedicationName(entry.medication) || "Unknown medication";
+
+        const row = document.createElement("button");
+        row.type = "button";
+        row.className = "history-entry schedule-history-row as-needed-history-row";
+        row.setAttribute("data-history-index", String(item.index));
+
+        const text = document.createElement("span");
+        text.className = "as-needed-history-row-text";
+
+        const titleLine = document.createElement("span");
+        titleLine.className = "history-entry-body";
+        titleLine.textContent = medicationName + " \u00b7 " + formatAsNeededDose(dose.quantity, dose.unit);
+        text.appendChild(titleLine);
+
+        const dateLine = document.createElement("span");
+        dateLine.className = "history-entry-meta";
+        dateLine.textContent = item.timestamp !== null ? formatDateTime(entry.dateTime) : "Date unknown";
+        text.appendChild(dateLine);
+
+        const note = String(entry.note || "").trim();
+        if (note) {
+            const noteLine = document.createElement("span");
+            noteLine.className = "history-entry-meta";
+            noteLine.textContent = note;
+            text.appendChild(noteLine);
+        }
+
+        const chevron = document.createElement("span");
+        chevron.className = "medication-card-notes-chevron";
+        chevron.setAttribute("aria-hidden", "true");
+        chevron.textContent = "\u203a";
+
+        row.appendChild(text);
+        row.appendChild(chevron);
+        asNeededHistoryDisplay.appendChild(row);
+    });
+
+    if (asNeededHistoryShowMoreButton) {
+        asNeededHistoryShowMoreButton.hidden = items.length <= visibleItems.length;
+    }
+}
+
+function openAsNeededHistoryModal() {
+    if (!asNeededHistoryModal) {
+        return;
+    }
+
+    asNeededHistoryVisibleCount = AS_NEEDED_HISTORY_INITIAL_COUNT;
+    renderAsNeededHistory();
+    asNeededHistoryModal.style.display = "flex";
+
+    const content = asNeededHistoryModal.querySelector(".schedule-history-modal-content");
+    if (content) {
+        content.scrollTop = 0;
+    }
+}
+
+function closeAsNeededHistoryModal() {
+    if (asNeededHistoryModal) {
+        asNeededHistoryModal.style.display = "none";
+    }
+}
+
+function deleteAsNeededHistoryEntryAt(historyIndex) {
+    const entry = Number.isInteger(historyIndex) ? asNeededMedicationHistory[historyIndex] : null;
+    if (!entry) {
+        return false;
+    }
+
+    const dose = getAsNeededOccurrenceDose(entry);
+    const deleteMessage = "Delete this history entry?\n\n" + normalizeAsNeededMedicationName(entry.medication) +
+        "\n" + formatDateTime(entry.dateTime) + " · " +
+        formatAsNeededDose(dose.quantity, dose.unit);
+    if (!window.confirm(deleteMessage)) {
+        return false;
+    }
+
+    asNeededMedicationHistory.splice(historyIndex, 1);
+    saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+    renderAsNeededMedicationHistory();
+    return true;
+}
+
 function getMedicationHistoryFor(medicationName) {
     return asNeededMedicationHistory.filter(function (entry) {
         return (entry.medication || "") === medicationName;
@@ -780,6 +946,10 @@ function getMedicationHistoryFor(medicationName) {
 }
 
 function renderAsNeededMedicationHistory() {
+    if (isAsNeededHistoryModalOpen()) {
+        renderAsNeededHistory();
+    }
+
     if (!asNeededLastTakenDisplay) {
         return;
     }
@@ -793,13 +963,23 @@ function renderAsNeededMedicationHistory() {
 
     const latestByMedication = {};
 
-    asNeededMedicationHistory.forEach(function (entry) {
+    asNeededMedicationHistory.forEach(function (entry, index) {
         const medicationName = entry && entry.medication ? String(entry.medication).trim() : "";
         if (!medicationName) {
             return;
         }
 
-        latestByMedication[medicationName] = entry;
+        const timestamp = getAsNeededHistoryTimestamp(entry);
+        const current = latestByMedication[medicationName];
+        // A valid date beats an invalid one; ties and two invalids fall back to array order.
+        const isNewer = !current ||
+            (timestamp !== null && current.timestamp === null) ||
+            (timestamp !== null && current.timestamp !== null && timestamp >= current.timestamp) ||
+            (timestamp === null && current.timestamp === null);
+
+        if (isNewer) {
+            latestByMedication[medicationName] = { entry: entry, index: index, timestamp: timestamp };
+        }
     });
 
     const medicationNames = Object.keys(latestByMedication).sort(function (a, b) {
@@ -816,8 +996,9 @@ function renderAsNeededMedicationHistory() {
     asNeededLastTakenDisplay.innerHTML =
         "<h3 class=\"as-needed-history-heading\">As-Needed Medication History</h3>" +
         medicationNames.map(function (medicationName) {
-        const latest = latestByMedication[medicationName];
-        const historyIndex = asNeededMedicationHistory.lastIndexOf(latest);
+        const latestRecord = latestByMedication[medicationName];
+        const latest = latestRecord.entry;
+        const historyIndex = latestRecord.index;
         const dose = getAsNeededOccurrenceDose(latest);
         const noteText = latest.note ? " — " + latest.note : "";
         const isExpanded = getAsNeededMedicationCompareKey(medicationName) ===
@@ -828,8 +1009,8 @@ function renderAsNeededMedicationHistory() {
             "\"><strong>" + medicationName + "</strong><span class=\"as-needed-history-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
             " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
             "</span><span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
-            historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-medication=\"" +
-            medicationName + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
+            historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-index=\"" +
+            historyIndex + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
         }).join("");
 }
 
@@ -917,6 +1098,10 @@ function openAsNeededMedicationModal(historyIndex) {
         asNeededMedicationModalTitle.textContent = editingAsNeededHistoryIndex >= 0
             ? "Edit As-Needed Medication Entry"
             : "Log As-Needed Medication";
+    }
+
+    if (deleteAsNeededMedicationBtn) {
+        deleteAsNeededMedicationBtn.style.display = editingAsNeededHistoryIndex >= 0 ? "block" : "none";
     }
 
     if (asNeededMedicationModal) {
@@ -2731,24 +2916,61 @@ if (asNeededLastTakenDisplay) {
         const deleteButton = event.target.closest(".medication-delete-btn");
         if (!deleteButton) return;
 
-        const medication = deleteButton.getAttribute("data-medication");
-        if (!medication) return;
+        deleteAsNeededHistoryEntryAt(Number(deleteButton.getAttribute("data-index")));
+    });
+}
 
-        const medicationHistory = getMedicationHistoryFor(medication);
-        if (!medicationHistory.length) return;
+if (asNeededHistoryRow) {
+    asNeededHistoryRow.addEventListener("click", openAsNeededHistoryModal);
+}
 
-        const latestEntry = medicationHistory[medicationHistory.length - 1];
-        const latestDose = getAsNeededOccurrenceDose(latestEntry);
-        const deleteMessage = "Delete this history entry?\n\n" + medication +
-            "\n" + formatDateTime(latestEntry.dateTime) + " · " +
-            formatAsNeededDose(latestDose.quantity, latestDose.unit);
-        if (!window.confirm(deleteMessage)) return;
+if (asNeededHistoryDisplay) {
+    asNeededHistoryDisplay.addEventListener("click", function (event) {
+        const row = event.target.closest(".as-needed-history-row");
+        if (!row || !asNeededHistoryDisplay.contains(row)) {
+            return;
+        }
 
-        const latestIndex = asNeededMedicationHistory.lastIndexOf(medicationHistory[medicationHistory.length - 1]);
-        if (latestIndex >= 0) {
-            asNeededMedicationHistory.splice(latestIndex, 1);
-            saveData("asNeededMedicationHistory", asNeededMedicationHistory);
-            renderAsNeededMedicationHistory();
+        const historyIndex = Number(row.getAttribute("data-history-index"));
+        if (Number.isInteger(historyIndex) && asNeededMedicationHistory[historyIndex]) {
+            openAsNeededMedicationModal(historyIndex);
+        }
+    });
+}
+
+if (asNeededHistoryShowMoreButton) {
+    asNeededHistoryShowMoreButton.addEventListener("click", function () {
+        asNeededHistoryVisibleCount += AS_NEEDED_HISTORY_SHOW_MORE_STEP;
+        renderAsNeededHistory();
+    });
+}
+
+if (closeAsNeededHistoryModalBtn) {
+    closeAsNeededHistoryModalBtn.addEventListener("click", closeAsNeededHistoryModal);
+}
+
+if (asNeededHistoryModal) {
+    asNeededHistoryModal.addEventListener("touchmove", function (event) {
+        const content = asNeededHistoryModal.querySelector(".schedule-history-modal-content");
+        if (content && !content.contains(event.target)) {
+            event.preventDefault();
+        }
+    }, {
+        passive: false
+    });
+
+    asNeededHistoryModal.addEventListener("click", function (event) {
+        if (event.target === asNeededHistoryModal) {
+            closeAsNeededHistoryModal();
+        }
+    });
+}
+
+if (deleteAsNeededMedicationBtn) {
+    deleteAsNeededMedicationBtn.addEventListener("click", function () {
+        if (deleteAsNeededHistoryEntryAt(editingAsNeededHistoryIndex)) {
+            editingAsNeededHistoryIndex = -1;
+            closeAsNeededMedicationModal();
         }
     });
 }
