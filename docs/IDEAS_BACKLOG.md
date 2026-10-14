@@ -127,3 +127,22 @@ Completed, obsolete, and duplicate ideas have been removed from the active backl
     * Cross-device Chrome synchronization
   * Keep the current Safari/Home Screen setup unchanged unless testing confirms Chrome provides an equal or better experience.
   * This is a future investigation only and is separate from the planned Quick Links change to open external links in new Safari tabs.
+
+
+### Health Trends — Unified Health Trend Charts
+
+**Status:** Future idea — not currently planned for implementation
+
+Create a new **Health Trends** entry point on the main dashboard to bring together important health measurements over time.
+
+Potential features:
+- Graph weight and weight-loss trends.
+- Compare weight with blood pressure over matching dates.
+- Compare weight with daily calorie intake and calorie averages.
+- Allow selection of a time range, such as 30 days, 90 days, or one year.
+- Align measurements by date and handle missing readings appropriately.
+- Keep separate scales for measurements with different units.
+
+**Implementation approach:** Preserve the existing Weight History and Nutrition Center functionality. Reuse existing stored data rather than creating duplicate records. Add features incrementally after reviewing the current data structures and charting code.
+
+**Initial step when this idea is revisited:** Investigate the existing weight, blood pressure, and nutrition data storage and chart implementations before proposing changes.
