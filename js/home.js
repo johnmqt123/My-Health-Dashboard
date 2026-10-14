@@ -1,5 +1,17 @@
 
-const WELCOME_DISPLAY_NAME = "Yooper";
+const WELCOME_FALLBACK_NAME = "John";
+
+function getWelcomeDisplayName() {
+    const profileApi = window.personalProfileData;
+    const profile = profileApi && typeof profileApi.loadProfile === "function"
+        ? profileApi.loadProfile()
+        : null;
+    const firstName = profile && typeof profile.firstName === "string"
+        ? profile.firstName.trim()
+        : "";
+
+    return firstName || WELCOME_FALLBACK_NAME;
+}
 
 function initializeHome() {
     updateGreeting();
@@ -23,13 +35,14 @@ function updateDailyMessage() {
 function updateGreeting() {
     const greeting = document.getElementById("greeting");
     const hour = new Date().getHours();
+    const displayName = getWelcomeDisplayName();
 
     if (hour < 12) {
-        greeting.textContent = "Good morning,\n" + WELCOME_DISPLAY_NAME;
+        greeting.textContent = "Good morning,\n" + displayName;
     } else if (hour < 18) {
-        greeting.textContent = "Good afternoon,\n" + WELCOME_DISPLAY_NAME;
+        greeting.textContent = "Good afternoon,\n" + displayName;
     } else {
-        greeting.textContent = "Good evening,\n" + WELCOME_DISPLAY_NAME;
+        greeting.textContent = "Good evening,\n" + displayName;
     }
 }
 
