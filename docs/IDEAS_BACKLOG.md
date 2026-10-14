@@ -146,3 +146,25 @@ Potential features:
 **Implementation approach:** Preserve the existing Weight History and Nutrition Center functionality. Reuse existing stored data rather than creating duplicate records. Add features incrementally after reviewing the current data structures and charting code.
 
 **Initial step when this idea is revisited:** Investigate the existing weight, blood pressure, and nutrition data storage and chart implementations before proposing changes.
+### Blood Pressure History — Trend Graph Presentation Improvements
+
+**Status:** Future improvement — defer implementation
+
+The blood pressure trend graph has been added to Blood Pressure History, but its presentation needs refinement. The existing history list works correctly and should remain unchanged.
+
+**Issues observed:**
+- The Blood Pressure History layout is too wide on the iPhone; the Close History button can slide off the right edge of the visible screen.
+- The graph, legend, and axis labels need a more mobile-friendly layout in portrait and landscape.
+- Blood pressure changes are often subtle, making the current graph appear nearly flat and difficult to interpret.
+
+**Potential improvements:**
+- Keep the history header and Close History button fully visible within the screen width.
+- Refine chart sizing, spacing, labels, and legend placement for narrow screens.
+- Consider a more useful vertical scale for highlighting modest changes, while clearly labeling the scale and avoiding misleading visual exaggeration.
+- Review whether a selectable vertical scale or another presentation option would make trends easier to interpret.
+- Preserve accurate readings, dates, and times; do not alter stored data or invent missing readings.
+
+**Constraints:**
+- Defer changes until a later UI cleanup pass.
+- Preserve the existing Blood Pressure History list, editing, deletion, date filters, and copy functionality.
+- Keep this separate from the future Health Trends dashboard concept.
