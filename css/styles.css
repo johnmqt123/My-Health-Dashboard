@@ -5282,6 +5282,94 @@ button:active,
     color: var(--muted);
 }
 
+.bp-trend {
+    margin: 10px 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.bp-trend-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 4px;
+    color: var(--text);
+    font-size: 0.85rem;
+}
+
+.bp-trend-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bp-trend-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+.bp-trend-scroll {
+    min-height: 240px;
+    overflow-x: auto;
+}
+
+.bp-trend-scroll svg {
+    display: block;
+    width: 100%;
+    min-width: 520px;
+    height: 240px;
+}
+
+.bp-trend-axis {
+    stroke: var(--dashboard-card-border);
+    stroke-width: 1;
+}
+
+.bp-trend-grid-line {
+    stroke: var(--dashboard-card-border);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.bp-trend-label {
+    fill: var(--muted);
+    font-size: 11px;
+}
+
+.bp-trend-line {
+    fill: none;
+    stroke-width: 3;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.bp-trend-line.bp-trend-systolic {
+    stroke: var(--dashboard-primary-accent);
+}
+
+.bp-trend-line.bp-trend-diastolic {
+    stroke: var(--dashboard-green-accent);
+}
+
+.bp-trend-marker {
+    stroke: var(--surface);
+    stroke-width: 1.5;
+}
+
+.bp-trend-marker.bp-trend-systolic,
+.bp-trend-swatch.bp-trend-systolic {
+    fill: var(--dashboard-primary-accent);
+    background: var(--dashboard-primary-accent);
+}
+
+.bp-trend-marker.bp-trend-diastolic,
+.bp-trend-swatch.bp-trend-diastolic {
+    fill: var(--dashboard-green-accent);
+    background: var(--dashboard-green-accent);
+}
+
 @media (max-width: 600px) {
     .nutrition-statistics-header,
     .nutrition-statistics-chart-header {

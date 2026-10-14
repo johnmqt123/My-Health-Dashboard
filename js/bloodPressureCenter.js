@@ -33,6 +33,7 @@
     const bpFilterToggle = document.getElementById("bpFilterToggle");
     const bpFilterPanel = document.getElementById("bpFilterPanel");
     const bpHistoryDisplay = document.getElementById("bpHistoryDisplay");
+    const bpTrendChart = document.getElementById("bpTrendChart");
     const bpStartDateInput = document.getElementById("bpStartDate");
     const bpEndDateInput = document.getElementById("bpEndDate");
     const bpClearRangeButton = document.getElementById("bpClearRangeButton");
@@ -181,7 +182,162 @@
         }).join("\n");
     }
 
+    function getBpTrendTimestamp(entry) {
+        const day = parseBloodPressureDateValue(entry && entry.date ? entry.date : "");
+        if (!day) {
+            return null;
+        }
+
+        const timeMatch = /^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i.exec(entry.time ? String(entry.time).trim() : "");
+        if (timeMatch) {
+            let hours = Number(timeMatch[1]);
+            const meridian = timeMatch[3] ? timeMatch[3].toUpperCase() : "";
+            if (meridian === "PM" && hours < 12) hours += 12;
+            if (meridian === "AM" && hours === 12) hours = 0;
+            if (hours < 24) {
+                day.setHours(hours, Number(timeMatch[2]), 0, 0);
+            }
+        }
+
+        return day.getTime();
+    }
+
+    function getBpTrendPoints() {
+        const startDate = bpStartDateInput ? String(bpStartDateInput.value || "").trim() : "";
+        const endDate = bpEndDateInput ? String(bpEndDateInput.value || "").trim() : "";
+
+        return bpHistory.map(function (entry, index) {
+            return {
+                time: getBpTrendTimestamp(entry),
+                dateKey: getBloodPressureDateKey(entry),
+                systolic: Number(entry && entry.systolic),
+                diastolic: Number(entry && entry.diastolic),
+                index: index
+            };
+        }).filter(function (point) {
+            return point.time !== null &&
+                point.dateKey &&
+                Number.isFinite(point.systolic) && point.systolic > 0 &&
+                Number.isFinite(point.diastolic) && point.diastolic > 0 &&
+                (!startDate || point.dateKey >= startDate) &&
+                (!endDate || point.dateKey <= endDate);
+        }).sort(function (left, right) {
+            return left.time - right.time || left.index - right.index;
+        });
+    }
+
+    function renderBpTrendChart() {
+        if (!bpTrendChart) {
+            return;
+        }
+
+        const startValue = bpStartDateInput ? bpStartDateInput.value : "";
+        const endValue = bpEndDateInput ? bpEndDateInput.value : "";
+        if (startValue && endValue && startValue > endValue) {
+            bpTrendChart.textContent = "Start date must be on or before end date.";
+            return;
+        }
+
+        const points = getBpTrendPoints();
+        if (!points.length) {
+            bpTrendChart.textContent = "No blood pressure readings to graph for this range.";
+            return;
+        }
+
+        const width = 720;
+        const height = 240;
+        const plotLeft = 58;
+        const plotRight = 678;
+        const plotTop = 20;
+        const plotBottom = 204;
+        const xInset = 8;
+
+        const allValues = [];
+        points.forEach(function (point) {
+            allValues.push(point.systolic, point.diastolic);
+        });
+        const rawMin = Math.min.apply(null, allValues) - 5;
+        const rawMax = Math.max.apply(null, allValues) + 5;
+        const roughStep = (rawMax - rawMin) / 4;
+        const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+        const normalizedStep = roughStep / magnitude;
+        const tickStep = (normalizedStep <= 1 ? 1 : normalizedStep <= 2 ? 2 : normalizedStep <= 5 ? 5 : 10) * magnitude;
+        const domainMin = Math.floor(rawMin / tickStep) * tickStep;
+        const domainMax = Math.ceil(rawMax / tickStep) * tickStep;
+        const span = domainMax - domainMin || tickStep;
+
+        const firstTime = points[0].time;
+        const lastTime = points[points.length - 1].time;
+        const timeSpan = lastTime - firstTime;
+
+        function xFor(time) {
+            if (!timeSpan) {
+                return (plotLeft + plotRight) / 2;
+            }
+            return plotLeft + xInset + ((time - firstTime) / timeSpan) * (plotRight - plotLeft - xInset * 2);
+        }
+
+        function yFor(value) {
+            return plotBottom - ((value - domainMin) / span) * (plotBottom - plotTop);
+        }
+
+        let yAxis = "";
+        for (let tick = domainMin; tick <= domainMax + tickStep / 100; tick += tickStep) {
+            const y = yFor(tick).toFixed(1);
+            yAxis += '<line class="bp-trend-grid-line" x1="' + plotLeft + '" y1="' + y + '" x2="' + plotRight + '" y2="' + y + '"></line>' +
+                '<text class="bp-trend-label" x="4" y="' + (Number(y) + 4).toFixed(1) + '">' +
+                Math.round(tick) + ' mmHg</text>';
+        }
+
+        const showTime = timeSpan < 2 * 86400000;
+        const tickCount = timeSpan ? 5 : 1;
+        let dateLabels = "";
+        for (let tickIndex = 0; tickIndex < tickCount; tickIndex += 1) {
+            const time = tickCount === 1 ? firstTime : firstTime + (timeSpan * tickIndex) / (tickCount - 1);
+            const date = new Date(time);
+            const text = date.toLocaleDateString([], { month: "short", day: "numeric" }) +
+                (showTime ? ", " + date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "");
+            dateLabels += '<text class="bp-trend-label" x="' + xFor(time).toFixed(1) + '" y="233" text-anchor="middle">' + text + '</text>';
+        }
+
+        function seriesMarkup(key, className, name) {
+            const coordinates = points.map(function (point) {
+                return xFor(point.time).toFixed(1) + "," + yFor(point[key]).toFixed(1);
+            });
+            const line = points.length > 1
+                ? '<polyline class="bp-trend-line ' + className + '" points="' + coordinates.join(" ") + '"></polyline>'
+                : "";
+            const markers = points.map(function (point) {
+                const when = new Date(point.time);
+                return '<circle class="bp-trend-marker ' + className + '" cx="' + xFor(point.time).toFixed(1) +
+                    '" cy="' + yFor(point[key]).toFixed(1) + '" r="4"><title>' + name + " " + point[key] + " mmHg, " +
+                    when.toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) +
+                    (when.getHours() || when.getMinutes() ? " " + when.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }) : "") +
+                    '</title></circle>';
+            }).join("");
+            return line + markers;
+        }
+
+        bpTrendChart.innerHTML =
+            '<div class="bp-trend-legend">' +
+                '<span class="bp-trend-legend-item"><span class="bp-trend-swatch bp-trend-systolic"></span>Systolic</span>' +
+                '<span class="bp-trend-legend-item"><span class="bp-trend-swatch bp-trend-diastolic"></span>Diastolic</span>' +
+            '</div>' +
+            '<div class="bp-trend-scroll">' +
+                '<svg viewBox="0 0 ' + width + " " + height + '" role="img" aria-label="Systolic and diastolic blood pressure trend, ' +
+                points.length + (points.length === 1 ? " reading" : " readings") + '">' +
+                    yAxis +
+                    '<line class="bp-trend-axis" x1="' + plotLeft + '" y1="' + plotBottom + '" x2="' + plotRight + '" y2="' + plotBottom + '"></line>' +
+                    seriesMarkup("systolic", "bp-trend-systolic", "Systolic") +
+                    seriesMarkup("diastolic", "bp-trend-diastolic", "Diastolic") +
+                    dateLabels +
+                '</svg>' +
+            '</div>';
+    }
+
     function updateBpRangeSummary() {
+        renderBpTrendChart();
+
         const hasInvalidRange = Boolean(
             bpStartDateInput && bpEndDateInput &&
             bpStartDateInput.value && bpEndDateInput.value &&
