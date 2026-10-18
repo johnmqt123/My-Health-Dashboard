@@ -2946,6 +2946,26 @@ button.history-action-btn {
 
 #asNeededMedicationContent .as-needed-entry.is-expanded .history-entry-actions {
     display: flex;
+    flex-wrap: wrap;
+}
+
+#asNeededMedicationContent .as-needed-hidden-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+#asNeededMedicationContent .as-needed-hidden-name {
+    color: var(--muted);
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+#asNeededMedicationContent .as-needed-show-btn {
+    min-height: 40px;
+    white-space: nowrap;
 }
 
 #asNeededMedicationContent .as-needed-entry:last-child {

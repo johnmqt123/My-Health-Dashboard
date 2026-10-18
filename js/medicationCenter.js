@@ -167,6 +167,50 @@ function getAsNeededMedicationCompareKey(name) {
     return normalizeAsNeededMedicationName(name).toLowerCase();
 }
 
+const AS_NEEDED_LAST_TAKEN_HIDDEN_KEY = "asNeededLastTakenHiddenMedications";
+let asNeededHiddenLastTakenExpanded = false;
+
+function getAsNeededLastTakenHiddenNames() {
+    const stored = loadData(AS_NEEDED_LAST_TAKEN_HIDDEN_KEY, []);
+    if (!Array.isArray(stored)) {
+        return [];
+    }
+
+    return stored.map(normalizeAsNeededMedicationName).filter(Boolean);
+}
+
+function saveAsNeededLastTakenHiddenNames(names) {
+    const seen = {};
+    const unique = names.filter(function (name) {
+        const key = getAsNeededMedicationCompareKey(name);
+        if (!key || seen[key]) {
+            return false;
+        }
+        seen[key] = true;
+        return true;
+    });
+    saveData(AS_NEEDED_LAST_TAKEN_HIDDEN_KEY, unique);
+}
+
+function isAsNeededLastTakenHidden(name) {
+    const key = getAsNeededMedicationCompareKey(name);
+    return getAsNeededLastTakenHiddenNames().some(function (hiddenName) {
+        return getAsNeededMedicationCompareKey(hiddenName) === key;
+    });
+}
+
+function setAsNeededLastTakenHidden(name, hidden) {
+    const key = getAsNeededMedicationCompareKey(name);
+    const names = getAsNeededLastTakenHiddenNames().filter(function (hiddenName) {
+        return getAsNeededMedicationCompareKey(hiddenName) !== key;
+    });
+    if (hidden) {
+        names.push(normalizeAsNeededMedicationName(name));
+    }
+    saveAsNeededLastTakenHiddenNames(names);
+    renderAsNeededMedicationHistory();
+}
+
 function normalizeAsNeededDoseQuantity(value, fallbackValue) {
     const quantity = Number(value);
     return Number.isFinite(quantity) && quantity > 0 ? quantity : fallbackValue;
@@ -554,6 +598,13 @@ function addAsNeededAvailableMedication() {
             }
         });
         saveData("asNeededMedicationHistory", asNeededMedicationHistory);
+        if (isAsNeededLastTakenHidden(originalName)) {
+            const carriedNames = getAsNeededLastTakenHiddenNames().filter(function (hiddenName) {
+                return getAsNeededMedicationCompareKey(hiddenName) !== getAsNeededMedicationCompareKey(originalName);
+            });
+            carriedNames.push(normalizedName);
+            saveAsNeededLastTakenHiddenNames(carriedNames);
+        }
         renderAsNeededMedicationHistory();
     }
 
@@ -1061,9 +1112,44 @@ function renderAsNeededMedicationHistory() {
         return;
     }
 
+    const hiddenNameKeys = {};
+    getAsNeededLastTakenHiddenNames().forEach(function (hiddenName) {
+        hiddenNameKeys[getAsNeededMedicationCompareKey(hiddenName)] = true;
+    });
+    const allMedicationNames = medicationNames;
+    const hiddenMedicationNames = allMedicationNames.filter(function (name) {
+        return hiddenNameKeys[getAsNeededMedicationCompareKey(name)];
+    });
+    const visibleMedicationNames = allMedicationNames.filter(function (name) {
+        return !hiddenNameKeys[getAsNeededMedicationCompareKey(name)];
+    });
+    const escapeLastTakenText = function (text) {
+        return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    };
+
+    const emptyVisibleHtml = visibleMedicationNames.length
+        ? ""
+        : "<p class=\"as-needed-history-empty\">All medications are hidden from Last Taken. Use the section below to show one again, or tap History for all entries.</p>";
+
+    const hiddenGroupHtml = hiddenMedicationNames.length
+        ? "<div class=\"as-needed-inactive-group as-needed-hidden-group" + (asNeededHiddenLastTakenExpanded ? " is-expanded" : "") + "\">" +
+            "<button type=\"button\" class=\"as-needed-inactive-toggle as-needed-hidden-toggle\" aria-expanded=\"" +
+            (asNeededHiddenLastTakenExpanded ? "true" : "false") + "\">Hidden from Last Taken (" + hiddenMedicationNames.length + ")</button>" +
+            (asNeededHiddenLastTakenExpanded
+                ? hiddenMedicationNames.map(function (name) {
+                    return "<div class=\"as-needed-hidden-row\"><span class=\"as-needed-hidden-name\">" + escapeLastTakenText(name) +
+                        "</span><button type=\"button\" class=\"history-action-btn edit as-needed-show-btn\" data-medication=\"" +
+                        escapeLastTakenText(name) + "\">Show</button></div>";
+                }).join("")
+                : "") +
+            "</div>"
+        : "";
+
     asNeededLastTakenDisplay.innerHTML =
         "<h3 class=\"as-needed-history-heading\">As-Needed Medication History — Last Taken</h3>" +
-        medicationNames.map(function (medicationName) {
+        emptyVisibleHtml +
+        visibleMedicationNames.map(function (medicationName) {
         const latestRecord = latestByMedication[medicationName];
         const latest = latestRecord.entry;
         const historyIndex = latestRecord.index;
@@ -1077,9 +1163,11 @@ function renderAsNeededMedicationHistory() {
             "\"><strong>" + medicationName + "</strong><span class=\"as-needed-history-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
             " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
             "</span><span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
-            historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-index=\"" +
+            historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn edit as-needed-hide-btn\" data-medication=\"" +
+            medicationName.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") +
+            "\">Hide from Last Taken</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-index=\"" +
             historyIndex + "\" aria-label=\"Delete medication entry\">Delete Entry</button></div></div>";
-        }).join("");
+        }).join("") + hiddenGroupHtml;
 }
 
 function resetAsNeededMedicationForm() {
@@ -2981,6 +3069,25 @@ if (asNeededLastTakenDisplay) {
             const isSameMedication = getAsNeededMedicationCompareKey(expandedAsNeededHistoryMedicationName) ===
                 getAsNeededMedicationCompareKey(medicationName);
             expandedAsNeededHistoryMedicationName = isSameMedication ? "" : medicationName;
+            renderAsNeededMedicationHistory();
+            return;
+        }
+
+        const hideButton = event.target.closest(".as-needed-hide-btn");
+        if (hideButton) {
+            setAsNeededLastTakenHidden(hideButton.getAttribute("data-medication"), true);
+            return;
+        }
+
+        const showButton = event.target.closest(".as-needed-show-btn");
+        if (showButton) {
+            setAsNeededLastTakenHidden(showButton.getAttribute("data-medication"), false);
+            return;
+        }
+
+        const hiddenToggle = event.target.closest(".as-needed-hidden-toggle");
+        if (hiddenToggle) {
+            asNeededHiddenLastTakenExpanded = !asNeededHiddenLastTakenExpanded;
             renderAsNeededMedicationHistory();
             return;
         }
