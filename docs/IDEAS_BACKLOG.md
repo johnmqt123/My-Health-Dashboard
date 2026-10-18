@@ -168,3 +168,22 @@ The blood pressure trend graph has been added to Blood Pressure History, but its
 - Defer changes until a later UI cleanup pass.
 - Preserve the existing Blood Pressure History list, editing, deletion, date filters, and copy functionality.
 - Keep this separate from the future Health Trends dashboard concept.
+
+### As-Needed Medication History — Search by Medication
+
+**Status:** Future enhancement — low priority
+
+Add a search function to the full As-Needed Medication History view so the user can quickly find historical records for a specific medication without scrolling through a long chronological list.
+
+**Potential features:**
+- Search by medication name, such as Tramadol or Maxitrol.
+- Show matching historical entries with their recorded dates, times, quantities, and notes when available.
+- Preserve the existing chronological history view when no search is applied.
+- Provide a simple way to clear the search and return to the complete history.
+
+**Constraints:**
+- Searching must not modify or delete historical records.
+- Hidden medications in the Last Taken summary must remain searchable in the full history.
+- Keep the search interface simple and usable on an iPhone.
+
+**Priority:** Defer until the need becomes more pressing. The existing chronological history remains functional.
