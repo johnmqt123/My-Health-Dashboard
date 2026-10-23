@@ -389,7 +389,7 @@
         const willShow = bpFilterPanel.hidden;
         bpFilterPanel.hidden = !willShow;
         bpFilterToggle.setAttribute("aria-expanded", String(willShow));
-        bpFilterToggle.textContent = willShow ? "Hide Search & Filter" : "Search & Filter";
+        bpFilterToggle.textContent = willShow ? "Hide Search & Filter" : "Search & Filter Readings";
     }
 
     async function copySelectedBpReadings() {
@@ -874,7 +874,7 @@
 
         if (bpFilterToggle && bpFilterPanel) {
             bpFilterPanel.hidden = true;
-            bpFilterToggle.textContent = "Search & Filter";
+            bpFilterToggle.textContent = "Search & Filter Readings";
             bpFilterToggle.setAttribute("aria-expanded", "false");
             bpFilterToggle.addEventListener("click", toggleBpFilterPanel);
         }

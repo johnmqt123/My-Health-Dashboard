@@ -758,6 +758,7 @@ header p {
 
 #bpHistorySection {
     /* Blood Pressure History is ordinary page content; the main page is the only scroll surface. */
+    min-width: 0;
     max-height: none;
     overflow: visible;
 }
@@ -5308,6 +5309,10 @@ button:active,
     margin: 10px 0;
     color: var(--muted);
     font-size: 0.9rem;
+}
+
+.bp-trend[hidden] {
+    display: none;
 }
 
 .bp-trend-legend {
