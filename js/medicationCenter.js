@@ -1154,15 +1154,16 @@ function renderAsNeededMedicationHistory() {
         const latest = latestRecord.entry;
         const historyIndex = latestRecord.index;
         const dose = getAsNeededOccurrenceDose(latest);
-        const noteText = latest.note ? " — " + latest.note : "";
+        const noteText = latest.note ? String(latest.note) : "";
         const isExpanded = getAsNeededMedicationCompareKey(medicationName) ===
             getAsNeededMedicationCompareKey(expandedAsNeededHistoryMedicationName);
 
         return "<div class=\"as-needed-entry" + (isExpanded ? " is-expanded" : "") + "\"><button type=\"button\" class=\"as-needed-history-toggle\" aria-expanded=\"" +
             (isExpanded ? "true" : "false") + "\" aria-label=\"" + (isExpanded ? "Collapse " : "Expand ") + medicationName +
-            "\"><strong>" + medicationName + "</strong><span class=\"as-needed-history-meta\">Last Taken: " + formatDateTime(latest.dateTime) +
-            " · " + formatAsNeededDose(dose.quantity, dose.unit) + noteText +
-            "</span><span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
+            "\"><strong>" + medicationName + "</strong><span class=\"as-needed-history-date\">Last taken: " + formatDateTime(latest.dateTime) +
+            "</span><span class=\"as-needed-history-meta\">Dose: " + formatAsNeededDose(dose.quantity, dose.unit) + "</span>" +
+            (noteText ? "<span class=\"as-needed-history-meta as-needed-history-note\">Note: " + noteText + "</span>" : "") +
+            "<span class=\"as-needed-history-chevron\" aria-hidden=\"true\">›</span></button><div class=\"history-entry-actions\"><button type=\"button\" class=\"history-action-btn edit as-needed-edit-btn\" data-index=\"" +
             historyIndex + "\">Edit</button><button type=\"button\" class=\"history-action-btn edit as-needed-hide-btn\" data-medication=\"" +
             medicationName.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;") +
             "\">Hide from Last Taken</button><button type=\"button\" class=\"history-action-btn delete medication-delete-btn as-needed-delete-btn\" data-index=\"" +
