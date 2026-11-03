@@ -3397,6 +3397,24 @@ button.history-action-btn {
     color: #075985;
 }
 
+.daily-diary-pagination-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+}
+
+.daily-diary-pagination-actions .daily-diary-show-more-button {
+    width: auto;
+    flex: 1 1 120px;
+    max-width: 200px;
+}
+
+.daily-diary-pagination-actions .daily-diary-show-more-button[hidden] {
+    display: none;
+}
+
 #dailyDiaryHistoryDisplay.diary-history-list {
     gap: 6px;
 }

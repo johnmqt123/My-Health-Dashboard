@@ -23,6 +23,7 @@
     const dailyDiaryResultCount = document.getElementById("dailyDiaryResultCount");
     const dailyDiaryShowMoreButton = document.getElementById("dailyDiaryShowMoreButton");
     const dailyDiaryShowingCount = document.getElementById("dailyDiaryShowingCount");
+    const dailyDiaryShowAllButton = document.getElementById("dailyDiaryShowAllButton");
 
     const dailyDiaryEditorModal = document.getElementById("dailyDiaryEditorModal");
     const dailyDiaryEditorTitle = document.getElementById("dailyDiaryEditorTitle");
@@ -508,6 +509,9 @@
             if (dailyDiaryShowMoreButton) {
                 dailyDiaryShowMoreButton.hidden = true;
             }
+            if (dailyDiaryShowAllButton) {
+                dailyDiaryShowAllButton.hidden = true;
+            }
             if (dailyDiaryShowingCount) {
                 dailyDiaryShowingCount.textContent = "";
             }
@@ -539,6 +543,10 @@
             const nextCount = Math.min(DIARY_SHOW_MORE_STEP, remainingEntries);
             dailyDiaryShowMoreButton.textContent = "Show " + nextCount + " More";
             dailyDiaryShowMoreButton.setAttribute("aria-label", "Show " + nextCount + " more entries");
+        }
+
+        if (dailyDiaryShowAllButton) {
+            dailyDiaryShowAllButton.hidden = remainingEntries <= 0;
         }
 
         if (dailyDiaryShowingCount) {
@@ -740,6 +748,16 @@
         renderHistory();
     }
 
+    function showAllDiaryEntries() {
+        const filteredEntries = getFilteredDiaryEntries();
+        if (!filteredEntries.length) {
+            return;
+        }
+
+        visibleDiaryEntriesCount = filteredEntries.length;
+        renderHistory();
+    }
+
     function initDailyDiaryCenter() {
         if (!dailyDiaryOpenTodayButton || !dailyDiaryEditorInput || !dailyDiaryEditorSaveButton) {
             return;
@@ -849,6 +867,10 @@
             dailyDiaryShowMoreButton.addEventListener("click", function () {
                 loadMoreDiaryEntries();
             });
+        }
+
+        if (dailyDiaryShowAllButton) {
+            dailyDiaryShowAllButton.addEventListener("click", showAllDiaryEntries);
         }
 
         renderHistory();
