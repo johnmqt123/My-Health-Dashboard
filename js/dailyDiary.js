@@ -22,6 +22,7 @@
     const dailyDiaryClearFiltersButton = document.getElementById("dailyDiaryClearFiltersButton");
     const dailyDiaryResultCount = document.getElementById("dailyDiaryResultCount");
     const dailyDiaryShowMoreButton = document.getElementById("dailyDiaryShowMoreButton");
+    const dailyDiaryShowingCount = document.getElementById("dailyDiaryShowingCount");
 
     const dailyDiaryEditorModal = document.getElementById("dailyDiaryEditorModal");
     const dailyDiaryEditorTitle = document.getElementById("dailyDiaryEditorTitle");
@@ -34,8 +35,8 @@
     let editorActiveDate = null;
     let lockedScrollTop = 0;
     let diaryModalLockCount = 0;
-    const INITIAL_DIARY_VISIBLE_COUNT = 40;
-    const DIARY_SHOW_MORE_STEP = 40;
+    const INITIAL_DIARY_VISIBLE_COUNT = 10;
+    const DIARY_SHOW_MORE_STEP = 10;
     let visibleDiaryEntriesCount = 0;
 
     function getLocalDateKey(dateValue) {
@@ -507,6 +508,9 @@
             if (dailyDiaryShowMoreButton) {
                 dailyDiaryShowMoreButton.hidden = true;
             }
+            if (dailyDiaryShowingCount) {
+                dailyDiaryShowingCount.textContent = "";
+            }
             updateDiaryResultCount(filteredEntries);
 
             const message = hasInvalidRange
@@ -528,8 +532,19 @@
         dailyDiaryHistoryDisplay.classList.add("diary-history-list");
         updateDiaryResultCount(filteredEntries);
 
+        const remainingEntries = filteredEntries.length - visibleEntries.length;
+
         if (dailyDiaryShowMoreButton) {
-            dailyDiaryShowMoreButton.hidden = filteredEntries.length <= visibleEntries.length;
+            dailyDiaryShowMoreButton.hidden = remainingEntries <= 0;
+            const nextCount = Math.min(DIARY_SHOW_MORE_STEP, remainingEntries);
+            dailyDiaryShowMoreButton.textContent = "Show " + nextCount + " More";
+            dailyDiaryShowMoreButton.setAttribute("aria-label", "Show " + nextCount + " more entries");
+        }
+
+        if (dailyDiaryShowingCount) {
+            dailyDiaryShowingCount.textContent = remainingEntries > 0
+                ? "Showing " + visibleEntries.length + " of " + filteredEntries.length + " entries"
+                : "Showing all " + filteredEntries.length + (filteredEntries.length === 1 ? " entry" : " entries");
         }
 
         const grouped = {};

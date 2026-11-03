@@ -3373,8 +3373,21 @@ button.history-action-btn {
 
 .daily-diary-pagination-wrap {
     display: flex;
-    justify-content: center;
-    margin: 0 0 10px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 0;
+}
+
+.daily-diary-showing-count {
+    margin: 0;
+    font-size: 0.83rem;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.daily-diary-showing-count:empty {
+    display: none;
 }
 
 .daily-diary-show-more-button {
