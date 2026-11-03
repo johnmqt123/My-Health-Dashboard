@@ -366,6 +366,51 @@ function isMedicationPeriodLoggedToday(legacyKey) {
     );
 }
 
+function escapeMedicationStatusHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+        return {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        }[character];
+    });
+}
+
+function buildMedicationTakenStatusHtml(legacyKey) {
+    const defaults = medicationEventCompatibility[legacyKey];
+    const event = getMedicationEventForLegacyKey(legacyKey);
+    const base = event && event.name
+        ? event.name
+        : (defaults ? defaults.buttonLabel : "Medication");
+    const time = medicationLog[legacyKey] && medicationLog[legacyKey].time
+        ? medicationLog[legacyKey].time
+        : "--";
+
+    return "<strong>✅ Taken Today:</strong> " +
+        '<button type="button" class="medication-taken-time-btn" data-medication-key="' +
+        escapeMedicationStatusHtml(legacyKey) +
+        '" aria-label="Edit ' + escapeMedicationStatusHtml(base) +
+        ' taken time, currently ' + escapeMedicationStatusHtml(time) + '">' +
+        escapeMedicationStatusHtml(time) + ' <span aria-hidden="true">✎</span></button>';
+}
+
+document.addEventListener("click", function (event) {
+    const timeButton = event.target.closest(".medication-taken-time-btn");
+
+    if (!timeButton) {
+        return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (typeof window.openMedicationTakenTimeEditor === "function") {
+        window.openMedicationTakenTimeEditor(timeButton.getAttribute("data-medication-key"));
+    }
+});
+
 function getMedicationActionButtonLabel(legacyKey) {
     return isMedicationPeriodLoggedToday(legacyKey)
         ? getMedicationUnlogButtonLabel(legacyKey)
@@ -1220,16 +1265,14 @@ if (
     medicationLog.wakeUp.date === new Date().toDateString()
 ) {
 
-    medStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.wakeUp.time;
+    medStatus.innerHTML = buildMedicationTakenStatusHtml("wakeUp");
         
 
     wakeUpButton.textContent = getMedicationActionButtonLabel("wakeUp");
     const summaryWakeUp = document.getElementById("summaryWakeUp");
 
 if (summaryWakeUp) {
-    summaryWakeUp.textContent = "✅ Logged " + medicationLog.wakeUp.time;
+    summaryWakeUp.textContent = "✅ Taken " + medicationLog.wakeUp.time;
 }
     wakeUpButton.disabled = false;
 }
@@ -1239,9 +1282,7 @@ if (
     medicationLog.breakfast.date === new Date().toDateString()
 ) {
 
-    breakfastStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.breakfast.time;
+    breakfastStatus.innerHTML = buildMedicationTakenStatusHtml("breakfast");
         
         
 
@@ -1255,9 +1296,7 @@ if (
     medicationLog.midday?.logged &&
     medicationLog.midday.date === new Date().toDateString()
 ) {
-    middayStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.midday.time;
+    middayStatus.innerHTML = buildMedicationTakenStatusHtml("midday");
         
         
 
@@ -1270,9 +1309,7 @@ if (
     medicationLog.dinner.date === new Date().toDateString()
 ) {
 
-    dinnerStatus.innerHTML =
-    "<strong>✅ Logged Today:</strong> " +
-    medicationLog.dinner.time;
+    dinnerStatus.innerHTML = buildMedicationTakenStatusHtml("dinner");
 
 
 
@@ -1285,9 +1322,7 @@ if (
     medicationLog.evening.date === new Date().toDateString()
 ) {
 
-    eveningStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.evening.time;
+    eveningStatus.innerHTML = buildMedicationTakenStatusHtml("evening");
         
         
 
@@ -1349,9 +1384,7 @@ localStorage.setItem(
     JSON.stringify(medicationHistory)
 );
 
-    medStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.wakeUp.time;
+    medStatus.innerHTML = buildMedicationTakenStatusHtml("wakeUp");
 
         
 
@@ -1421,9 +1454,7 @@ localStorage.setItem(
 );
 
 
-    breakfastStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.breakfast.time;
+    breakfastStatus.innerHTML = buildMedicationTakenStatusHtml("breakfast");
 
     breakfastButton.textContent = getMedicationActionButtonLabel("breakfast");
     breakfastButton.disabled = false;
@@ -1489,9 +1520,7 @@ localStorage.setItem(
     JSON.stringify(medicationHistory)
 );
 
-    middayStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.midday.time;
+    middayStatus.innerHTML = buildMedicationTakenStatusHtml("midday");
 
     middayButton.textContent = getMedicationActionButtonLabel("midday");
     middayButton.disabled = false;
@@ -1556,9 +1585,7 @@ localStorage.setItem(
     JSON.stringify(medicationHistory)
 );
 
-   dinnerStatus.innerHTML =
-    "<strong>✅ Logged Today:</strong> " +
-    medicationLog.dinner.time;
+   dinnerStatus.innerHTML = buildMedicationTakenStatusHtml("dinner");
 
 
 
@@ -1628,9 +1655,7 @@ localStorage.setItem(
 
 
 
-    eveningStatus.innerHTML =
-        "<strong>✅ Logged Today:</strong> " +
-        medicationLog.evening.time;
+    eveningStatus.innerHTML = buildMedicationTakenStatusHtml("evening");
 
     eveningButton.textContent = getMedicationActionButtonLabel("evening");
     eveningButton.disabled = false;
@@ -1643,9 +1668,7 @@ function updateDashboard() {
 
     if (medicationLog.wakeUp?.logged) {
 
-        medStatus.innerHTML =
-            "<strong>✅ Logged Today:</strong> " +
-            medicationLog.wakeUp.time;
+        medStatus.innerHTML = buildMedicationTakenStatusHtml("wakeUp");
 
         wakeUpButton.textContent = getMedicationActionButtonLabel("wakeUp");
 
@@ -1655,7 +1678,7 @@ function updateDashboard() {
 
         if (summaryWakeUp) {
             summaryWakeUp.textContent =
-                "✅ Logged " + medicationLog.wakeUp.time;
+                "✅ Taken " + medicationLog.wakeUp.time;
         }
     }
 
@@ -1842,8 +1865,7 @@ function refreshMedicationPeriodStatus(legacyKey) {
     }
 
     if (isMedicationPeriodLoggedToday(legacyKey)) {
-        elements.status.innerHTML =
-            "<strong>✅ Logged Today:</strong> " + medicationLog[legacyKey].time;
+        elements.status.innerHTML = buildMedicationTakenStatusHtml(legacyKey);
     } else {
         elements.status.textContent = "Not Logged";
     }

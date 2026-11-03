@@ -1500,6 +1500,7 @@ const closeScheduleHistoryModalBtn = document.getElementById("closeScheduleHisto
 const scheduleHistoryEditModal = document.getElementById("scheduleHistoryEditModal");
 const scheduleHistoryEditModalTitle = document.getElementById("scheduleHistoryEditModalTitle");
 const scheduleHistoryEditDateTimeInput = document.getElementById("scheduleHistoryEditDateTimeInput");
+const scheduleHistoryEditNote = document.getElementById("scheduleHistoryEditNote");
 const saveScheduleHistoryEditBtn = document.getElementById("saveScheduleHistoryEditBtn");
 const cancelScheduleHistoryEditBtn = document.getElementById("cancelScheduleHistoryEditBtn");
 
@@ -1652,6 +1653,9 @@ function pad2(value) {
 function closeScheduleHistoryEditModal() {
     if (scheduleHistoryEditModal) {
         scheduleHistoryEditModal.style.display = "none";
+    }
+    if (scheduleHistoryEditNote) {
+        scheduleHistoryEditNote.hidden = true;
     }
     editingScheduleHistoryIndex = -1;
     editingScheduleHistorySnapshot = null;
@@ -1850,6 +1854,51 @@ if (cancelScheduleHistoryEditBtn) {
 }
 
 window.openMedicationScheduleHistoryModal = openScheduleHistoryModal;
+
+// Opens the existing history editor for today's taken record without opening the history list.
+function openMedicationTakenTimeEditor(eventId) {
+    const compat = window.medicationScheduleCompat;
+    const log = medicationLog && medicationLog[eventId];
+
+    if (!compat || typeof compat.getMedicationHistoryPeriod !== "function" ||
+        !log || !log.logged || log.date !== new Date().toDateString()) {
+        alert("No taken time was found for today to edit.");
+        return;
+    }
+
+    const period = compat.getMedicationHistoryPeriod(eventId);
+    const history = Array.isArray(medicationHistory) ? medicationHistory : [];
+    let index = -1;
+
+    history.forEach(function (entry, entryIndex) {
+        if (entry && entry.period === period && entry.date === log.date &&
+            (index === -1 || entry.time === log.time)) {
+            index = entryIndex;
+        }
+    });
+
+    if (index === -1 || !isScheduleHistoryEntryEditable(history[index])) {
+        alert("This taken time can't be edited here because no matching history record was found.");
+        return;
+    }
+
+    const group = getMedicationScheduleGroupById(eventId);
+    activeScheduleHistoryPeriod = period;
+    activeScheduleHistoryEventId = eventId;
+    activeScheduleHistoryName = group && group.name ? group.name : period;
+
+    openScheduleHistoryEditModal(index);
+
+    if (editingScheduleHistoryIndex !== index) {
+        return;
+    }
+
+    if (scheduleHistoryEditNote) {
+        scheduleHistoryEditNote.hidden = false;
+    }
+}
+
+window.openMedicationTakenTimeEditor = openMedicationTakenTimeEditor;
 
 function buildMedicationList() {
 
