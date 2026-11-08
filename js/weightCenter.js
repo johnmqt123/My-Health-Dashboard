@@ -175,7 +175,7 @@
     let editingWeightIndex = null;
     let activeDetailIndex = null;
     let lockedScrollTop = 0;
-    const WEIGHT_HISTORY_PAGE_SIZE = 10;
+    const WEIGHT_HISTORY_PAGE_SIZE = 32;
     let visibleWeightEntriesCount = WEIGHT_HISTORY_PAGE_SIZE;
 
     function parseHistoryDate(entry) {
