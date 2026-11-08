@@ -1492,6 +1492,13 @@ header p {
     box-shadow: none;
 }
 
+.weight-history-navigation button:hover,
+.weight-history-navigation button:active {
+    background: var(--archive-accent-border);
+    color: var(--archive-accent-text);
+    transform: none;
+}
+
 .weight-history-navigation button:focus-visible {
     outline: 2px solid var(--archive-accent);
     outline-offset: 2px;
