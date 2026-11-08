@@ -152,6 +152,10 @@
     const weightHistoryButton = document.getElementById("weightHistoryButton");
     const weightHistorySection = document.getElementById("weightHistorySection");
     const weightHistoryDisplay = document.getElementById("weightHistoryDisplay");
+    const weightHistoryYear = document.getElementById("weightHistoryYear");
+    const weightHistoryMonth = document.getElementById("weightHistoryMonth");
+    const weightHistoryShowingCount = document.getElementById("weightHistoryShowingCount");
+    const weightHistoryShowMore = document.getElementById("weightHistoryShowMore");
     const weightModal = document.getElementById("weightModal");
     const weightModalContent = weightModal ? weightModal.querySelector(".modal-content") : null;
     const weightModalTitle = weightModal ? weightModal.querySelector("h2") : null;
@@ -171,6 +175,8 @@
     let editingWeightIndex = null;
     let activeDetailIndex = null;
     let lockedScrollTop = 0;
+    const WEIGHT_HISTORY_PAGE_SIZE = 10;
+    let visibleWeightEntriesCount = WEIGHT_HISTORY_PAGE_SIZE;
 
     function parseHistoryDate(entry) {
         if (!entry || !entry.date) return null;
@@ -235,6 +241,38 @@
         return null;
     }
 
+    function parseWeightDisplayDate(entry) {
+        if (!entry || !entry.date) return null;
+
+        const text = String(entry.date).trim();
+        const us = text.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+        const iso = text.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        const parsed = parseHistoryDate({ date: text });
+        if (!parsed) return null;
+
+        if (us || iso) {
+            const year = Number(us ? us[3] : iso[1]);
+            const month = Number(us ? us[1] : iso[2]);
+            const day = Number(us ? us[2] : iso[3]);
+            if (parsed.getFullYear() !== year || parsed.getMonth() + 1 !== month || parsed.getDate() !== day) {
+                return null;
+            }
+        }
+
+        const time = String(entry.time || "").trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+        if (time) {
+            let hours = Number(time[1]);
+            const minutes = Number(time[2]);
+            const meridian = time[3] ? time[3].toUpperCase() : "";
+            if (minutes < 60 && (meridian ? hours >= 1 && hours <= 12 : hours < 24)) {
+                if (meridian === "PM" && hours < 12) hours += 12;
+                if (meridian === "AM" && hours === 12) hours = 0;
+                parsed.setHours(hours, minutes, 0, 0);
+            }
+        }
+        return parsed;
+    }
+
     function lockWeightModalBackgroundScroll() {
         lockedScrollTop = window.scrollY || window.pageYOffset || 0;
         document.documentElement.classList.add("weight-modal-open");
@@ -261,8 +299,7 @@
         unlockWeightModalBackgroundScroll();
     }
 
-    function formatMonthHeader(entry) {
-        const parsed = parseHistoryDate(entry);
+    function formatMonthHeader(parsed) {
         if (!parsed) return "Unknown Month";
         return parsed.toLocaleDateString([], {
             month: "long",
@@ -270,8 +307,7 @@
         });
     }
 
-    function formatRowDate(entry) {
-        const parsed = parseHistoryDate(entry);
+    function formatRowDate(entry, parsed) {
         if (!parsed) return entry.date || "Unknown Date";
         return parsed.toLocaleDateString([], {
             month: "short",
@@ -446,46 +482,96 @@
         weightHistoryDisplay.innerHTML = "";
         weightHistoryDisplay.classList.add("weight-history-list");
 
+        const entries = weightHistory.map(function (entry, index) {
+            return { entry: entry, index: index, date: parseWeightDisplayDate(entry) };
+        });
+        const years = Array.from(new Set(entries.filter(function (item) {
+            return item.date !== null;
+        }).map(function (item) {
+            return item.date.getFullYear();
+        }))).sort(function (left, right) {
+            return right - left;
+        });
+
+        if (weightHistoryYear) {
+            const selectedYear = weightHistoryYear.value;
+            weightHistoryYear.innerHTML = '<option value="">All Years</option>';
+            years.forEach(function (year) {
+                const option = document.createElement("option");
+                option.value = String(year);
+                option.textContent = String(year);
+                weightHistoryYear.appendChild(option);
+            });
+            if (selectedYear && years.indexOf(Number(selectedYear)) === -1) {
+                visibleWeightEntriesCount = WEIGHT_HISTORY_PAGE_SIZE;
+            } else {
+                weightHistoryYear.value = selectedYear;
+            }
+        }
+
+        const year = weightHistoryYear ? weightHistoryYear.value : "";
+        const month = weightHistoryMonth ? weightHistoryMonth.value : "";
+        const filtered = entries.filter(function (item) {
+            if (!year && !month) return true;
+            return item.date &&
+                (!year || item.date.getFullYear() === Number(year)) &&
+                (!month || item.date.getMonth() + 1 === Number(month));
+        }).sort(function (left, right) {
+            if (!left.date || !right.date) {
+                if (left.date) return -1;
+                if (right.date) return 1;
+                return right.index - left.index;
+            }
+            return right.date.getTime() - left.date.getTime() || right.index - left.index;
+        });
+        const visibleEntries = filtered.slice(0, visibleWeightEntriesCount);
+
+        if (weightHistoryShowingCount) {
+            weightHistoryShowingCount.textContent = "Showing " + visibleEntries.length +
+                " of " + filtered.length + " entries";
+        }
+        if (weightHistoryShowMore) {
+            weightHistoryShowMore.hidden = visibleEntries.length >= filtered.length;
+        }
+
         if (weightHistory.length === 0) {
             weightHistoryDisplay.textContent = "No weight entries yet.";
             return;
         }
+        if (filtered.length === 0) {
+            weightHistoryDisplay.textContent = "No weight entries match the selected filters.";
+            return;
+        }
 
-        const grouped = {};
-        const orderedMonths = [];
+        const grouped = new Map();
+        visibleEntries.forEach(function (item) {
+            const monthKey = item.date
+                ? item.date.getFullYear() + "-" + item.date.getMonth()
+                : "unknown";
 
-        weightHistory.slice().reverse().forEach(function (entry, index) {
-            const originalIndex = weightHistory.length - 1 - index;
-            const monthKey = formatMonthHeader(entry);
-
-            if (!grouped[monthKey]) {
-                grouped[monthKey] = [];
-                orderedMonths.push(monthKey);
+            if (!grouped.has(monthKey)) {
+                grouped.set(monthKey, []);
             }
-
-            grouped[monthKey].push({
-                entry: entry,
-                index: originalIndex
-            });
+            grouped.get(monthKey).push(item);
         });
 
-        orderedMonths.forEach(function (monthKey) {
+        grouped.forEach(function (items) {
             const group = document.createElement("div");
             group.className = "weight-month-group";
 
             const header = document.createElement("div");
             header.className = "weight-month-header";
-            header.textContent = monthKey;
+            header.textContent = formatMonthHeader(items[0].date);
             group.appendChild(header);
 
-            grouped[monthKey].forEach(function (item) {
+            items.forEach(function (item) {
                 const row = document.createElement("button");
                 row.type = "button";
                 row.className = "weight-history-row";
                 row.setAttribute("data-index", String(item.index));
                 row.innerHTML =
                     '<span class="weight-history-main">' +
-                        '<span class="weight-history-date">' + escapeHtml(formatRowDate(item.entry)) + "</span>" +
+                        '<span class="weight-history-date">' + escapeHtml(formatRowDate(item.entry, item.date)) + "</span>" +
                         '<span class="weight-history-value">' + escapeHtml(item.entry.weight + " lb") + "</span>" +
                     "</span>" +
                     '<span class="weight-history-chevron" aria-hidden="true">&gt;</span>';
@@ -539,6 +625,7 @@
             return;
         }
 
+        visibleWeightEntriesCount = WEIGHT_HISTORY_PAGE_SIZE;
         renderWeightHistory();
         weightHistorySection.style.display = "block";
         weightHistoryButton.textContent = "📊 Hide History";
@@ -586,6 +673,21 @@
         if (weightHistoryButton) {
             weightHistoryButton.textContent = "📊 History";
             weightHistoryButton.addEventListener("click", toggleWeightHistory);
+        }
+
+        [weightHistoryYear, weightHistoryMonth].forEach(function (select) {
+            if (!select) return;
+            select.addEventListener("change", function () {
+                visibleWeightEntriesCount = WEIGHT_HISTORY_PAGE_SIZE;
+                renderWeightHistory();
+            });
+        });
+
+        if (weightHistoryShowMore) {
+            weightHistoryShowMore.addEventListener("click", function () {
+                visibleWeightEntriesCount += WEIGHT_HISTORY_PAGE_SIZE;
+                renderWeightHistory();
+            });
         }
 
         if (cancelWeightBtn) {
