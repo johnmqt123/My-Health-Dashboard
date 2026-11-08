@@ -1464,6 +1464,39 @@ header p {
     display: none;
 }
 
+.weight-history-navigation {
+    position: sticky;
+    bottom: max(12px, env(safe-area-inset-bottom, 0px));
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 8px;
+    border: 1px solid var(--archive-accent-border);
+    border-radius: 10px;
+    background: var(--surface);
+}
+
+.weight-history-navigation button {
+    flex: 1 1 120px;
+    width: auto;
+    min-height: 44px;
+    margin: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--archive-accent-border);
+    border-radius: 8px;
+    background: #f8fafc;
+    color: var(--archive-accent-text);
+    font-weight: 700;
+    box-shadow: none;
+}
+
+.weight-history-navigation button:focus-visible {
+    outline: 2px solid var(--archive-accent);
+    outline-offset: 2px;
+}
+
 #weightHistoryDisplay.weight-history-list {
     gap: 6px;
 }

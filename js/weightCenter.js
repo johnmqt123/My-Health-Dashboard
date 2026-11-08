@@ -156,6 +156,8 @@
     const weightHistoryMonth = document.getElementById("weightHistoryMonth");
     const weightHistoryShowingCount = document.getElementById("weightHistoryShowingCount");
     const weightHistoryShowMore = document.getElementById("weightHistoryShowMore");
+    const weightHistoryBackToTop = document.getElementById("weightHistoryBackToTop");
+    const weightHistoryClose = document.getElementById("weightHistoryClose");
     const weightModal = document.getElementById("weightModal");
     const weightModalContent = weightModal ? weightModal.querySelector(".modal-content") : null;
     const weightModalTitle = weightModal ? weightModal.querySelector("h2") : null;
@@ -673,6 +675,16 @@
         if (weightHistoryButton) {
             weightHistoryButton.textContent = "📊 History";
             weightHistoryButton.addEventListener("click", toggleWeightHistory);
+        }
+
+        if (weightHistoryBackToTop && weightHistorySection) {
+            weightHistoryBackToTop.addEventListener("click", function () {
+                weightHistorySection.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+        }
+
+        if (weightHistoryClose) {
+            weightHistoryClose.addEventListener("click", toggleWeightHistory);
         }
 
         [weightHistoryYear, weightHistoryMonth].forEach(function (select) {
