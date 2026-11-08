@@ -699,6 +699,16 @@ header p {
     overflow: hidden;
 }
 
+#weightHistorySection {
+    max-height: none;
+    overflow: visible;
+}
+
+#weightHistoryDisplay {
+    max-height: none;
+    overflow: visible;
+}
+
 #dailyDiaryHistorySection {
     /* Diary History is ordinary page content; the main page is the only scroll surface. */
     max-height: none;
